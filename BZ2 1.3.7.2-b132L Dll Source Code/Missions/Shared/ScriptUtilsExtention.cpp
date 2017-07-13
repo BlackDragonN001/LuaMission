@@ -846,7 +846,7 @@ bool GetODFName(const Handle h, char *ODFName)
 // Combines two strings into one. Used to append things to a string safely.
 bool CombineStrings(char *ReturnString, const char *String1, const char *String2, const size_t MaxSize)
 {
-	if ((!String1) || (!String2))
+	if ((!ReturnString) || (!String1) || (!String2))
 		return false; // Null pointer, bad. return! return!
 
 	if (ReturnString == String2)
