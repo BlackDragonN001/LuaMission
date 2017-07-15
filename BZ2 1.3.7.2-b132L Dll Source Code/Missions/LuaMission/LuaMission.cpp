@@ -5791,6 +5791,23 @@ static const luaL_Reg sLuaScriptUtils [] = {
 	{ "CameraPos", CameraPos },
 	{ "ReplaceObject", ReplaceObject },
 
+
+	// Math stuffs.
+	{ "SetVector", SetVector },
+	{ "DotProduct", DotProduct },
+	{ "CrossProduct", CrossProduct },
+	{ "Normalize", Normalize },
+	{ "Length", Length },
+	{ "LengthSquared", LengthSquared },
+	{ "Distance2D", Distance2D },
+	{ "Distance2DSquared", Distance2DSquared },
+	{ "Distance3D", Distance3D },
+	{ "Distance3DSquared", Distance3DSquared },
+	{ "SetMatrix", SetMatrix },
+	{ "BuildAxisRotationMatrix", BuildAxisRotationMatrix },
+	{ "BuildPositionRotationMatrix", BuildPositionRotationMatrix },
+	{ "BuildOrthogonalMatrix", BuildOrthogonalMatrix },
+	{ "BuildDirectionalMatrix", BuildDirectionalMatrix },
 	{ NULL, NULL }
 };
 
