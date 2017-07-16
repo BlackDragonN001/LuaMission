@@ -6352,7 +6352,7 @@ bool LuaMission::PostLoad(bool missionSave)
 	if (missionSave)
 		return true;
 
-	ConvertHandles(h_array, h_count);
+	//ConvertHandles(h_array, h_count);
 
 	return ret;
 }
