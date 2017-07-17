@@ -51,6 +51,7 @@
 // String lengths.
 #define MAX_ODF_LENGTH 64 // Max ODF Length.
 #define MAX_NAME_LENGTH 256 // Max Objective Name/AIP file Length.
+#define MAX_CONSOLE_MSG_LENGTH 512 // Max length of Console Message/AddObjective msg.
 #define MAX_MESSAGE_LENGTH 2048 // Max Length of a message string.
 // Math stuff.
 #define PI 3.141592654f // Because Pie R Square.

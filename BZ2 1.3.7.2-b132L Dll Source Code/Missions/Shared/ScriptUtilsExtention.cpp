@@ -670,7 +670,37 @@ void FormatConsoleMessage(const char *format, ...)
 	va_start(ap, format);
 	char tempstr[MAX_MESSAGE_LENGTH] = {0};
 	vsnprintf_s(tempstr, sizeof(tempstr), sizeof(tempstr), format, ap);
-	PrintConsoleMessage(tempstr);
+	size_t len = strlen(tempstr);
+	if (len < MAX_CONSOLE_MSG_LENGTH)
+	{
+		PrintConsoleMessage(tempstr);
+	}
+	else
+	{
+		char *start = tempstr, *end = tempstr;
+		for (char *ptr = tempstr; *ptr != '\0'; ++ptr)
+		{
+			if (end - start >= MAX_CONSOLE_MSG_LENGTH)
+			{
+				PrintConsoleMessage(start);
+				return; // Message too long, dump string and move on.
+			}
+			if (*ptr == '\n') // End of line.
+			{
+				end = ptr;
+				*end = '\0';
+				if (end > tempstr && *(end - 1) == '\r')
+					*(end - 1) = '\0';
+
+				PrintConsoleMessage(start);
+				start = end + 1;
+			}
+		}
+		if ((start <= end + 1) && (end - start < 512)) // If we're not at end of file yet, print last line.
+		{
+			PrintConsoleMessage(start);
+		}
+	}
 	va_end(ap);
 }
 
