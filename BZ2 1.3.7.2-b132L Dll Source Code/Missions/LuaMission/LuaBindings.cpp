@@ -1403,7 +1403,7 @@ int GetPlayerHandle(lua_State *L)
 int IsAlive(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
-	lua_pushboolean(L, ::IsAlive(h));
+	lua_pushboolean(L, ::IsAlive2(h));
 	return 1;
 }
 
@@ -1411,7 +1411,7 @@ int IsAlive(lua_State *L)
 int IsFlying(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
-	lua_pushboolean(L, ::IsFlying(h));
+	lua_pushboolean(L, ::IsFlying2(h));
 	return 1;
 }
 
@@ -1419,7 +1419,7 @@ int IsFlying(lua_State *L)
 int IsAliveAndPilot(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
-	lua_pushboolean(L, ::IsAliveAndPilot(h));
+	lua_pushboolean(L, ::IsAliveAndPilot2(h));
 	return 1;
 }
 
@@ -3840,30 +3840,6 @@ int DoesODFExist(lua_State *L)
 {
 	char *odf = const_cast<char *>(luaL_checkstring(L, 1));
 	lua_pushboolean(L, ::DoesODFExist(odf));
-	return 1;
-}
-
-//DLLEXPORT bool DLLAPI IsAlive2(Handle h);
-int IsAlive2(lua_State *L)
-{
-	Handle h = RequireHandle(L, 1);
-	lua_pushboolean(L, ::IsAlive2(h));
-	return 1;
-}
-
-//DLLEXPORT bool DLLAPI IsFlying2(Handle h);
-int IsFlying2(lua_State *L)
-{
-	Handle h = RequireHandle(L, 1);
-	lua_pushboolean(L, ::IsFlying2(h));
-	return 1;
-}
-
-//DLLEXPORT bool DLLAPI IsAliveAndPilot2(Handle h);
-int IsAliveAndPilot2(lua_State *L)
-{
-	Handle h = RequireHandle(L, 1);
-	lua_pushboolean(L, ::IsAliveAndPilot2(h));
 	return 1;
 }
 
