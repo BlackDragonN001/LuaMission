@@ -354,17 +354,17 @@ Returns the game object controlled by the player on the given team. Returns nil 
 
 -boolean IsAlive ( handle h )
 
-Returns true if the game object exists and (if the object is a vehicle) controlled. Returns false otherwise, and clears the handle to 0.
+Returns true if the game object exists and (if the object is a vehicle) controlled. Returns false otherwise.
 
 
 -boolean IsFlying ( handle h )
 
-Returns true if the game object is flagged as flying. Returns false otherwise, and clears the handle to 0 if the object is not around.
+Returns true if the game object is flagged as flying. Returns false otherwise.
 
 
 -boolean IsAliveAndPilot ( handle h )
 
-Returns true if the game object exists and (if the object is a vehicle) controlled and piloted. Returns false otherwise, and clears the handle to 0.
+Returns true if the game object exists and (if the object is a vehicle) controlled and piloted. Returns false otherwise.
 
 
 -boolean IsValid ( handle h )
@@ -1636,22 +1636,6 @@ Returns the classlabel of the weapon in the specified slot. (0 - 4)
 -boolean DoesODFExist ( string Odf )
 
 Returns true if the specified ODF exists, e.g. DoesODFExist("avtank")
-
-
--boolean IsAlive2 ( handle h )
-
-Returns true if the game object exists and (if the object is a vehicle) controlled. Returns false otherwise, this version does not clear the handle to 0 if it's not around.
-
-
--boolean IsFlying2 ( handle h )
-
-Returns true if the game object is flagged as flying. Returns false otherwise, this version does not clear the handle to 0 if it's not around.
-
-
--boolean IsAliveAndPilot2 ( handle h )
-
-Returns true if the game object exists and (if the object is a vehicle) controlled and piloted. Returns false otherwise, this version does not clear the handle to 0 if it's not around.
-
 
 -TranslateString ( name Value, int Size, string source ) 
 
