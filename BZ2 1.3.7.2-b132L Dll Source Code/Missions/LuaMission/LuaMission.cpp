@@ -64,7 +64,7 @@ void LuaMission::Setup(void)
 	if (lua_isfunction(L, -1))
 	{
 		// call the Start function
-		LuaScriptUtils::LuaCheckStatus(lua_pcall(L, 0, 0, 0), L, "Lua script Start error: %s");
+		LuaBindings::LuaCheckStatus(lua_pcall(L, 0, 0, 0), L, "Lua script Start error: %s");
 	}
 	else
 	{
@@ -153,14 +153,14 @@ void LuaMission::InitialSetup(void)
 	// Register our functions
 	// (into the global table)
 	lua_pushglobaltable(L);
-	luaL_setfuncs(L, LuaScriptUtils::sLuaScriptUtils, 0);
+	luaL_setfuncs(L, LuaBindings::sLuaScriptUtils, 0);
 
 	// Create a metatable for handles
 	lua_pushlightuserdata(L, NULL);
     luaL_newmetatable(L, "Handle");
     lua_pushstring(L, "Handle");
     lua_setfield(L, -2, "__type");
-	lua_pushcfunction(L, LuaScriptUtils::Handle_ToString);
+	lua_pushcfunction(L, LuaBindings::Handle_ToString);
     lua_setfield(L, -2, "__tostring");
     lua_setmetatable(L, -2);
 	
@@ -176,23 +176,23 @@ void LuaMission::InitialSetup(void)
 	luaL_newmetatable(L, "Vector");
 	lua_pushstring(L, "Vector");
 	lua_setfield(L, -2, "__type");
-	lua_pushcfunction(L, LuaScriptUtils::Vector_Index);
+	lua_pushcfunction(L, LuaBindings::Vector_Index);
 	lua_setfield(L, -2, "__index");
-	lua_pushcfunction(L, LuaScriptUtils::Vector_NewIndex);
+	lua_pushcfunction(L, LuaBindings::Vector_NewIndex);
 	lua_setfield(L, -2, "__newindex");
-	lua_pushcfunction(L, LuaScriptUtils::Vector_Neg);
+	lua_pushcfunction(L, LuaBindings::Vector_Neg);
 	lua_setfield(L, -2, "__unm");
-	lua_pushcfunction(L, LuaScriptUtils::Vector_Add);
+	lua_pushcfunction(L, LuaBindings::Vector_Add);
 	lua_setfield(L, -2, "__add");
-	lua_pushcfunction(L, LuaScriptUtils::Vector_Sub);
+	lua_pushcfunction(L, LuaBindings::Vector_Sub);
 	lua_setfield(L, -2, "__sub");
-	lua_pushcfunction(L, LuaScriptUtils::Vector_Mul);
+	lua_pushcfunction(L, LuaBindings::Vector_Mul);
 	lua_setfield(L, -2, "__mul");
-	lua_pushcfunction(L, LuaScriptUtils::Vector_Div);
+	lua_pushcfunction(L, LuaBindings::Vector_Div);
 	lua_setfield(L, -2, "__div");
-	lua_pushcfunction(L, LuaScriptUtils::Vector_Eq);
+	lua_pushcfunction(L, LuaBindings::Vector_Eq);
 	lua_setfield(L, -2, "__eq");
-	lua_pushcfunction(L, LuaScriptUtils::Vector_ToString);
+	lua_pushcfunction(L, LuaBindings::Vector_ToString);
 	lua_setfield(L, -2, "__tostring");
 	// Vector is a struct so it doesn't need __gc
 	lua_pop(L, 1);
@@ -201,13 +201,13 @@ void LuaMission::InitialSetup(void)
 	luaL_newmetatable(L, "Matrix");
 	lua_pushstring(L, "Matrix");
 	lua_setfield(L, -2, "__type");
-	lua_pushcfunction(L, LuaScriptUtils::Matrix_Index);
+	lua_pushcfunction(L, LuaBindings::Matrix_Index);
 	lua_setfield(L, -2, "__index");
-	lua_pushcfunction(L, LuaScriptUtils::Matrix_NewIndex);
+	lua_pushcfunction(L, LuaBindings::Matrix_NewIndex);
 	lua_setfield(L, -2, "__newindex");
-	lua_pushcfunction(L, LuaScriptUtils::Matrix_Mul);
+	lua_pushcfunction(L, LuaBindings::Matrix_Mul);
 	lua_setfield(L, -2, "__mul");
-	lua_pushcfunction(L, LuaScriptUtils::Matrix_ToString);
+	lua_pushcfunction(L, LuaBindings::Matrix_ToString);
 	lua_setfield(L, -2, "__tostring");
 	// Matrix is a struct so it doesn't need __gc
 	lua_pop(L, 1);
@@ -223,7 +223,7 @@ void LuaMission::InitialSetup(void)
 	*/
 
 	// identity matrix
-	*LuaScriptUtils::NewMatrix(L) = Identity_Matrix;
+	*LuaBindings::NewMatrix(L) = Identity_Matrix;
 	lua_setglobal(L, "IdentityMatrix");
 
 	// ai commands
@@ -253,8 +253,8 @@ void LuaMission::InitialSetup(void)
 	FileBuffer[bufSize] = '\0';
 
 	// load and run the script
-	LuaScriptUtils::LuaCheckStatus(luaL_loadbuffer(L, FileBuffer, bufSize, script_filename), L, "Lua script load error: %s") &&
-	LuaScriptUtils::LuaCheckStatus(lua_pcall(L, 0, LUA_MULTRET, 0), L, "Lua script run error: %s");
+	LuaBindings::LuaCheckStatus(luaL_loadbuffer(L, FileBuffer, bufSize, script_filename), L, "Lua script load error: %s") &&
+	LuaBindings::LuaCheckStatus(lua_pcall(L, 0, LUA_MULTRET, 0), L, "Lua script run error: %s");
 
 	// release file data
 	free(FileBuffer);
@@ -269,7 +269,7 @@ void LuaMission::InitialSetup(void)
 	if (lua_isfunction(L, -1))
 	{
 		// call the InitialSetup function.
-		LuaScriptUtils::LuaCheckStatus(lua_pcall(L, 1, 0, 0), L, "Lua script InitialSetup error: %s");
+		LuaBindings::LuaCheckStatus(lua_pcall(L, 1, 0, 0), L, "Lua script InitialSetup error: %s");
 	}
 	else
 	{
@@ -335,11 +335,11 @@ bool LuaMission::Load(bool missionSave)
 			ret = ret && Read(&count, 1);
 			for (int i = 0; i < count; ++i)
 			{
-				ret = ret && LuaScriptUtils::LoadValue(L, true);
+				ret = ret && LuaBindings::LoadValue(L, true);
 			}
 
 			// call the Load function
-			LuaScriptUtils::LuaCheckStatus(lua_pcall(L, count, 0, 0), L, "Lua script Load error: %s");
+			LuaBindings::LuaCheckStatus(lua_pcall(L, count, 0, 0), L, "Lua script Load error: %s");
 		}
 		else
 		{
@@ -350,7 +350,7 @@ bool LuaMission::Load(bool missionSave)
 			ret = ret && Read(&count, 1);
 			for (int i = 0; i < count; ++i)
 			{
-				ret = ret && LuaScriptUtils::LoadValue(L, false);
+				ret = ret && LuaBindings::LoadValue(L, false);
 			}
 
 			lua_pop(L, 1);
@@ -405,14 +405,14 @@ bool LuaMission::Save(bool missionSave)
 		{
 			// call the Save function
 			int level = lua_gettop(L);
-			if (LuaScriptUtils::LuaCheckStatus(lua_pcall(L, 0, LUA_MULTRET, 0), L, "Lua script Save error: %s"))
+			if (LuaBindings::LuaCheckStatus(lua_pcall(L, 0, LUA_MULTRET, 0), L, "Lua script Save error: %s"))
 			{
 				// write return values to the file
 				int count = lua_gettop(L) - level + 1;
 				ret = ret && Write(&count, 1);
 				for (int i = level; i < level + count; ++i)
 				{
-					ret = ret && LuaScriptUtils::SaveValue(L, i);
+					ret = ret && LuaBindings::SaveValue(L, i);
 				}
 			}
 		}
@@ -439,11 +439,11 @@ void LuaMission::PreOrdnanceHit(Handle shooterHandle, Handle victimHandle, int o
 	if (lua_isfunction(L, -1))
 	{
 		// call the PreOrdnanceHit function
-		LuaScriptUtils::PushHandle(L, shooterHandle);
-		LuaScriptUtils::PushHandle(L, victimHandle);
+		LuaBindings::PushHandle(L, shooterHandle);
+		LuaBindings::PushHandle(L, victimHandle);
 		lua_pushinteger(L, ordnanceTeam);
 		lua_pushstring(L, pOrdnanceODF);
-		LuaScriptUtils::LuaCheckStatus(lua_pcall(L, 4, 0, 0), L, "Lua script PreOrdnanceHit error: %s");
+		LuaBindings::LuaCheckStatus(lua_pcall(L, 4, 0, 0), L, "Lua script PreOrdnanceHit error: %s");
 	}
 	else
 	{
@@ -466,9 +466,9 @@ PreGetInReturnCodes LuaMission::PreGetIn(const int curWorld, Handle pilotHandle,
 	{
 		// call the PreGetIn function
 		lua_pushnumber(L, curWorld);
-		LuaScriptUtils::PushHandle(L, pilotHandle);
-		LuaScriptUtils::PushHandle(L, emptyCraftHandle);
-		LuaScriptUtils::LuaCheckStatus(lua_pcall(L, 3, 1, 0), L, "Lua script PreGetIn error: %s");
+		LuaBindings::PushHandle(L, pilotHandle);
+		LuaBindings::PushHandle(L, emptyCraftHandle);
+		LuaBindings::LuaCheckStatus(lua_pcall(L, 3, 1, 0), L, "Lua script PreGetIn error: %s");
 
 		PreGetInReturnCodes returnvalue2 = PreGetInReturnCodes(luaL_optinteger(L, 1, returnvalue));
 
@@ -498,11 +498,11 @@ PreSnipeReturnCodes LuaMission::PreSnipe(const int curWorld, Handle shooterHandl
 	{
 		// call the PreSnipe function
 		lua_pushinteger(L, curWorld);
-		LuaScriptUtils::PushHandle(L, shooterHandle);
-		LuaScriptUtils::PushHandle(L, victimHandle);
+		LuaBindings::PushHandle(L, shooterHandle);
+		LuaBindings::PushHandle(L, victimHandle);
 		lua_pushinteger(L, ordnanceTeam);
 		lua_pushstring(L, pOrdnanceODF);
-		LuaScriptUtils::LuaCheckStatus(lua_pcall(L, 5, 1, 0), L, "Lua script PreSnipe error: %s");
+		LuaBindings::LuaCheckStatus(lua_pcall(L, 5, 1, 0), L, "Lua script PreSnipe error: %s");
 		PreSnipeReturnCodes returnvalue2 = PreSnipeReturnCodes(luaL_optinteger(L, 1, returnvalue));
 
 		if(returnvalue2 != PRESNIPE_KILLPILOT) // If the Lua return was different then the Default behavior, let Lua Override.
@@ -532,9 +532,9 @@ PrePickupPowerupReturnCodes LuaMission::PrePickupPowerup(const int curWorld, Han
 	{
 		// call the PrePickupPowerup function
 		lua_pushinteger(L, curWorld);
-		LuaScriptUtils::PushHandle(L, me);
-		LuaScriptUtils::PushHandle(L, powerupHandle);
-		LuaScriptUtils::LuaCheckStatus(lua_pcall(L, 3, 1, 0), L, "Lua script PrePickupPowerup error: %s");
+		LuaBindings::PushHandle(L, me);
+		LuaBindings::PushHandle(L, powerupHandle);
+		LuaBindings::LuaCheckStatus(lua_pcall(L, 3, 1, 0), L, "Lua script PrePickupPowerup error: %s");
 		PrePickupPowerupReturnCodes returnvalue2 = PrePickupPowerupReturnCodes(luaL_optinteger(L, 1, returnvalue));
 
 		if(returnvalue2 != PREPICKUPPOWERUP_ALLOW) // If the Lua return was different then the Default behavior, let Lua Override.
@@ -563,10 +563,10 @@ void LuaMission::PostTargetChangedCallback(Handle craft, Handle previousTarget, 
 	if (lua_isfunction(L, -1))
 	{
 		// call the PostTargetChangeCallback function
-		LuaScriptUtils::PushHandle(L, craft);
-		LuaScriptUtils::PushHandle(L, previousTarget);
-		LuaScriptUtils::PushHandle(L, currentTarget);
-		LuaScriptUtils::LuaCheckStatus(lua_pcall(L, 3, 0, 0), L, "Lua script PostTargetChangeCallback error: %s");
+		LuaBindings::PushHandle(L, craft);
+		LuaBindings::PushHandle(L, previousTarget);
+		LuaBindings::PushHandle(L, currentTarget);
+		LuaBindings::LuaCheckStatus(lua_pcall(L, 3, 0, 0), L, "Lua script PostTargetChangeCallback error: %s");
 	}
 	else
 	{
@@ -588,8 +588,8 @@ void LuaMission::AddObject(Handle h)
 	if (lua_isfunction(L, -1))
 	{
 		// call the CreateObject function with the game object handle
-		LuaScriptUtils::PushHandle(L, h);
-		LuaScriptUtils::LuaCheckStatus(lua_pcall(L, 1, 0, 0), L, "Lua script CreateObject error: %s");
+		LuaBindings::PushHandle(L, h);
+		LuaBindings::LuaCheckStatus(lua_pcall(L, 1, 0, 0), L, "Lua script CreateObject error: %s");
 	}
 	else
 	{
@@ -601,8 +601,8 @@ void LuaMission::AddObject(Handle h)
 	if (lua_isfunction(L, -1))
 	{
 		// call the AddObject function with the game object handle
-		LuaScriptUtils::PushHandle(L, h);
-		LuaScriptUtils::LuaCheckStatus(lua_pcall(L, 1, 0, 0), L, "Lua script AddObject error: %s");
+		LuaBindings::PushHandle(L, h);
+		LuaBindings::LuaCheckStatus(lua_pcall(L, 1, 0, 0), L, "Lua script AddObject error: %s");
 	}
 	else
 	{
@@ -624,8 +624,8 @@ void LuaMission::DeleteObject(Handle h)
 	if (lua_isfunction(L, -1))
 	{
 		// call the DeleteObject function with the game object handle
-		LuaScriptUtils::PushHandle(L, h);
-		LuaScriptUtils::LuaCheckStatus(lua_pcall(L, 1, 0, 0), L, "Lua script DeleteObject error: %s");
+		LuaBindings::PushHandle(L, h);
+		LuaBindings::LuaCheckStatus(lua_pcall(L, 1, 0, 0), L, "Lua script DeleteObject error: %s");
 	}
 	else
 	{
@@ -651,8 +651,8 @@ bool LuaMission::AddPlayer(DPID id, int Team, bool IsNewPlayer)
 		lua_pushinteger(L, id);
 		lua_pushinteger(L, Team);
 		lua_pushboolean(L, IsNewPlayer);
-		LuaScriptUtils::LuaCheckStatus(lua_pcall(L, 3, 1, 0), L, "Lua script AddPlayer error: %s");
-		returnvalue = LuaScriptUtils::luaL_optboolean(L, 1, returnvalue);
+		LuaBindings::LuaCheckStatus(lua_pcall(L, 3, 1, 0), L, "Lua script AddPlayer error: %s");
+		returnvalue = LuaBindings::luaL_optboolean(L, 1, returnvalue);
 		lua_pop(L, 1);
 	}
 	else
@@ -674,7 +674,7 @@ void LuaMission::DeletePlayer(DPID id)
 	{
 		// call the Update function
 		lua_pushinteger(L, id);
-		LuaScriptUtils::LuaCheckStatus(lua_pcall(L, 1, 0, 0), L, "Lua script DeletePlayer error: %s");
+		LuaBindings::LuaCheckStatus(lua_pcall(L, 1, 0, 0), L, "Lua script DeletePlayer error: %s");
 	}
 	else
 	{
@@ -694,8 +694,8 @@ EjectKillRetCodes LuaMission::PlayerEjected(Handle DeadObjectHandle)
 	if (lua_isfunction(L, -1))
 	{
 		// call the PlayerEjected function
-		LuaScriptUtils::PushHandle(L, DeadObjectHandle);
-		LuaScriptUtils::LuaCheckStatus(lua_pcall(L, 1, 1, 0), L, "Lua script PlayerEjected error: %s");
+		LuaBindings::PushHandle(L, DeadObjectHandle);
+		LuaBindings::LuaCheckStatus(lua_pcall(L, 1, 1, 0), L, "Lua script PlayerEjected error: %s");
 		returnvalue = EjectKillRetCodes(luaL_optinteger(L, 1, returnvalue));
 		lua_pop(L, 1);
 	}
@@ -724,9 +724,9 @@ EjectKillRetCodes LuaMission::ObjectKilled(int DeadObjectHandle, int KillersHand
 	if (lua_isfunction(L, -1))
 	{
 		// call the ObjectKilled function
-		LuaScriptUtils::PushHandle(L, DeadObjectHandle);
-		LuaScriptUtils::PushHandle(L, KillersHandle);
-		LuaScriptUtils::LuaCheckStatus(lua_pcall(L, 2, 1, 0), L, "Lua script ObjectKilled error: %s");
+		LuaBindings::PushHandle(L, DeadObjectHandle);
+		LuaBindings::PushHandle(L, KillersHandle);
+		LuaBindings::LuaCheckStatus(lua_pcall(L, 2, 1, 0), L, "Lua script ObjectKilled error: %s");
 		returnvalue = EjectKillRetCodes(luaL_optinteger(L, 1, returnvalue));
 		lua_pop(L, 1);
 	}
@@ -755,9 +755,9 @@ EjectKillRetCodes LuaMission::ObjectSniped(int DeadObjectHandle, int KillersHand
 	if (lua_isfunction(L, -1))
 	{
 		// call the ObjectSniped function
-		LuaScriptUtils::PushHandle(L, DeadObjectHandle);
-		LuaScriptUtils::PushHandle(L, KillersHandle);
-		LuaScriptUtils::LuaCheckStatus(lua_pcall(L, 2, 1, 0), L, "Lua script ObjectSniped error: %s");
+		LuaBindings::PushHandle(L, DeadObjectHandle);
+		LuaBindings::PushHandle(L, KillersHandle);
+		LuaBindings::LuaCheckStatus(lua_pcall(L, 2, 1, 0), L, "Lua script ObjectSniped error: %s");
 		returnvalue = EjectKillRetCodes(luaL_optinteger(L, 1, returnvalue));
 		lua_pop(L, 1);
 	}
@@ -795,7 +795,7 @@ void LuaMission::Execute(void)
 		if (lua_isfunction(L, -1))
 		{
 			// call the Update function
-			LuaScriptUtils::LuaCheckStatus(lua_pcall(L, 0, 0, 0), L, "Lua script Update error: %s");
+			LuaBindings::LuaCheckStatus(lua_pcall(L, 0, 0, 0), L, "Lua script Update error: %s");
 		}
 		else
 		{
@@ -817,7 +817,7 @@ void LuaMission::PostRun(void)
 		if (lua_isfunction(L, -1))
 		{
 			// call the PostRun function
-			LuaScriptUtils::LuaCheckStatus(lua_pcall(L, 0, 0, 0), L, "Lua script PostRun error: '%s'");
+			LuaBindings::LuaCheckStatus(lua_pcall(L, 0, 0, 0), L, "Lua script PostRun error: '%s'");
 		}
 		else
 		{

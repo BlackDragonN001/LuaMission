@@ -13,7 +13,7 @@ extern "C" void *luaL_testudata(lua_State *L, int ud, const char *tname);
 extern "C" int LuaPrint(lua_State *L);
 extern "C" int LuaPanic(lua_State *L);
 
-namespace LuaScriptUtils {
+namespace LuaBindings {
 	bool LuaCheckStatus(int status, lua_State *L, const char *format);
 	void PushHandle(lua_State *L, Handle h);
 	int GetHandle(lua_State *L);

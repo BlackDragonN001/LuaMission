@@ -93,7 +93,7 @@ extern "C" int LuaPanic(lua_State *L)
 	return 0;
 }
 
-namespace LuaScriptUtils {
+namespace LuaBindings {
 bool LuaCheckStatus(int status, lua_State *L, const char *format)
 {
 	if (status)
@@ -126,7 +126,7 @@ int GetHandle(lua_State *L)
 	if (lua_isnumber(L, 1))
 	{
 		int seqNo = lua_tointeger(L, 1);
-		LuaScriptUtils::PushHandle(L, ::GetHandle(seqNo)); // ScriptUtils
+		LuaBindings::PushHandle(L, ::GetHandle(seqNo)); // ScriptUtils
 	}
 	else
 	{
