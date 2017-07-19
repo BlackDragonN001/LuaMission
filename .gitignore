@@ -297,6 +297,13 @@ __pycache__/
 
 
 # custom
+!/BZ2 1.3.7.2-b132L Dll Source Code/[Dd]ebug/
+!/BZ2 1.3.7.2-b132L Dll Source Code/[Dd]ebug/*.lib
+!/BZ2 1.3.7.2-b132L Dll Source Code/[Dd]ebug/*.exp
+!/BZ2 1.3.7.2-b132L Dll Source Code/[Dd]ebug/missions/
+!/BZ2 1.3.7.2-b132L Dll Source Code/[Dd]ebug/missions/LuaMissionDocs.txt
+!/BZ2 1.3.7.2-b132L Dll Source Code/[Dd]ebug/missions/redist/
+!/BZ2 1.3.7.2-b132L Dll Source Code/[Dd]ebug/missions/redist/exists.txt
 /BZ2 1.3.7.2-b132L Dll Source Code/Missions/bz1
 /BZ2 1.3.7.2-b132L Dll Source Code/Missions/bz2isdfttn
 /BZ2 1.3.7.2-b132L Dll Source Code/Missions/demo01
