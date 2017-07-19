@@ -293,3 +293,49 @@ __pycache__/
 *.btm.cs
 *.odx.cs
 *.xsd.cs
+
+
+
+# custom
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/bz1
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/bz2isdfttn
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/demo01
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/DEMO03
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/ISDF01
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/ISDF02
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/ISDF03
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/ISDF04
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/ISDF05
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/ISDF06
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/ISDF07
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/ISDF08
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/ISDF09
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/ISDF10
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/ISDF11
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/ISDF12
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/ISDF13
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/ISDF14
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/ISDF15
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/ISDF16
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/ISDF17
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/ISDF20
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/Isdfttn
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/misn17
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/MultST01
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/NewScion
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/pressDemo
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/profile01
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/profile02
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/scion01
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/scion02
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/scion03
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/scion04
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/scion05
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/scion06
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/scion07
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/scion08
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/sciontmp
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/stratdem
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/Strategy01
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/StratTEST
+/BZ2 1.3.7.2-b132L Dll Source Code/Missions/adg1
