@@ -3,7 +3,7 @@
 
 // Lua Specific things...
 
-extern "C" static void luaL_setfuncs(lua_State *L, const luaL_Reg *l, int nup) {
+extern "C" void luaL_setfuncs(lua_State *L, const luaL_Reg *l, int nup) {
 	luaL_checkstack(L, nup, "too many upvalues");
 	for (; l->name != NULL; l++) {  /* fill the table with given functions */
 		int i;
@@ -30,7 +30,7 @@ extern "C" void *luaL_testudata(lua_State *L, int ud, const char *tname) {
 	return NULL;  /* value is not a userdata with a metatable */
 }
 
-extern "C" static int LuaPrint(lua_State *L)
+extern "C" int LuaPrint(lua_State *L)
 {
 	int n = lua_gettop(L);  /* number of arguments */
 	int i;
@@ -82,7 +82,7 @@ extern "C" static int LuaPrint(lua_State *L)
 #endif
 
 // panic handler
-extern "C" static int LuaPanic(lua_State *L)
+extern "C" int LuaPanic(lua_State *L)
 {
 	const char * error = lua_tostring(L, -1);
 	//	OutputDebugString(error);
@@ -94,7 +94,7 @@ extern "C" static int LuaPanic(lua_State *L)
 }
 
 namespace LuaScriptUtils {
-static bool LuaCheckStatus(int status, lua_State *L, const char *format)
+bool LuaCheckStatus(int status, lua_State *L, const char *format)
 {
 	if (status)
 	{
@@ -111,7 +111,7 @@ static bool LuaCheckStatus(int status, lua_State *L, const char *format)
 }
 
 // push a handle onto the lua stack
-static void PushHandle(lua_State *L, Handle h)
+void PushHandle(lua_State *L, Handle h)
 {
 	if (h)
 		lua_pushlightuserdata(L, (void *)(h));
@@ -121,7 +121,7 @@ static void PushHandle(lua_State *L, Handle h)
 
 // Handle GetHandle(Name n)
 //DLLEXPORT Handle DLLAPI GetHandle(int seqNo);
-static int GetHandle(lua_State *L)
+int GetHandle(lua_State *L)
 {
 	if (lua_isnumber(L, 1))
 	{
@@ -137,13 +137,13 @@ static int GetHandle(lua_State *L)
 }
 
 // get a handle from the lua stack
-static Handle GetHandle(lua_State *L, int n)
+Handle GetHandle(lua_State *L, int n)
 {
 	return Handle(luaL_testudata(L, n, "Handle"));
 }
 
 // Require a handle, or warn the player there's not one.
-static Handle RequireHandle(lua_State *L, int n)
+Handle RequireHandle(lua_State *L, int n)
 {
 	if (lua_isnil(L, n))
 		return NULL;
@@ -152,7 +152,7 @@ static Handle RequireHandle(lua_State *L, int n)
 }
 
 // Handle to string
-static int Handle_ToString(lua_State *L)
+int Handle_ToString(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	char buf[MAX_ODF_LENGTH];
@@ -164,19 +164,19 @@ static int Handle_ToString(lua_State *L)
 
 // get a vector from the lua stack
 // returns NULL if the item is not a vector
-static Vector *GetVector(lua_State *L, int n)
+Vector *GetVector(lua_State *L, int n)
 {
 	return static_cast<Vector *>(luaL_testudata(L, n, "Vector"));
 }
 
 // get a required vector from the lua stack
-static Vector *RequireVector(lua_State *L, int n)
+Vector *RequireVector(lua_State *L, int n)
 {
 	return static_cast<Vector *>(luaL_checkudata(L, n, "Vector"));
 }
 
 // create a vector on the lua stack
-static Vector *NewVector(lua_State *L)
+Vector *NewVector(lua_State *L)
 {
 	Vector *v = static_cast<Vector *>(lua_newuserdata(L, sizeof(Vector)));
 	luaL_getmetatable(L, "Vector");
@@ -186,19 +186,19 @@ static Vector *NewVector(lua_State *L)
 
 // get a matrix from the lua stack
 // returns NULL if the item is not a matrix
-static Matrix *GetMatrix(lua_State *L, int n)
+Matrix *GetMatrix(lua_State *L, int n)
 {
 	return static_cast<Matrix *>(luaL_testudata(L, n, "Matrix"));
 }
 
 // get a required Matrix from the lua stack
-static Matrix *RequireMatrix(lua_State *L, int n)
+Matrix *RequireMatrix(lua_State *L, int n)
 {
 	return static_cast<Matrix *>(luaL_checkudata(L, n, "Matrix"));
 }
 
 // create a matrix on the lua stack
-static Matrix *NewMatrix(lua_State *L)
+Matrix *NewMatrix(lua_State *L)
 {
 	Matrix *m = static_cast<Matrix *>(lua_newuserdata(L, sizeof(Matrix)));
 	luaL_getmetatable(L, "Matrix");
@@ -207,14 +207,14 @@ static Matrix *NewMatrix(lua_State *L)
 }
 
 // Optional Boolean.
-static bool luaL_optboolean(lua_State *L, int n, int defval)
+bool luaL_optboolean(lua_State *L, int n, int defval)
 {
 	return luaL_opt(L, lua_toboolean, n, defval);
 }
 
 // vector index (read)
 // receives (userdata, key)
-static int Vector_Index(lua_State *L)
+int Vector_Index(lua_State *L)
 {
 	Vector *v = GetVector(L, 1);
 	if (!v)
@@ -238,7 +238,7 @@ static int Vector_Index(lua_State *L)
 
 // vector newindex (write)
 // receives (userdata, key, value)
-static int Vector_NewIndex(lua_State *L)
+int Vector_NewIndex(lua_State *L)
 {
 	Vector *v = GetVector(L, 1);
 	if (!v)
@@ -261,7 +261,7 @@ static int Vector_NewIndex(lua_State *L)
 }
 
 // vector unary minus
-static int Vector_Neg(lua_State *L)
+int Vector_Neg(lua_State *L)
 {
 	Vector *v = RequireVector(L, 1);
 	*NewVector(L) = Neg_Vector(*v);
@@ -269,7 +269,7 @@ static int Vector_Neg(lua_State *L)
 }
 
 // vector add
-static int Vector_Add(lua_State *L)
+int Vector_Add(lua_State *L)
 {
 	Vector *v1 = RequireVector(L, 1);
 	Vector *v2 = RequireVector(L, 2);
@@ -278,7 +278,7 @@ static int Vector_Add(lua_State *L)
 }
 
 // vector subtract
-static int Vector_Sub(lua_State *L)
+int Vector_Sub(lua_State *L)
 {
 	Vector *v1 = RequireVector(L, 1);
 	Vector *v2 = RequireVector(L, 2);
@@ -287,7 +287,7 @@ static int Vector_Sub(lua_State *L)
 }
 
 // vector multiply
-static int Vector_Mul(lua_State *L)
+int Vector_Mul(lua_State *L)
 {
 	if (lua_isnumber(L, 1))
 	{
@@ -313,7 +313,7 @@ static int Vector_Mul(lua_State *L)
 }
 
 // vector divide
-static int Vector_Div(lua_State *L)
+int Vector_Div(lua_State *L)
 {
 	if (lua_isnumber(L, 1))
 	{
@@ -339,7 +339,7 @@ static int Vector_Div(lua_State *L)
 }
 
 // vector equality
-static int Vector_Eq(lua_State *L)
+int Vector_Eq(lua_State *L)
 {
 	Vector *v1 = RequireVector(L, 1);
 	Vector *v2 = RequireVector(L, 2);
@@ -348,7 +348,7 @@ static int Vector_Eq(lua_State *L)
 }
 
 // vector to string
-static int Vector_ToString(lua_State *L)
+int Vector_ToString(lua_State *L)
 {
 	Vector *v = RequireVector(L, 1);
 	char buf[MAX_ODF_LENGTH] = { 0 };
@@ -359,7 +359,7 @@ static int Vector_ToString(lua_State *L)
 
 // matrix index (read)
 // receives (userdata, key)
-static int Matrix_Index(lua_State *L)
+int Matrix_Index(lua_State *L)
 {
 	Matrix *m = GetMatrix(L, 1);
 	const char *key = luaL_checkstring(L, 2);
@@ -420,7 +420,7 @@ static int Matrix_Index(lua_State *L)
 
 // matrix newindex (write)
 // receives (userdata, key, value)
-static int Matrix_NewIndex(lua_State *L)
+int Matrix_NewIndex(lua_State *L)
 {
 	Matrix *m = GetMatrix(L, 1);
 	if (!m)
@@ -486,7 +486,7 @@ static int Matrix_NewIndex(lua_State *L)
 }
 
 // matrix multiply
-static int Matrix_Mul(lua_State *L)
+int Matrix_Mul(lua_State *L)
 {
 	Matrix *m1 = GetMatrix(L, 1);
 	if (!m1)
@@ -508,7 +508,7 @@ static int Matrix_Mul(lua_State *L)
 }
 
 // matrix to string
-static int Matrix_ToString(lua_State *L)
+int Matrix_ToString(lua_State *L)
 {
 	Matrix *m = GetMatrix(L, 1);
 	if (!m)
@@ -525,7 +525,7 @@ static int Matrix_ToString(lua_State *L)
 }
 
 // construct a vector from three numbers
-static int SetVector(lua_State *L)
+int SetVector(lua_State *L)
 {
 	float x = float(luaL_optnumber(L, 1, 0.0f));
 	float y = float(luaL_optnumber(L, 2, 0.0f));
@@ -535,7 +535,7 @@ static int SetVector(lua_State *L)
 }
 
 // vector dot product
-static int DotProduct(lua_State *L)
+int DotProduct(lua_State *L)
 {
 	Vector *v1 = RequireVector(L, 1);
 	Vector *v2 = RequireVector(L, 2);
@@ -544,7 +544,7 @@ static int DotProduct(lua_State *L)
 }
 
 // vector cross product
-static int CrossProduct(lua_State *L)
+int CrossProduct(lua_State *L)
 {
 	Vector *v1 = RequireVector(L, 1);
 	Vector *v2 = RequireVector(L, 2);
@@ -553,7 +553,7 @@ static int CrossProduct(lua_State *L)
 }
 
 // vector normalize
-static int Normalize(lua_State *L)
+int Normalize(lua_State *L)
 {
 	Vector *v = RequireVector(L, 1);
 	*NewVector(L) = Normalize_Vector(*v);
@@ -561,7 +561,7 @@ static int Normalize(lua_State *L)
 }
 
 // vector length
-static int Length(lua_State *L)
+int Length(lua_State *L)
 {
 	Vector *v = RequireVector(L, 1);
 	lua_pushnumber(L, GetLength2D(*v));
@@ -569,7 +569,7 @@ static int Length(lua_State *L)
 }
 
 // vector length squared
-static int LengthSquared(lua_State *L)
+int LengthSquared(lua_State *L)
 {
 	Vector *v = RequireVector(L, 1);
 	lua_pushnumber(L, Dot_Product(*v, *v));
@@ -577,7 +577,7 @@ static int LengthSquared(lua_State *L)
 }
 
 // vector distance
-static int Distance2D(lua_State *L)
+int Distance2D(lua_State *L)
 {
 	Vector *v1 = RequireVector(L, 1);
 	Vector *v2 = RequireVector(L, 2);
@@ -586,7 +586,7 @@ static int Distance2D(lua_State *L)
 }
 
 // vector distance
-static int Distance2DSquared(lua_State *L)
+int Distance2DSquared(lua_State *L)
 {
 	Vector *v1 = RequireVector(L, 1);
 	Vector *v2 = RequireVector(L, 2);
@@ -595,7 +595,7 @@ static int Distance2DSquared(lua_State *L)
 }
 
 // vector distance
-static int Distance3D(lua_State *L)
+int Distance3D(lua_State *L)
 {
 	if (Vector *pos = GetVector(L, 1))
 	{
@@ -613,7 +613,7 @@ static int Distance3D(lua_State *L)
 }
 
 // vector distance squared
-static int Distance3DSquared(lua_State *L)
+int Distance3DSquared(lua_State *L)
 {
 	if (Vector *pos = GetVector(L, 1))
 	{
@@ -632,7 +632,7 @@ static int Distance3DSquared(lua_State *L)
 
 // construct a matrix from 12 numbers
 // TO DO: construct a matrix from 4 vectors
-static int SetMatrix(lua_State *L)
+int SetMatrix(lua_State *L)
 {
 	float right_x = float(luaL_optnumber(L, 1, 0.0f));
 	float right_y = float(luaL_optnumber(L, 2, 0.0f));
@@ -654,7 +654,7 @@ static int SetMatrix(lua_State *L)
 	return 1;
 }
 
-static int BuildAxisRotationMatrix(lua_State *L)
+int BuildAxisRotationMatrix(lua_State *L)
 {
 	float angle = float(luaL_optnumber(L, 1, 0.0f));
 	float x, y, z;
@@ -674,7 +674,7 @@ static int BuildAxisRotationMatrix(lua_State *L)
 	return 1;
 }
 
-static int BuildPositionRotationMatrix(lua_State *L)
+int BuildPositionRotationMatrix(lua_State *L)
 {
 	float pitch = float(luaL_optnumber(L, 1, 0.0f));
 	float yaw = float(luaL_optnumber(L, 2, 0.0f));
@@ -697,11 +697,11 @@ static int BuildPositionRotationMatrix(lua_State *L)
 }
 
 // moved to header
-//static const Vector zero(0.0f, 0.0f, 0.0f);
-//static const Vector y_axis(0.0f, 1.0f, 0.0f);
-//static const Vector z_axis(0.0f, 0.0f, 1.0f);
+//const Vector zero(0.0f, 0.0f, 0.0f);
+//const Vector y_axis(0.0f, 1.0f, 0.0f);
+//const Vector z_axis(0.0f, 0.0f, 1.0f);
 
-static int BuildOrthogonalMatrix(lua_State *L)
+int BuildOrthogonalMatrix(lua_State *L)
 {
 	const Vector *up = GetVector(L, 1);
 	if (!up)
@@ -713,7 +713,7 @@ static int BuildOrthogonalMatrix(lua_State *L)
 	return 1;
 }
 
-static int BuildDirectionalMatrix(lua_State *L)
+int BuildDirectionalMatrix(lua_State *L)
 {
 	const Vector *position = GetVector(L, 1);
 	if (!position)
@@ -729,7 +729,7 @@ static int BuildDirectionalMatrix(lua_State *L)
 // Script Util Functions:
 
 
-static int Make_RGB(lua_State *L)
+int Make_RGB(lua_State *L)
 {
 	int r = luaL_optinteger(L, 1, 0);
 	int g = luaL_optinteger(L, 2, 0);
@@ -737,7 +737,7 @@ static int Make_RGB(lua_State *L)
 	lua_pushinteger(L, RGB(r, g, b));
 	return 1;
 }
-static int Make_RGBA(lua_State *L)
+int Make_RGBA(lua_State *L)
 {
 	int r = luaL_optinteger(L, 1, 0);
 	int g = luaL_optinteger(L, 2, 0);
@@ -748,7 +748,7 @@ static int Make_RGBA(lua_State *L)
 }
 
 //void FailMission(Time t, char *fileName = NULL);
-static int FailMission(lua_State *L)
+int FailMission(lua_State *L)
 {
 	Time t = Time(luaL_checknumber(L, 1));
 	char *fileName = const_cast<char *>(luaL_optstring(L, 2, NULL));
@@ -757,7 +757,7 @@ static int FailMission(lua_State *L)
 }
 
 //void SucceedMission(Time t, char *fileName = NULL);
-static int SucceedMission(lua_State *L)
+int SucceedMission(lua_State *L)
 {
 	Time t = Time(luaL_checknumber(L, 1));
 	char *fileName = const_cast<char *>(luaL_optstring(L, 2, NULL));
@@ -766,14 +766,14 @@ static int SucceedMission(lua_State *L)
 }
 
 //DLLAPI *ChangeSide)(void);
-static int ChangeSide(lua_State *L)
+int ChangeSide(lua_State *L)
 {
 	::ChangeSide();
 	return 0;
 }
 
 //ScrapValue AddScrap(TeamNum t, ScrapValue v);
-static int AddScrap(lua_State *L)
+int AddScrap(lua_State *L)
 {
 	TeamNum t = TeamNum(luaL_checkinteger(L, 1));
 	ScrapValue v = ScrapValue(luaL_checkinteger(L, 2));
@@ -782,7 +782,7 @@ static int AddScrap(lua_State *L)
 }
 
 //ScrapValue SetScrap(TeamNum t, ScrapValue v);
-static int SetScrap(lua_State *L)
+int SetScrap(lua_State *L)
 {
 	TeamNum t = TeamNum(luaL_checkinteger(L, 1));
 	ScrapValue v = ScrapValue(luaL_checkinteger(L, 2));
@@ -791,7 +791,7 @@ static int SetScrap(lua_State *L)
 }
 
 //ScrapValue GetScrap(TeamNum t);
-static int GetScrap(lua_State *L)
+int GetScrap(lua_State *L)
 {
 	TeamNum t = TeamNum(luaL_checkinteger(L, 1));
 	lua_pushinteger(L, ::GetScrap(t));
@@ -799,7 +799,7 @@ static int GetScrap(lua_State *L)
 }
 
 //void AddMaxScrap(TeamNum t, ScrapValue v);
-static int AddMaxScrap(lua_State *L)
+int AddMaxScrap(lua_State *L)
 {
 	TeamNum t = TeamNum(luaL_checkinteger(L, 1));
 	ScrapValue v = ScrapValue(luaL_checkinteger(L, 2));
@@ -809,7 +809,7 @@ static int AddMaxScrap(lua_State *L)
 }
 
 //void SetMaxScrap(TeamNum t, ScrapValue v);
-static int SetMaxScrap(lua_State *L)
+int SetMaxScrap(lua_State *L)
 {
 	TeamNum t = TeamNum(luaL_checkinteger(L, 1));
 	ScrapValue v = ScrapValue(luaL_checkinteger(L, 2));
@@ -819,7 +819,7 @@ static int SetMaxScrap(lua_State *L)
 }
 
 //ScrapValue GetMaxScrap(TeamNum t);
-static int GetMaxScrap(lua_State *L)
+int GetMaxScrap(lua_State *L)
 {
 	TeamNum t = TeamNum(luaL_checkinteger(L, 1));
 	lua_pushinteger(L, ::GetMaxScrap(t));
@@ -827,14 +827,14 @@ static int GetMaxScrap(lua_State *L)
 }
 
 // Time GetTime(void)
-static int GetTime(lua_State *L)
+int GetTime(lua_State *L)
 {
 	lua_pushnumber(L, ::GetTime());
 	return 1;
 }
 
 //Handle GetTug(Handle cargo);
-static int GetTug(lua_State *L)
+int GetTug(lua_State *L)
 {
 	Handle cargo = RequireHandle(L, 1);
 	Handle tug = ::GetTug(cargo);
@@ -843,7 +843,7 @@ static int GetTug(lua_State *L)
 }
 
 //bool HasCargo(Handle me);
-static int HasCargo(lua_State *L)
+int HasCargo(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	lua_pushboolean(L, ::HasCargo(me));
@@ -855,7 +855,7 @@ static int HasCargo(lua_State *L)
 //Distance GetDistance(Handle &h1, Name path, int point = 0);
 //inline float GetDistance(Handle h, Vector v) { return GetDistance2D(GetPosition(h), v); }
 //inline float GetDistance(Handle h, Matrix m) { return GetDistance2D(GetPosition(h), m.posit); }
-static int GetDistance(lua_State *L)
+int GetDistance(lua_State *L)
 {
 	Handle h1 = RequireHandle(L, 1);
 	Dist d;
@@ -883,7 +883,7 @@ static int GetDistance(lua_State *L)
 }
 
 //Handle GetNearestObject(Handle h);
-static int GetNearestObject(lua_State *L)
+int GetNearestObject(lua_State *L)
 {
 	Handle n = 0;
 	/* // Need a version that takes a Vector for the postion to enable all of these. -GBD //Handle GetNearestObject(const Vector &pos); //Handle GetNearestObect(Name path,int point);
@@ -913,7 +913,7 @@ static int GetNearestObject(lua_State *L)
 
 //Handle GetNearestVehicle(Handle h);
 //Handle GetNearestVehicle(Name path,int point);
-static int GetNearestVehicle(lua_State *L)
+int GetNearestVehicle(lua_State *L)
 {
 	Handle n = 0;
 	/* // Need a version that takes a Vector for the postion to enable all of these. -GBD //Handle GetNearestVehicle(const Vector &pos);
@@ -943,7 +943,7 @@ static int GetNearestVehicle(lua_State *L)
 }
 
 //Handle GetNearestBuilding(Handle h);
-static int GetNearestBuilding(lua_State *L)
+int GetNearestBuilding(lua_State *L)
 {
 	Handle n = 0;
 	/* // Need a version that takes a Vector for the postion to enable all of these. -GBD //Handle GetNearestBuilding(const Vector &pos); //Handle GetNearestBuilding(Name path,int point);
@@ -973,7 +973,7 @@ static int GetNearestBuilding(lua_State *L)
 
 //Handle GetNearestEnemy(Handle h);
 //DLLEXPORT Handle DLLAPI GetNearestEnemy(Handle h, bool ignorePilots, bool ignoreScavs, float maxDist = 450.0f);
-static int GetNearestEnemy(lua_State *L)
+int GetNearestEnemy(lua_State *L)
 {
 	Handle n = 0;
 	/* // Need a version that takes a Vector for the postion to enable all of these. -GBD //Handle GetNearestEnemy(const Vector &pos); //Handle GetNearestEnemy(Name path,int point);
@@ -1014,7 +1014,7 @@ static int GetNearestEnemy(lua_State *L)
 //Handle BuildObject(char *odf, int team, Name path, int point = 0)
 //Handle BuildObject(char *odf, int team, Vector v);
 //Handle BuildObject(char *odf, int team, Matrix m);
-static int BuildObject(lua_State *L)
+int BuildObject(lua_State *L)
 {
 	char *odf = const_cast<char *>(luaL_checkstring(L, 1));
 	int team = luaL_checkinteger(L, 2);
@@ -1051,7 +1051,7 @@ static int BuildObject(lua_State *L)
 }
 
 // void RemoveObject(Handle h)
-static int RemoveObject(lua_State *L)
+int RemoveObject(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	::RemoveObject(h);
@@ -1060,7 +1060,7 @@ static int RemoveObject(lua_State *L)
 
 //DLLEXPORT int DLLAPI GetFirstEmptyGroup(void);
 //DLLEXPORT int DLLAPI GetFirstEmptyGroup(int t);
-static int GetFirstEmptyGroup(lua_State *L)
+int GetFirstEmptyGroup(lua_State *L)
 {
 	int group = 0;
 	if (lua_isnumber(L, 1))
@@ -1078,7 +1078,7 @@ static int GetFirstEmptyGroup(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetGroup(Handle h, int group);
-static int SetGroup(lua_State *L)
+int SetGroup(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	int group = luaL_optinteger(L, 2, 0);
@@ -1087,7 +1087,7 @@ static int SetGroup(lua_State *L)
 }
 
 //void Attack(Handle me, Handle him, int priority = 1);
-static int Attack(lua_State *L)
+int Attack(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	Handle him = RequireHandle(L, 2);
@@ -1097,7 +1097,7 @@ static int Attack(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI Service(Handle me, Handle him, int priority = 1);
-static int Service(lua_State *L)
+int Service(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	Handle him = RequireHandle(L, 2);
@@ -1111,7 +1111,7 @@ static int Service(lua_State *L)
 //void Goto(Handle me, Handle him, int priority = 1);
 //inline void Goto(Handle h, Matrix Position, int Priority) { Goto(h, Position.posit, Priority); }
 //inline void Goto(Handle h, char* Path, int Point, int Priority) { Goto(h, GetVectorFromPath(Path, Point), Priority); }
-static int Goto(lua_State *L)
+int Goto(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	int priority = luaL_optinteger(L, 3, 1);
@@ -1151,7 +1151,7 @@ static int Goto(lua_State *L)
 //inline void Mine(Handle h, Matrix Where, int Priority = 1) { Mine(h, Where.posit, Priority); }
 //inline void Mine(Handle me, Handle him, int Priority = 1) { Mine(me, GetPosition(him), Priority); }
 //inline void Mine(Handle h, char* Path, int Point, int Priority) { Mine(h, GetVectorFromPath(Path, Point), Priority); }
-static int Mine(lua_State *L)
+int Mine(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	int priority = luaL_optinteger(L, 3, 1);
@@ -1187,7 +1187,7 @@ static int Mine(lua_State *L)
 }
 
 //void Follow(Handle me, Handle him, int priority = 1);
-static int Follow(lua_State *L)
+int Follow(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	Handle him = RequireHandle(L, 2);
@@ -1197,7 +1197,7 @@ static int Follow(lua_State *L)
 }
 
 //void Defend(Handle me, int priority = 1);
-static int Defend(lua_State *L)
+int Defend(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	int priority = luaL_optinteger(L, 2, 1);
@@ -1206,7 +1206,7 @@ static int Defend(lua_State *L)
 }
 
 //void Defend2(Handle me, Handle him, int priority = 1);
-static int Defend2(lua_State *L)
+int Defend2(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	Handle him = RequireHandle(L, 2);
@@ -1216,7 +1216,7 @@ static int Defend2(lua_State *L)
 }
 
 //void Stop(Handle me, int priority = 1);
-static int Stop(lua_State *L)
+int Stop(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	int priority = luaL_optinteger(L, 2, 1);
@@ -1225,7 +1225,7 @@ static int Stop(lua_State *L)
 }
 
 //void Patrol(Handle me, Name path, int priority = 1);
-static int Patrol(lua_State *L)
+int Patrol(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	Name path = Name(luaL_checkstring(L, 2));
@@ -1237,7 +1237,7 @@ static int Patrol(lua_State *L)
 //void Retreat(Handle me, Name path, int priority = 1);
 //void Retreat(Handle me, Handle him, int priority = 1);
 // Vector + Matrix improvised with Goto/Independence. -GBD
-static int Retreat(lua_State *L)
+int Retreat(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	int priority = luaL_optinteger(L, 3, 1);
@@ -1273,7 +1273,7 @@ static int Retreat(lua_State *L)
 }
 
 //void GetIn(Handle me, Handle him, int priority = 1);
-static int GetIn(lua_State *L)
+int GetIn(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	Handle him = RequireHandle(L, 2);
@@ -1283,7 +1283,7 @@ static int GetIn(lua_State *L)
 }
 
 //void Pickup(Handle me, Handle him, int priority = 1);
-static int Pickup(lua_State *L)
+int Pickup(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	Handle him = RequireHandle(L, 2);
@@ -1297,7 +1297,7 @@ static int Pickup(lua_State *L)
 //void Dropoff(Handle me, Name path, int priority = 1);
 //inline void Dropoff(Handle h, char* Path, int Point, int Priority) { Dropoff(h, GetVectorFromPath(Path, Point), Priority); }
 //inline void Dropoff(Handle me, Handle him, int Priority = 1) { Dropoff(me, GetPosition(him), Priority); }
-static int Dropoff(lua_State *L)
+int Dropoff(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	int priority = luaL_optinteger(L, 3, 1);
@@ -1334,7 +1334,7 @@ static int Dropoff(lua_State *L)
 }
 
 //void Build(Handle me, char *odf, int priority = 1);
-static int Build(lua_State *L)
+int Build(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	char *odf = const_cast<char *>(luaL_checkstring(L, 2));
@@ -1344,7 +1344,7 @@ static int Build(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI LookAt(Handle me, Handle him, int priority = 1);
-static int LookAt(lua_State *L)
+int LookAt(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	Handle him = RequireHandle(L, 2);
@@ -1354,7 +1354,7 @@ static int LookAt(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI AllLookAt(int team, Handle him, int priority = 1);
-static int AllLookAt(lua_State *L)
+int AllLookAt(lua_State *L)
 {
 	int team = int(luaL_checknumber(L, 1));
 	Handle him = RequireHandle(L, 2);
@@ -1364,7 +1364,7 @@ static int AllLookAt(lua_State *L)
 }
 
 //bool IsOdf(Handle h, char *odf)
-static int IsOdf(lua_State *L)
+int IsOdf(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	char *odf = const_cast<char *>(luaL_checkstring(L, 2));
@@ -1373,7 +1373,7 @@ static int IsOdf(lua_State *L)
 }
 
 //DLLEXPORT char DLLAPI GetRace(Handle h);
-static int GetRace(lua_State *L)
+int GetRace(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	char race = ::GetRace(h);
@@ -1383,7 +1383,7 @@ static int GetRace(lua_State *L)
 
 //Handle GetPlayerHandle(void);
 //Handle GetPlayerHandle(int team);
-static int GetPlayerHandle(lua_State *L)
+int GetPlayerHandle(lua_State *L)
 {
 	Handle p = 0;
 	if (lua_isnumber(L, 1))
@@ -1400,7 +1400,7 @@ static int GetPlayerHandle(lua_State *L)
 }
 
 //bool IsAlive(Handle &h);
-static int IsAlive(lua_State *L)
+int IsAlive(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushboolean(L, ::IsAlive(h));
@@ -1408,7 +1408,7 @@ static int IsAlive(lua_State *L)
 }
 
 //DLLEXPORT bool DLLAPI IsFlying(Handle &h);
-static int IsFlying(lua_State *L)
+int IsFlying(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushboolean(L, ::IsFlying(h));
@@ -1416,7 +1416,7 @@ static int IsFlying(lua_State *L)
 }
 
 //bool IsAliveAndPilot(Handle &h);
-static int IsAliveAndPilot(lua_State *L)
+int IsAliveAndPilot(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushboolean(L, ::IsAliveAndPilot(h));
@@ -1424,7 +1424,7 @@ static int IsAliveAndPilot(lua_State *L)
 }
 
 //bool IsAround(Handle &h); //was bool IsVaid(Handle &h); in BZ1. -GBD
-static int IsAround(lua_State *L)
+int IsAround(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushboolean(L, ::IsAround(h));
@@ -1432,7 +1432,7 @@ static int IsAround(lua_State *L)
 }
 
 //DLLEXPORT Handle DLLAPI InBuilding(Handle h);
-static int InBuilding(lua_State *L)
+int InBuilding(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	PushHandle(L, ::InBuilding(h));
@@ -1440,7 +1440,7 @@ static int InBuilding(lua_State *L)
 }
 
 //DLLEXPORT Handle DLLAPI AtTerminal(Handle h);
-static int AtTerminal(lua_State *L)
+int AtTerminal(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	PushHandle(L, ::AtTerminal(h));
@@ -1449,7 +1449,7 @@ static int AtTerminal(lua_State *L)
 
 //Vector GetPosition(Handle h);
 //Vector GetPosition(Name path, int point = 0);
-static int GetPosition(lua_State *L)
+int GetPosition(lua_State *L)
 {
 	if (lua_isstring(L, 1))
 	{
@@ -1466,7 +1466,7 @@ static int GetPosition(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI GetPosition2(Handle h, Vector &pos);
-static int GetPosition2(lua_State *L)
+int GetPosition2(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	::GetPosition2(h, *NewVector(L));
@@ -1474,7 +1474,7 @@ static int GetPosition2(lua_State *L)
 }
 
 //Vector GetFront(Handle h);
-static int GetFront(lua_State *L)
+int GetFront(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	*NewVector(L) = ::GetFront(h);
@@ -1485,7 +1485,7 @@ static int GetFront(lua_State *L)
 //void SetPosition(Handle h, Matrix &mat);
 //void SetPosition(Handle h, Vector &pos);
 //void SetPosition(Handle h, Name path, int point = 0);
-static int SetPosition(lua_State *L)
+int SetPosition(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	if (Matrix *mat = GetMatrix(L, 2))
@@ -1517,7 +1517,7 @@ static int SetPosition(lua_State *L)
 //void Damage(Handle him, long amt);
 //void DamageF(Handle him, float amt);
 //void Damage(Handle him, Handle me, long amt);
-static int Damage(lua_State *L)
+int Damage(lua_State *L)
 {
 	Handle him = RequireHandle(L, 1);
 	// Damager version.
@@ -1536,7 +1536,7 @@ static int Damage(lua_State *L)
 }
 
 //float GetHealth(Handle h);
-static int GetHealth(lua_State *L)
+int GetHealth(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	lua_pushnumber(L, ::GetHealth(me));
@@ -1544,7 +1544,7 @@ static int GetHealth(lua_State *L)
 }
 
 //long GetCurHealth(Handle h);
-static int GetCurHealth(lua_State *L)
+int GetCurHealth(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	lua_pushinteger(L, ::GetCurHealth(me));
@@ -1552,7 +1552,7 @@ static int GetCurHealth(lua_State *L)
 }
 
 //long GetMaxHealth(Handle h);
-static int GetMaxHealth(lua_State *L)
+int GetMaxHealth(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	lua_pushinteger(L, ::GetMaxHealth(me));
@@ -1560,7 +1560,7 @@ static int GetMaxHealth(lua_State *L)
 }
 
 //void SetCurHealth(Handle h, long NewHealth);
-static int SetCurHealth(lua_State *L)
+int SetCurHealth(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	long health = luaL_checklong(L, 2);
@@ -1569,7 +1569,7 @@ static int SetCurHealth(lua_State *L)
 }
 
 //void SetMaxHealth(Handle h, long NewHealth);
-static int SetMaxHealth(lua_State *L)
+int SetMaxHealth(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	long health = luaL_checklong(L, 2);
@@ -1578,7 +1578,7 @@ static int SetMaxHealth(lua_State *L)
 }
 
 //void AddHealth(Handle h, long health);
-static int AddHealth(lua_State *L)
+int AddHealth(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	long health = luaL_checklong(L, 2);
@@ -1587,7 +1587,7 @@ static int AddHealth(lua_State *L)
 }
 
 //float GetAmmo(Handle h);
-static int GetAmmo(lua_State *L)
+int GetAmmo(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	lua_pushnumber(L, ::GetAmmo(me));
@@ -1595,7 +1595,7 @@ static int GetAmmo(lua_State *L)
 }
 
 //long GetCurAmmo(Handle h);
-static int GetCurAmmo(lua_State *L)
+int GetCurAmmo(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	lua_pushinteger(L, ::GetCurAmmo(me));
@@ -1603,7 +1603,7 @@ static int GetCurAmmo(lua_State *L)
 }
 
 //long GetMaxAmmo(Handle h);
-static int GetMaxAmmo(lua_State *L)
+int GetMaxAmmo(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	lua_pushinteger(L, ::GetMaxAmmo(me));
@@ -1611,7 +1611,7 @@ static int GetMaxAmmo(lua_State *L)
 }
 
 //void SetCurAmmo(Handle h, long NewAmmo);
-static int SetCurAmmo(lua_State *L)
+int SetCurAmmo(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	long ammo = luaL_checklong(L, 2);
@@ -1620,7 +1620,7 @@ static int SetCurAmmo(lua_State *L)
 }
 
 //void SetMaxAmmo(Handle h, long NewAmmo);
-static int SetMaxAmmo(lua_State *L)
+int SetMaxAmmo(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	long ammo = luaL_checklong(L, 2);
@@ -1629,7 +1629,7 @@ static int SetMaxAmmo(lua_State *L)
 }
 
 //void AddAmmo(Handle h, long ammo);
-static int AddAmmo(lua_State *L)
+int AddAmmo(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	long ammo = luaL_checklong(L, 2);
@@ -1638,7 +1638,7 @@ static int AddAmmo(lua_State *L)
 }
 
 //TeamNum GetTeamNum(Handle h)
-static int GetTeamNum(lua_State *L)
+int GetTeamNum(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushinteger(L, ::GetTeamNum(h));
@@ -1646,7 +1646,7 @@ static int GetTeamNum(lua_State *L)
 }
 
 //void SetTeamNum(Handle h, TeamNum t);
-static int SetTeamNum(lua_State *L)
+int SetTeamNum(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	TeamNum t = TeamNum(luaL_checkinteger(L, 2));
@@ -1655,7 +1655,7 @@ static int SetTeamNum(lua_State *L)
 }
 
 //void SetVelocity(Handle, Vector &vel);
-static int SetVelocity(lua_State *L)
+int SetVelocity(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	if (Vector *v = GetVector(L, 2))
@@ -1665,7 +1665,7 @@ static int SetVelocity(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetControls(Handle h, const VehicleControls &controls, unsigned long whichControls = -1);
-static int SetControls(lua_State *L)
+int SetControls(lua_State *L)
 {
 	Handle h = GetHandle(L, 1);
 
@@ -1768,7 +1768,7 @@ static int SetControls(lua_State *L)
 }
 
 //Handle GetWhoShotMe(Handle h)
-static int GetWhoShotMe(lua_State *L)
+int GetWhoShotMe(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	PushHandle(L, ::GetWhoShotMe(h));
@@ -1776,7 +1776,7 @@ static int GetWhoShotMe(lua_State *L)
 }
 
 //float GetLastEnemyShot(Handle h)
-static int GetLastEnemyShot(lua_State *L)
+int GetLastEnemyShot(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushnumber(L, ::GetLastEnemyShot(h));
@@ -1784,7 +1784,7 @@ static int GetLastEnemyShot(lua_State *L)
 }
 
 //float GetLastFriendShot(Handle h)
-static int GetLastFriendShot(lua_State *L)
+int GetLastFriendShot(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushnumber(L, ::GetLastFriendShot(h));
@@ -1792,21 +1792,21 @@ static int GetLastFriendShot(lua_State *L)
 }
 
 //void DefaultAllies(void);
-static int DefaultAllies(lua_State *L)
+int DefaultAllies(lua_State *L)
 {
 	::DefaultAllies();
 	return 0;
 }
 
 //DLLEXPORT void DLLAPI TeamplayAllies(void);
-static int TeamplayAllies(lua_State *L)
+int TeamplayAllies(lua_State *L)
 {
 	::TeamplayAllies();
 	return 0;
 }
 
 //void Ally(TeamNum t1, TeamNum t2);
-static int Ally(lua_State *L)
+int Ally(lua_State *L)
 {
 	TeamNum t1 = TeamNum(luaL_checkinteger(L, 1));
 	TeamNum t2 = TeamNum(luaL_checkinteger(L, 2));
@@ -1815,7 +1815,7 @@ static int Ally(lua_State *L)
 }
 
 //void UnAlly(TeamNum t1, TeamNum t2);
-static int UnAlly(lua_State *L)
+int UnAlly(lua_State *L)
 {
 	TeamNum t1 = TeamNum(luaL_checkinteger(L, 1));
 	TeamNum t2 = TeamNum(luaL_checkinteger(L, 2));
@@ -1824,7 +1824,7 @@ static int UnAlly(lua_State *L)
 }
 
 //bool IsTeamAllied(TeamNum t1, TeamNum t2);
-static int IsTeamAllied(lua_State *L)
+int IsTeamAllied(lua_State *L)
 {
 	TeamNum t1 = TeamNum(luaL_checkinteger(L, 1));
 	TeamNum t2 = TeamNum(luaL_checkinteger(L, 2));
@@ -1833,7 +1833,7 @@ static int IsTeamAllied(lua_State *L)
 }
 
 //bool IsAlly(Handle me, Handle him);
-static int IsAlly(lua_State *L)
+int IsAlly(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	Handle him = RequireHandle(L, 2);
@@ -1842,7 +1842,7 @@ static int IsAlly(lua_State *L)
 }
 
 //int AudioMessage(char *msg);
-static int AudioMessage(lua_State *L)
+int AudioMessage(lua_State *L)
 {
 	const char *msg = luaL_checkstring(L, 1);
 	lua_pushinteger(L, ::AudioMessage(msg));
@@ -1850,7 +1850,7 @@ static int AudioMessage(lua_State *L)
 }
 
 //bool IsAudioMessageDone(int msg);
-static int IsAudioMessageDone(lua_State *L)
+int IsAudioMessageDone(lua_State *L)
 {
 	int msg = luaL_checkinteger(L, 1);
 	lua_pushboolean(L, ::IsAudioMessageDone(msg));
@@ -1858,7 +1858,7 @@ static int IsAudioMessageDone(lua_State *L)
 }
 
 //void StopAudioMessage(int Msg);
-static int StopAudioMessage(lua_State *L)
+int StopAudioMessage(lua_State *L)
 {
 	int msg = luaL_checkinteger(L, 1);
 	::StopAudioMessage(msg);
@@ -1866,7 +1866,7 @@ static int StopAudioMessage(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI PreloadAudioMessage(const char* msg);
-static int PreloadAudioMessage(lua_State *L)
+int PreloadAudioMessage(lua_State *L)
 {
 	const char *msg = luaL_checkstring(L, 1);
 	::PreloadAudioMessage(msg);
@@ -1874,7 +1874,7 @@ static int PreloadAudioMessage(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI PurgeAudioMessage(const char* msg);
-static int PurgeAudioMessage(lua_State *L)
+int PurgeAudioMessage(lua_State *L)
 {
 	const char *msg = luaL_checkstring(L, 1);
 	::PurgeAudioMessage(msg);
@@ -1882,7 +1882,7 @@ static int PurgeAudioMessage(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI PreloadMusicMessage(const char* msg);
-static int PreloadMusicMessage(lua_State *L)
+int PreloadMusicMessage(lua_State *L)
 {
 	const char *msg = luaL_checkstring(L, 1);
 	::PreloadMusicMessage(msg);
@@ -1890,7 +1890,7 @@ static int PreloadMusicMessage(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI PurgeMusicMessage(const char* msg);
-static int PurgeMusicMessage(lua_State *L)
+int PurgeMusicMessage(lua_State *L)
 {
 	const char *msg = luaL_checkstring(L, 1);
 	::PurgeMusicMessage(msg);
@@ -1898,7 +1898,7 @@ static int PurgeMusicMessage(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI LoadJukeFile(char* msg);
-static int LoadJukeFile(lua_State *L)
+int LoadJukeFile(lua_State *L)
 {
 	const char *msg = luaL_checkstring(L, 1);
 	::LoadJukeFile(const_cast<char*>(msg));
@@ -1906,7 +1906,7 @@ static int LoadJukeFile(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetMusicIntensity(int intensity);
-static int SetMusicIntensity(lua_State *L)
+int SetMusicIntensity(lua_State *L)
 {
 	int msg = luaL_checkinteger(L, 1);
 	::SetMusicIntensity(msg);
@@ -1915,7 +1915,7 @@ static int SetMusicIntensity(lua_State *L)
 
 /* // AiPath pointer data type not supported from Lua. -GBD
 // create an AiPath pointer on the lua stack
-static AiPath **NewAiPath(lua_State *L)
+AiPath **NewAiPath(lua_State *L)
 {
 AiPath **p = static_cast<AiPath **>(lua_newuserdata(L, sizeof(AiPath *)));
 luaL_getmetatable(L, "AiPath");
@@ -1925,13 +1925,13 @@ return p;
 
 // get an AiPath pointer from the lua stack
 // returns NULL if the item is not an AiPath pointer
-static AiPath **GetAiPath(lua_State *L, int n)
+AiPath **GetAiPath(lua_State *L, int n)
 {
 return static_cast<AiPath **>(luaL_testudata(L, n, "AiPath"));
 }
 
 //DLLEXPORT AiPath *DLLAPI FindAiPath(const Vector &start, const Vector &goal);
-static int FindAiPath(lua_State *L)
+int FindAiPath(lua_State *L)
 {
 Vector *start = GetVector(L, 1);
 Vector *goal = GetVector(L, 2);
@@ -1941,7 +1941,7 @@ return 1;
 }
 
 //DLLEXPORT void DLLAPI FreeAiPath(AiPath *path);
-static int FreeAiPath(lua_State *L)
+int FreeAiPath(lua_State *L)
 {
 if (AiPath **p = GetAiPath(L, 1))
 {
@@ -1953,7 +1953,7 @@ return 0;
 */
 
 //DLLEXPORT void DLLAPI GetAiPaths(int &pathCount, char* *&pathNames);
-static int GetAiPaths(lua_State *L)
+int GetAiPaths(lua_State *L)
 {
 	int count;
 	char **paths;
@@ -1969,7 +1969,7 @@ static int GetAiPaths(lua_State *L)
 }
 
 //void SetPathType(Name path, PathType pathType);
-static int SetPathType(lua_State *L)
+int SetPathType(lua_State *L)
 {
 	Name path = Name(luaL_checkstring(L, 1));
 	PathType type = PathType(luaL_checkinteger(L, 2));
@@ -1978,19 +1978,19 @@ static int SetPathType(lua_State *L)
 }
 
 //void SetPathType(Name path, PathType pathType);
-static int SetPathOneWay(lua_State *L)
+int SetPathOneWay(lua_State *L)
 {
 	Name path = Name(luaL_checkstring(L, 1));
 	::SetPathType(path, ONE_WAY_PATH);
 	return 0;
 }
-static int SetPathRoundTrip(lua_State *L)
+int SetPathRoundTrip(lua_State *L)
 {
 	Name path = Name(luaL_checkstring(L, 1));
 	::SetPathType(path, ROUND_TRIP_PATH);
 	return 0;
 }
-static int SetPathLoop(lua_State *L)
+int SetPathLoop(lua_State *L)
 {
 	Name path = Name(luaL_checkstring(L, 1));
 	::SetPathType(path, LOOP_PATH);
@@ -1998,7 +1998,7 @@ static int SetPathLoop(lua_State *L)
 }
 
 //void SetIndependence(Handle me, int independence);
-static int SetIndependence(lua_State *L)
+int SetIndependence(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	int independence = luaL_checkinteger(L, 2);
@@ -2008,21 +2008,23 @@ static int SetIndependence(lua_State *L)
 
 //bool IsInfo(Handle h);
 //bool IsInfo(Name odf);
-static int IsInfo(lua_State *L)
+int IsInfo(lua_State *L)
 {
 	if (lua_isstring(L, 1))
 	{
 		Name odf = Name(lua_tostring(L, 1));
+		lua_pushboolean(L, ::IsInfo(odf));
 	}
 	else
 	{
 		Handle h = RequireHandle(L, 1);
+		lua_pushboolean(L, ::IsInfo(h));
 	}
 	return 1;
 }
 
 //void StartCockpitTimer(long time, long warn = LONG_MIN, long alert = LONG_MIN);
-static int StartCockpitTimer(lua_State *L)
+int StartCockpitTimer(lua_State *L)
 {
 	long time = luaL_checklong(L, 1);
 	long warn = luaL_optlong(L, 2, LONG_MIN);
@@ -2032,7 +2034,7 @@ static int StartCockpitTimer(lua_State *L)
 }
 
 //void StartCockpitTimerUp(long time, long warn = LONG_MAX, long alert = LONG_MAX);
-static int StartCockpitTimerUp(lua_State *L)
+int StartCockpitTimerUp(lua_State *L)
 {
 	long time = luaL_checklong(L, 1);
 	long warn = luaL_optlong(L, 2, LONG_MAX);
@@ -2042,21 +2044,21 @@ static int StartCockpitTimerUp(lua_State *L)
 }
 
 //void StopCockpitTimer(void);
-static int StopCockpitTimer(lua_State *L)
+int StopCockpitTimer(lua_State *L)
 {
 	::StopCockpitTimer();
 	return 0;
 }
 
 //void HideCockpitTimer(void);
-static int HideCockpitTimer(lua_State *L)
+int HideCockpitTimer(lua_State *L)
 {
 	::HideCockpitTimer();
 	return 0;
 }
 
 //long GetCockpitTimer(void);
-static int GetCockpitTimer(lua_State *L)
+int GetCockpitTimer(lua_State *L)
 {
 	long t = ::GetCockpitTimer();
 	lua_pushinteger(L, t);
@@ -2064,7 +2066,7 @@ static int GetCockpitTimer(lua_State *L)
 }
 
 //void StartEarthquake(float magnitude);
-static int StartEarthQuake(lua_State *L)
+int StartEarthQuake(lua_State *L)
 {
 	float magnitude = float(luaL_checknumber(L, 1));
 	::StartEarthQuake(magnitude);
@@ -2072,7 +2074,7 @@ static int StartEarthQuake(lua_State *L)
 }
 
 //void UpdateEarthQuake(float magnitude);
-static int UpdateEarthQuake(lua_State *L)
+int UpdateEarthQuake(lua_State *L)
 {
 	float magnitude = float(luaL_checknumber(L, 1));
 	::UpdateEarthQuake(magnitude);
@@ -2080,28 +2082,29 @@ static int UpdateEarthQuake(lua_State *L)
 }
 
 //void StopEarthquake(void);
-static int StopEarthQuake(lua_State *L)
+int StopEarthQuake(lua_State *L)
 {
 	::StopEarthQuake();
 	return 0;
 }
 
 //bool IsPerson(Handle &h);
-static int IsPerson(lua_State *L)
+int IsPerson(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
+	lua_pushboolean(L, ::IsPerson(h));
 	return 1;
 }
 
 //DLLEXPORT int DLLAPI GetCurWorld(void);
-static int GetCurWorld(lua_State *L)
+int GetCurWorld(lua_State *L)
 {
 	lua_pushnumber(L, ::GetCurWorld());
 	return 1;
 }
 
 //DLLEXPORT const char* DLLAPI GetVarItemStr(char* VarItemName);
-static int GetVarItemStr(lua_State *L)
+int GetVarItemStr(lua_State *L)
 {
 	const char *var = luaL_checkstring(L, 1);
 	lua_pushstring(L, ::GetVarItemStr(const_cast<char*>(var)));
@@ -2109,7 +2112,7 @@ static int GetVarItemStr(lua_State *L)
 }
 
 //DLLEXPORT const int DLLAPI GetVarItemInt(char* VarItemName);
-static int GetVarItemInt(lua_State *L)
+int GetVarItemInt(lua_State *L)
 {
 	const char *var = luaL_checkstring(L, 1);
 	lua_pushnumber(L, ::GetVarItemInt(const_cast<char*>(var)));
@@ -2117,7 +2120,7 @@ static int GetVarItemInt(lua_State *L)
 }
 
 //DLLEXPORT const int DLLAPI GetCVarItemInt(int TeamNum,int Idx);
-static int GetCVarItemInt(lua_State *L)
+int GetCVarItemInt(lua_State *L)
 {
 	int team = luaL_checkinteger(L, 1);
 	int index = luaL_checkinteger(L, 2);
@@ -2126,7 +2129,7 @@ static int GetCVarItemInt(lua_State *L)
 }
 
 //DLLEXPORT const char*  DLLAPI GetCVarItemStr(int TeamNum,int Idx);
-static int GetCVarItemStr(lua_State *L)
+int GetCVarItemStr(lua_State *L)
 {
 	int team = luaL_checkinteger(L, 1);
 	int index = luaL_checkinteger(L, 2);
@@ -2135,7 +2138,7 @@ static int GetCVarItemStr(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI PreloadODF(char* cfg);
-static int PreloadODF(lua_State *L)
+int PreloadODF(lua_State *L)
 {
 	const char *odf = luaL_checkstring(L, 1);
 	::PreloadODF(const_cast<char*>(odf));
@@ -2148,7 +2151,7 @@ static int PreloadODF(lua_State *L)
 //inline float TerrainFindFloor(Name Path, int Point = 0) { Vector Test = GetVectorFromPath(Path, Point); return TerrainFindFloor(Test.x, Test.z); }
 //inline float TerrainFindFloor(Handle h) { return TerrainFindFloor(GetPosition(h)); }
 //-number, vector GetTerrainHeightAndNormal ( handle h [ bool UseWater = false ] )
-static int TerrainFindFloor(lua_State *L)
+int TerrainFindFloor(lua_State *L)
 {
 	//Handle h = RequireHandle(L, 1);
 
@@ -2181,7 +2184,7 @@ static int TerrainFindFloor(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI AddPilotByHandle(Handle h);
-static int AddPilotByHandle(lua_State *L)
+int AddPilotByHandle(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	::AddPilotByHandle(h);
@@ -2189,7 +2192,7 @@ static int AddPilotByHandle(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI PrintConsoleMessage(char* msg);
-static int PrintConsoleMessage(lua_State *L)
+int PrintConsoleMessage(lua_State *L)
 {
 	const char *msg = luaL_checkstring(L, 1);
 	::PrintConsoleMessage(const_cast<char *>(msg));
@@ -2198,7 +2201,7 @@ static int PrintConsoleMessage(lua_State *L)
 
 //DLLEXPORT float DLLAPI GetRandomFloat(float range);
 // inline float GetRandomFloat(float min, float max);
-static int GetRandomFloat(lua_State *L)
+int GetRandomFloat(lua_State *L)
 {
 	float minrange = float(luaL_checknumber(L, 1));
 	if (lua_isnumber(L, 2))
@@ -2214,7 +2217,7 @@ static int GetRandomFloat(lua_State *L)
 }
 
 //bool IsDeployed(Handle h);
-static int IsDeployed(lua_State *L)
+int IsDeployed(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushboolean(L, ::IsDeployed(h));
@@ -2222,7 +2225,7 @@ static int IsDeployed(lua_State *L)
 }
 
 //void Deploy(Handle h);
-static int Deploy(lua_State *L)
+int Deploy(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	::Deploy(h);
@@ -2230,7 +2233,7 @@ static int Deploy(lua_State *L)
 }
 
 //bool IsSelected(Handle h);
-static int IsSelected(lua_State *L)
+int IsSelected(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushboolean(L, ::IsSelected(h));
@@ -2238,7 +2241,7 @@ static int IsSelected(lua_State *L)
 }
 
 //void SetWeaponMask(Handle me, long mask);
-static int SetWeaponMask(lua_State *L)
+int SetWeaponMask(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	long mask = luaL_checklong(L, 2);
@@ -2248,7 +2251,7 @@ static int SetWeaponMask(lua_State *L)
 
 //bool GiveWeapon(Handle me, Name weapon);
 //bool GiveWeapon(Handle me, Name weapon, int slot);
-static int GiveWeapon(lua_State *L)
+int GiveWeapon(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	Name weapon = Name(luaL_checkstring(L, 2));
@@ -2261,7 +2264,7 @@ static int GiveWeapon(lua_State *L)
 }
 
 //void FireAt(Handle me, Handle him = 0);
-static int FireAt(lua_State *L)
+int FireAt(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	Handle him = GetHandle(L, 2);
@@ -2272,7 +2275,7 @@ static int FireAt(lua_State *L)
 
 //DLLEXPORT bool DLLAPI IsFollowing(Handle h);
 //DLLEXPORT bool DLLAPI IsFollowing(Handle me, Handle him);
-static int IsFollowing(lua_State *L)
+int IsFollowing(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	if (Handle h2 = GetHandle(L, 2))
@@ -2283,14 +2286,14 @@ static int IsFollowing(lua_State *L)
 }
 
 //DLLEXPORT Handle DLLAPI WhoFollowing(Handle h);
-static int WhoFollowing(lua_State *L)
+int WhoFollowing(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	PushHandle(L, ::WhoFollowing(h));
 	return 1;
 }
 //void SetUserTarget(Handle h);
-static int SetUserTarget(lua_State *L)
+int SetUserTarget(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	::SetUserTarget(h);
@@ -2299,7 +2302,7 @@ static int SetUserTarget(lua_State *L)
 
 //Handle GetUserTarget(void);
 // DLLEXPORT Handle DLLAPI GetUserTarget(int TeamNum);
-static int GetUserTarget(lua_State *L)
+int GetUserTarget(lua_State *L)
 {
 	Handle h = 0;
 	int team = luaL_optinteger(L, 1, -1);
@@ -2312,7 +2315,7 @@ static int GetUserTarget(lua_State *L)
 }
 
 //void SetPerceivedTeam(Handle h, TeamNum t);
-static int SetPerceivedTeam(lua_State *L)
+int SetPerceivedTeam(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	TeamNum t = TeamNum(luaL_checkinteger(L, 2));
@@ -2321,7 +2324,7 @@ static int SetPerceivedTeam(lua_State *L)
 }
 
 //AiCommand GetCurrentCommand(Handle me);
-static int GetCurrentCommand(lua_State *L)
+int GetCurrentCommand(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	lua_pushinteger(L, ::GetCurrentCommand(me));
@@ -2329,7 +2332,7 @@ static int GetCurrentCommand(lua_State *L)
 }
 
 //Handle GetCurrentWho(Handle me);
-static int GetCurrentWho(lua_State *L)
+int GetCurrentWho(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	PushHandle(L, ::GetCurrentWho(me));
@@ -2337,7 +2340,7 @@ static int GetCurrentWho(lua_State *L)
 }
 
 //void EjectPilot(Handle h);
-static int EjectPilot(lua_State *L)
+int EjectPilot(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	::EjectPilot(me);
@@ -2345,7 +2348,7 @@ static int EjectPilot(lua_State *L)
 }
 
 //void HopOut(Handle h);
-static int HopOut(lua_State *L)
+int HopOut(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	::HopOut(me);
@@ -2353,7 +2356,7 @@ static int HopOut(lua_State *L)
 }
 
 //void KillPilot(Handle h);
-static int KillPilot(lua_State *L)
+int KillPilot(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	::KillPilot(me);
@@ -2361,7 +2364,7 @@ static int KillPilot(lua_State *L)
 }
 
 //void RemovePilotAI(Handle h);
-static int RemovePilot(lua_State *L)
+int RemovePilot(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	::RemovePilotAI(me);
@@ -2369,14 +2372,15 @@ static int RemovePilot(lua_State *L)
 }
 
 //Handle HoppedOutOf(Handle h);
-static int HoppedOutOf(lua_State *L)
+int HoppedOutOf(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
+	PushHandle(L, ::HoppedOutOf(me));
 	return 0;
 }
 
 //DLLEXPORT void DLLAPI GetCameraPosition(Vector &pos, Vector &dir);
-static int GetCameraPosition(lua_State *L)
+int GetCameraPosition(lua_State *L)
 {
 	Vector *pos = GetVector(L, 1);
 	Vector *dir = GetVector(L, 2);
@@ -2385,7 +2389,7 @@ static int GetCameraPosition(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetCameraPosition(const Vector &pos, const Vector &dir);
-static int SetCameraPosition(lua_State *L)
+int SetCameraPosition(lua_State *L)
 {
 	Vector *pos = GetVector(L, 1);
 	Vector *dir = GetVector(L, 2);
@@ -2394,14 +2398,14 @@ static int SetCameraPosition(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI ResetCameraPosition();
-static int ResetCameraPosition(lua_State *L)
+int ResetCameraPosition(lua_State *L)
 {
 	::ResetCameraPosition();
 	return 0;
 }
 
 //DLLEXPORT unsigned long DLLAPI CalcCRC(Name n);
-static int CalcCRC(lua_State *L)
+int CalcCRC(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
 	lua_pushinteger(L, ::CalcCRC(n));
@@ -2409,27 +2413,28 @@ static int CalcCRC(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI IFace_Exec(Name n);
-static int IFace_Exec(lua_State *L)
+int IFace_Exec(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
+	::IFace_Exec(n);
 	return 0;
 }
 //DLLEXPORT void DLLAPI IFace_Activate(Name n);
-static int IFace_Activate(lua_State *L)
+int IFace_Activate(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
 	::IFace_Activate(n);
 	return 0;
 }
 //DLLEXPORT void DLLAPI IFace_Deactivate(Name n);
-static int IFace_Deactivate(lua_State *L)
+int IFace_Deactivate(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
 	::IFace_Deactivate(n);
 	return 0;
 }
 //DLLEXPORT void DLLAPI IFace_CreateCommand(Name n);
-static int IFace_CreateCommand(lua_State *L)
+int IFace_CreateCommand(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
 	::IFace_CreateCommand(n);
@@ -2437,7 +2442,7 @@ static int IFace_CreateCommand(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI IFace_CreateString(Name name, Name value);
-static int IFace_CreateString(lua_State *L)
+int IFace_CreateString(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
 	Name v = Name(luaL_checkstring(L, 2));
@@ -2446,7 +2451,7 @@ static int IFace_CreateString(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI IFace_SetString(Name name, Name value);
-static int IFace_SetString(lua_State *L)
+int IFace_SetString(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
 	Name v = Name(luaL_checkstring(L, 2));
@@ -2455,7 +2460,7 @@ static int IFace_SetString(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI IFace_GetString(Name name, Name value, int maxSize);
-static int IFace_GetString(lua_State *L)
+int IFace_GetString(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
 	int size = luaL_checkinteger(L, 2);
@@ -2467,7 +2472,7 @@ static int IFace_GetString(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI IFace_CreateInteger(Name name, int value);
-static int IFace_CreateInteger(lua_State *L)
+int IFace_CreateInteger(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
 	int v = luaL_checkinteger(L, 2);
@@ -2476,7 +2481,7 @@ static int IFace_CreateInteger(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI IFace_SetInteger(Name name, int value);
-static int IFace_SetInteger(lua_State *L)
+int IFace_SetInteger(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
 	int v = luaL_checkinteger(L, 2);
@@ -2485,7 +2490,7 @@ static int IFace_SetInteger(lua_State *L)
 }
 
 //DLLEXPORT int DLLAPI IFace_GetInteger(Name name);
-static int IFace_GetInteger(lua_State *L)
+int IFace_GetInteger(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
 	lua_pushnumber(L, ::IFace_GetInteger(n));
@@ -2493,7 +2498,7 @@ static int IFace_GetInteger(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI IFace_SetIntegerRange(Name name, int low, int high);
-static int IFace_SetIntegerRange(lua_State *L)
+int IFace_SetIntegerRange(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
 	int min = luaL_checkinteger(L, 2);
@@ -2503,7 +2508,7 @@ static int IFace_SetIntegerRange(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI IFace_CreateFloat(Name name, float value);
-static int IFace_CreateFloat(lua_State *L)
+int IFace_CreateFloat(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
 	float v = float(luaL_checknumber(L, 2));
@@ -2512,7 +2517,7 @@ static int IFace_CreateFloat(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI IFace_SetFloat(Name name, float value);
-static int IFace_SetFloat(lua_State *L)
+int IFace_SetFloat(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
 	float v = float(luaL_checknumber(L, 2));
@@ -2521,7 +2526,7 @@ static int IFace_SetFloat(lua_State *L)
 }
 
 //DLLEXPORT float DLLAPI IFace_GetFloat(Name name);
-static int IFace_GetFloat(lua_State *L)
+int IFace_GetFloat(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
 	lua_pushnumber(L, ::IFace_GetFloat(n));
@@ -2529,7 +2534,7 @@ static int IFace_GetFloat(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI IFace_ClearListBox(Name name);
-static int IFace_ClearListBox(lua_State *L)
+int IFace_ClearListBox(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
 	::IFace_ClearListBox(n);
@@ -2537,7 +2542,7 @@ static int IFace_ClearListBox(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI IFace_AddTextItem(Name name, Name value);
-static int IFace_AddTextItem(lua_State *L)
+int IFace_AddTextItem(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
 	Name v = Name(luaL_checkstring(L, 2));
@@ -2546,7 +2551,7 @@ static int IFace_AddTextItem(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI IFace_GetSelectedItem(Name name, Name value, int maxSize);
-static int IFace_GetSelectedItem(lua_State *L)
+int IFace_GetSelectedItem(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
 	Name v = Name(luaL_checkstring(L, 2));
@@ -2556,7 +2561,7 @@ static int IFace_GetSelectedItem(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetSkill(Handle h,int s);
-static int SetSkill(lua_State *L)
+int SetSkill(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	int skill = luaL_checkinteger(L, 2);
@@ -2565,7 +2570,7 @@ static int SetSkill(lua_State *L)
 }
 
 //void SetAIP(Name n, TeamNum team = 2);
-static int SetAIP(lua_State *L)
+int SetAIP(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
 	TeamNum team = TeamNum(luaL_optinteger(L, 2, 2));
@@ -2574,7 +2579,7 @@ static int SetAIP(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI LogFloat(float v);
-static int LogFloat(lua_State *L)
+int LogFloat(lua_State *L)
 {
 	float v = float(luaL_checknumber(L, 1));
 	::LogFloat(v);
@@ -2582,43 +2587,43 @@ static int LogFloat(lua_State *L)
 }
 
 //DLLEXPORT int DLLAPI GetInstantMyForce(void);
-static int GetInstantMyForce(lua_State *L)
+int GetInstantMyForce(lua_State *L)
 {
 	lua_pushnumber(L, ::GetInstantMyForce());
 	return 1;
 }
 //DLLEXPORT int DLLAPI GetInstantCompForce(void);
-static int GetInstantCompForce(lua_State *L)
+int GetInstantCompForce(lua_State *L)
 {
 	lua_pushnumber(L, ::GetInstantCompForce());
 	return 1;
 }
 //DLLEXPORT int DLLAPI GetInstantDifficulty(void);
-static int GetInstantDifficulty(lua_State *L)
+int GetInstantDifficulty(lua_State *L)
 {
 	lua_pushnumber(L, ::GetInstantDifficulty());
 	return 1;
 }
 //DLLEXPORT int DLLAPI GetInstantGoal(void);
-static int GetInstantGoal(lua_State *L)
+int GetInstantGoal(lua_State *L)
 {
 	lua_pushnumber(L, ::GetInstantGoal());
 	return 1;
 }
 //DLLEXPORT int DLLAPI GetInstantType(void);
-static int GetInstantType(lua_State *L)
+int GetInstantType(lua_State *L)
 {
 	lua_pushnumber(L, ::GetInstantType());
 	return 1;
 }
 //DLLEXPORT int DLLAPI GetInstantFlag(void);
-static int GetInstantFlag(lua_State *L)
+int GetInstantFlag(lua_State *L)
 {
 	lua_pushnumber(L, ::GetInstantFlag());
 	return 1;
 }
 //DLLEXPORT int DLLAPI GetInstantMySide(void);
-static int GetInstantMySide(lua_State *L)
+int GetInstantMySide(lua_State *L)
 {
 	lua_pushnumber(L, ::GetInstantMySide());
 	return 1;
@@ -2626,7 +2631,7 @@ static int GetInstantMySide(lua_State *L)
 
 /* // Function exists in ScriptUtils.h, but doesn't exist in the .cpp or bzone.lib. No such function.
 //DLLEXPORT bool DLLAPI StoppedPlayback(void);
-static int StoppedPlayback(lua_State *L)
+int StoppedPlayback(lua_State *L)
 {
 lua_pushboolean(L, ::StoppedPlayback());
 return 1;
@@ -2634,14 +2639,14 @@ return 1;
 */
 
 //bool CameraReady();
-static int CameraReady(lua_State *L)
+int CameraReady(lua_State *L)
 {
 	lua_pushboolean(L, ::CameraReady());
 	return 1;
 }
 
 //bool CameraPath(Name path_name,int height,int speed,Handle target_handle);
-static int CameraPath(lua_State *L)
+int CameraPath(lua_State *L)
 {
 	Name path = Name(luaL_checkstring(L, 1));
 	int height = luaL_checkinteger(L, 2);
@@ -2652,7 +2657,7 @@ static int CameraPath(lua_State *L)
 }
 
 //bool CameraPathDir(Name path_name,int height,int speed);
-static int CameraPathDir(lua_State *L)
+int CameraPathDir(lua_State *L)
 {
 	Name path = Name(luaL_checkstring(L, 1));
 	int height = luaL_checkinteger(L, 2);
@@ -2662,7 +2667,7 @@ static int CameraPathDir(lua_State *L)
 }
 
 //bool PanDone();
-static int PanDone(lua_State *L)
+int PanDone(lua_State *L)
 {
 	lua_pushboolean(L, ::PanDone());
 	return 1;
@@ -2670,7 +2675,7 @@ static int PanDone(lua_State *L)
 
 //bool CameraObject(Handle object_handle,float x,float y,float z,Handle target_handle);
 //inline bool CameraObject(Handle object_handle, Vector pos, Handle target_handle) { return CameraObject(object_handle, pos.x, pos.y, pos.z, target_handle); }
-static int CameraObject(lua_State *L)
+int CameraObject(lua_State *L)
 {
 	Handle object = RequireHandle(L, 1);
 	if (Vector *pos = GetVector(L, 2))
@@ -2690,35 +2695,35 @@ static int CameraObject(lua_State *L)
 }
 
 //bool CameraFinish();
-static int CameraFinish(lua_State *L)
+int CameraFinish(lua_State *L)
 {
 	lua_pushboolean(L, ::CameraFinish());
 	return 1;
 }
 
 //bool CameraCancelled(void);
-static int CameraCancelled(lua_State *L)
+int CameraCancelled(lua_State *L)
 {
 	lua_pushboolean(L, ::CameraCancelled());
 	return 1;
 }
 
 //DLLEXPORT bool DLLAPI FreeCamera(void);
-static int FreeCamera(lua_State *L)
+int FreeCamera(lua_State *L)
 {
 	lua_pushboolean(L, ::FreeCamera());
 	return 1;
 }
 
 //DLLEXPORT bool DLLAPI FreeFinish(void);
-static int FreeFinish(lua_State *L)
+int FreeFinish(lua_State *L)
 {
 	lua_pushboolean(L, ::FreeFinish());
 	return 1;
 }
 
 //DLLEXPORT bool DLLAPI PlayMovie(char name[20]);
-static int PlayMovie(lua_State *L)
+int PlayMovie(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
 	lua_pushboolean(L, ::PlayMovie(n));
@@ -2726,14 +2731,14 @@ static int PlayMovie(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI StopMovie(void);
-static int StopMovie(lua_State *L)
+int StopMovie(lua_State *L)
 {
 	::StopMovie();
 	return 0;
 }
 
 //DLLEXPORT bool DLLAPI PlayMove(void);
-static int PlayMove(lua_State *L)
+int PlayMove(lua_State *L)
 {
 	::PlayMove();
 	return 0;
@@ -2741,7 +2746,7 @@ static int PlayMove(lua_State *L)
 
 //DLLEXPORT bool DLLAPI PlayRecording(char name[20]);
 //DLLEXPORT bool DLLAPI PlayRecording(char name[20], bool updateCam);
-static int PlayRecording(lua_State *L)
+int PlayRecording(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
 	if (lua_isboolean(L, 2))
@@ -2752,7 +2757,7 @@ static int PlayRecording(lua_State *L)
 }
 
 //DLLEXPORT bool DLLAPI PlaybackVehicle(char name[20]);
-static int PlaybackVehicle(lua_State *L)
+int PlaybackVehicle(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
 	lua_pushboolean(L, ::PlaybackVehicle(n));
@@ -2760,7 +2765,7 @@ static int PlaybackVehicle(lua_State *L)
 }
 
 //DLLEXPORT float DLLAPI SetAnimation(Handle h, Name n, int animType = 0);
-static int SetAnimation(lua_State *L)
+int SetAnimation(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	Name n = Name(luaL_checkstring(L, 2));
@@ -2770,7 +2775,7 @@ static int SetAnimation(lua_State *L)
 }
 
 //DLLEXPORT float DLLAPI GetAnimationFrame(Handle h, Name n);
-static int GetAnimationFrame(lua_State *L)
+int GetAnimationFrame(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	Name n = Name(luaL_checkstring(L, 2));
@@ -2779,7 +2784,7 @@ static int GetAnimationFrame(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI StartAnimation(Handle h);
-static int StartAnimation(lua_State *L)
+int StartAnimation(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	::StartAnimation(h);
@@ -2787,7 +2792,7 @@ static int StartAnimation(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI MaskEmitter(Handle h, DWORD mask);
-static int MaskEmitter(lua_State *L)
+int MaskEmitter(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	DWORD mask = DWORD(luaL_checkinteger(L, 2));
@@ -2796,7 +2801,7 @@ static int MaskEmitter(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI StartEmitter(Handle h, int slot); // slot starts at 1, incruments.
-static int StartEmitter(lua_State *L)
+int StartEmitter(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	int slot = luaL_checkinteger(L, 2);
@@ -2805,7 +2810,7 @@ static int StartEmitter(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI StopEmitter(Handle h, int slot);
-static int StopEmitter(lua_State *L)
+int StopEmitter(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	int slot = luaL_checkinteger(L, 2);
@@ -2815,19 +2820,19 @@ static int StopEmitter(lua_State *L)
 
 /* // Depreciated functions.
 //DLLEXPORT void DLLAPI SaveObjects(char* &buffer, unsigned long &size);
-static int SaveObjects(lua_State *L)
+int SaveObjects(lua_State *L)
 {
 return 0;
 }
 
 //DLLEXPORT void DLLAPI LoadObjects(char* buffer, unsigned long size);
-static int LoadObjects(lua_State *L)
+int LoadObjects(lua_State *L)
 {
 return 0;
 }
 
 //DLLEXPORT void DLLAPI IgnoreSync(bool on);
-static int IgnoreSync(lua_State *L)
+int IgnoreSync(lua_State *L)
 {
 bool on = lua_toboolean(L, 1);
 IgnoreSync(on);
@@ -2835,7 +2840,7 @@ return 0;
 }
 
 //DLLEXPORT bool DLLAPI IsRecording(void);
-static int IsRecording(lua_State *L)
+int IsRecording(lua_State *L)
 {
 lua_pushboolean(L, IsRecording());
 return 1;
@@ -2843,7 +2848,7 @@ return 1;
 */
 
 //void SetObjectiveOn(Handle h);
-static int SetObjectiveOn(lua_State *L)
+int SetObjectiveOn(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	::SetObjectiveOn(h);
@@ -2851,7 +2856,7 @@ static int SetObjectiveOn(lua_State *L)
 }
 
 //void SetObjectiveOff(Handle h);
-static int SetObjectiveOff(lua_State *L)
+int SetObjectiveOff(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	::SetObjectiveOff(h);
@@ -2859,7 +2864,7 @@ static int SetObjectiveOff(lua_State *L)
 }
 
 //void SetObjectiveName(Handle h, Name n);
-static int SetObjectiveName(lua_State *L)
+int SetObjectiveName(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	Name n = Name(luaL_checkstring(L, 2));
@@ -2868,14 +2873,14 @@ static int SetObjectiveName(lua_State *L)
 }
 
 //void ClearObjectives(void);
-static int ClearObjectives(lua_State *L)
+int ClearObjectives(lua_State *L)
 {
 	::ClearObjectives();
 	return 0;
 }
 
 // GetColor functions, retrieve color from a specified color string. Added all the BZ1 colors for backwards compatability.
-static long GetColor(const char * const colorname)
+long GetColor(const char * const colorname)
 {
 	switch (Hash(colorname))
 	{
@@ -2901,7 +2906,7 @@ static long GetColor(const char * const colorname)
 }
 
 // AddObjective(char *name, long color, float showTime = 8.0f)
-static int AddObjective(lua_State *L)
+int AddObjective(lua_State *L)
 {
 	char *name = const_cast<char *>(luaL_checkstring(L, 1));
 	unsigned long color = WHITE;
@@ -2920,7 +2925,7 @@ static int AddObjective(lua_State *L)
 }
 
 //bool IsWithin(Handle &h1, Handle &h2, Distance d);
-static int IsWithin(lua_State *L)
+int IsWithin(lua_State *L)
 {
 	Handle h1 = RequireHandle(L, 1);
 	Handle h2 = RequireHandle(L, 2);
@@ -2930,17 +2935,18 @@ static int IsWithin(lua_State *L)
 }
 
 //int CountUnitsNearObject(Handle h, Distance d, TeamNum t, char *odf);
-static int CountUnitsNearObject(lua_State *L)
+int CountUnitsNearObject(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	Dist d = Dist(luaL_checknumber(L, 2));
 	TeamNum t = TeamNum(luaL_checkinteger(L, 3));
 	char *odf = const_cast<char *>(luaL_checkstring(L, 4));
+	lua_pushinteger(L, ::CountUnitsNearObject(h, d, t, odf));
 	return 1;
 }
 
 //DLLEXPORT void DLLAPI SetAvoidType(Handle h, int avoidType);
-static int SetAvoidType(lua_State *L)
+int SetAvoidType(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	int avoidType = luaL_checkinteger(L, 2);
@@ -2949,7 +2955,7 @@ static int SetAvoidType(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI Annoy(Handle me, Handle him);
-static int Annoy(lua_State *L)
+int Annoy(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	Handle him = RequireHandle(L, 2);
@@ -2958,7 +2964,7 @@ static int Annoy(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI ClearThrust(Handle h);
-static int ClearThrust(lua_State *L)
+int ClearThrust(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	::ClearThrust(h);
@@ -2966,7 +2972,7 @@ static int ClearThrust(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetVerbose(Handle h, bool on);
-static int SetVerbose(lua_State *L)
+int SetVerbose(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	bool on = lua_toboolean(L, 2);
@@ -2975,7 +2981,7 @@ static int SetVerbose(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI ClearIdleAnims(Handle h);
-static int ClearIdleAnims(lua_State *L)
+int ClearIdleAnims(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	::ClearIdleAnims(h);
@@ -2983,7 +2989,7 @@ static int ClearIdleAnims(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI AddIdleAnim(Handle h, Name anim);
-static int AddIdleAnim(lua_State *L)
+int AddIdleAnim(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	Name n = Name(luaL_checkstring(L, 2));
@@ -2992,7 +2998,7 @@ static int AddIdleAnim(lua_State *L)
 }
 
 //DLLEXPORT bool DLLAPI IsIdle(Handle h);
-static int IsIdle(lua_State *L)
+int IsIdle(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushboolean(L, ::IsIdle(h));
@@ -3000,7 +3006,7 @@ static int IsIdle(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI CountThreats(Handle h, int &here, int &coming);
-static int CountThreats(lua_State *L)
+int CountThreats(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	int here = 0, coming = 0;
@@ -3012,7 +3018,7 @@ static int CountThreats(lua_State *L)
 
 //DLLEXPORT void DLLAPI SpawnBirds(int group, int count, Name odf, TeamNum t, Name path);
 //DLLEXPORT void DLLAPI SpawnBirds(int group, int count, Name odf, TeamNum t, Handle startObj, Handle destObj);
-static int SpawnBirds(lua_State *L)
+int SpawnBirds(lua_State *L)
 {
 	int group = luaL_checkinteger(L, 1);
 	int count = luaL_checkinteger(L, 2);
@@ -3033,7 +3039,7 @@ static int SpawnBirds(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI RemoveBirds(int group);
-static int RemoveBirds(lua_State *L)
+int RemoveBirds(lua_State *L)
 {
 	int group = luaL_checkinteger(L, 1);
 	::RemoveBirds(group);
@@ -3041,7 +3047,7 @@ static int RemoveBirds(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetColorFade(float ratio, float rate, unsigned long color);
-static int SetColorFade(lua_State *L)
+int SetColorFade(lua_State *L)
 {
 	float ratio = float(luaL_checknumber(L, 2));
 	float fade = float(luaL_checknumber(L, 2));
@@ -3051,7 +3057,7 @@ static int SetColorFade(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI StopCheats(void);
-static int StopCheats(lua_State *L)
+int StopCheats(lua_State *L)
 {
 	::StopCheats();
 	return 0;
@@ -3059,7 +3065,7 @@ static int StopCheats(lua_State *L)
 
 //DLLEXPORT void DLLAPI CalcCliffs(Handle h1, Handle h2, float radius);
 //DLLEXPORT void DLLAPI CalcCliffs(Name path);
-static int CalcCliffs(lua_State *L)
+int CalcCliffs(lua_State *L)
 {
 	if (lua_isstring(L, 1))
 	{
@@ -3077,7 +3083,7 @@ static int CalcCliffs(lua_State *L)
 }
 
 //DLLEXPORT int DLLAPI StartSoundEffect(const char* file, Handle h = 0);
-static int StartSoundEffect(lua_State *L)
+int StartSoundEffect(lua_State *L)
 {
 	const char *file = luaL_checkstring(L, 1);
 	Handle h = GetHandle(L, 2);
@@ -3086,7 +3092,7 @@ static int StartSoundEffect(lua_State *L)
 }
 
 //DLLEXPORT int DLLAPI FindSoundEffect(const char* file, Handle h = 0);
-static int FindSoundEffect(lua_State *L)
+int FindSoundEffect(lua_State *L)
 {
 	const char *file = luaL_checkstring(L, 1);
 	Handle h = GetHandle(L, 2);
@@ -3095,7 +3101,7 @@ static int FindSoundEffect(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI StopSoundEffect(int sound);
-static int StopSoundEffect(lua_State *L)
+int StopSoundEffect(lua_State *L)
 {
 	int sound = luaL_checkinteger(L, 1);
 	::StopSoundEffect(sound);
@@ -3103,7 +3109,7 @@ static int StopSoundEffect(lua_State *L)
 }
 
 //DLLEXPORT Handle DLLAPI GetObjectByTeamSlot(int TeamNum, int Slot);
-static int GetObjectByTeamSlot(lua_State *L)
+int GetObjectByTeamSlot(lua_State *L)
 {
 	int team = luaL_checkinteger(L, 1);
 	int slot = luaL_checkinteger(L, 2);
@@ -3112,42 +3118,42 @@ static int GetObjectByTeamSlot(lua_State *L)
 }
 
 //bool IsNetworkOn(); // Was bool Net_IsNetGame() in BZ1.
-static int IsNetworkOn(lua_State *L)
+int IsNetworkOn(lua_State *L)
 {
 	lua_pushboolean(L, ::IsNetworkOn());
 	return 1;
 }
 
 //bool ImServer(); // Was bool Net_IsHosting() in BZ1.
-static int ImServer(lua_State *L)
+int ImServer(lua_State *L)
 {
 	lua_pushboolean(L, ::ImServer());
 	return 1;
 }
 
 //DLLEXPORT bool DLLAPI ImDedicatedServer(void);
-static int ImDedicatedServer(lua_State *L)
+int ImDedicatedServer(lua_State *L)
 {
 	lua_pushboolean(L, ::ImDedicatedServer());
 	return 1;
 }
 
 //DLLEXPORT bool DLLAPI IsTeamplayOn(void);
-static int IsTeamplayOn(lua_State *L)
+int IsTeamplayOn(lua_State *L)
 {
 	lua_pushboolean(L, ::IsTeamplayOn());
 	return 1;
 }
 
 //DLLEXPORT int DLLAPI CountPlayers(void);
-static int CountPlayers(lua_State *L)
+int CountPlayers(lua_State *L)
 {
 	lua_pushinteger(L, ::CountPlayers());
 	return 1;
 }
 
 //DLLEXPORT char DLLAPI GetRaceOfTeam(int TeamNum);
-static int GetRaceOfTeam(lua_State *L)
+int GetRaceOfTeam(lua_State *L)
 {
 	int team = luaL_checkinteger(L, 1);
 	char race = ::GetRaceOfTeam(team);
@@ -3156,7 +3162,7 @@ static int GetRaceOfTeam(lua_State *L)
 }
 
 //DLLEXPORT bool DLLAPI IsPlayer(Handle h);
-static int IsPlayer(lua_State *L)
+int IsPlayer(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushboolean(L, ::IsPlayer(h));
@@ -3164,7 +3170,7 @@ static int IsPlayer(lua_State *L)
 }
 
 //DLLEXPORT const char*  DLLAPI GetPlayerName(Handle h);
-static int GetPlayerName(lua_State *L)
+int GetPlayerName(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	const char *Name = ::GetPlayerName(h);
@@ -3173,7 +3179,7 @@ static int GetPlayerName(lua_State *L)
 }
 
 //DLLEXPORT int DLLAPI WhichTeamGroup(int Team);
-static int WhichTeamGroup(lua_State *L)
+int WhichTeamGroup(lua_State *L)
 {
 	int team = luaL_checkinteger(L, 1);
 	lua_pushinteger(L, ::WhichTeamGroup(team));
@@ -3181,7 +3187,7 @@ static int WhichTeamGroup(lua_State *L)
 }
 
 //DLLEXPORT int DLLAPI CountAllies(int Team);
-static int CountAllies(lua_State *L)
+int CountAllies(lua_State *L)
 {
 	int team = luaL_checkinteger(L, 1);
 	lua_pushinteger(L, ::CountAllies(team));
@@ -3189,7 +3195,7 @@ static int CountAllies(lua_State *L)
 }
 
 //DLLEXPORT int DLLAPI GetCommanderTeam(int Team);
-static int GetCommanderTeam(lua_State *L)
+int GetCommanderTeam(lua_State *L)
 {
 	int team = luaL_checkinteger(L, 1);
 	lua_pushinteger(L, ::GetCommanderTeam(team));
@@ -3197,7 +3203,7 @@ static int GetCommanderTeam(lua_State *L)
 }
 
 //DLLEXPORT int DLLAPI GetFirstAlliedTeam(int Team);
-static int GetFirstAlliedTeam(lua_State *L)
+int GetFirstAlliedTeam(lua_State *L)
 {
 	int team = luaL_checkinteger(L, 1);
 	lua_pushinteger(L, ::GetFirstAlliedTeam(team));
@@ -3205,7 +3211,7 @@ static int GetFirstAlliedTeam(lua_State *L)
 }
 
 //DLLEXPORT int DLLAPI GetLastAlliedTeam(int Team);
-static int GetLastAlliedTeam(lua_State *L)
+int GetLastAlliedTeam(lua_State *L)
 {
 	int team = luaL_checkinteger(L, 1);
 	lua_pushinteger(L, ::GetLastAlliedTeam(team));
@@ -3213,7 +3219,7 @@ static int GetLastAlliedTeam(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI GetTeamplayRanges(int WhichTeam,int &DefenseTeamNum,int &OffenseMinTeamNum,int &OffenseMaxTeamNum);
-static int GetTeamplayRanges(lua_State *L)
+int GetTeamplayRanges(lua_State *L)
 {
 	int team = luaL_checkinteger(L, 1);
 	int DefenseTeamNum = luaL_checkinteger(L, 2);
@@ -3227,7 +3233,7 @@ static int GetTeamplayRanges(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetRandomHeadingAngle(Handle h);
-static int SetRandomHeadingAngle(lua_State *L)
+int SetRandomHeadingAngle(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	::SetRandomHeadingAngle(h);
@@ -3235,28 +3241,28 @@ static int SetRandomHeadingAngle(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI ClearTeamColors(void); 
-static int ClearTeamColors(lua_State *L)
+int ClearTeamColors(lua_State *L)
 {
 	::ClearTeamColors();
 	return 0;
 }
 
 //DLLEXPORT void DLLAPI DefaultTeamColors(void); // For FFA/DM, uses colors sent from server
-static int DefaultTeamColors(lua_State *L)
+int DefaultTeamColors(lua_State *L)
 {
 	::DefaultTeamColors();
 	return 0;
 }
 
 //DLLEXPORT void DLLAPI TeamplayTeamColors(void); // For MPI/Team strat, colors sent from server
-static int TeamplayTeamColors(lua_State *L)
+int TeamplayTeamColors(lua_State *L)
 {
 	::TeamplayTeamColors();
 	return 0;
 }
 
 //DLLEXPORT void DLLAPI SetTeamColor(int team, int red, int green, int blue);
-static int SetTeamColor(lua_State *L)
+int SetTeamColor(lua_State *L)
 {
 	int team = luaL_checkinteger(L, 1);
 
@@ -3275,7 +3281,7 @@ static int SetTeamColor(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI ClearTeamColor(int team);
-static int ClearTeamColor(lua_State *L)
+int ClearTeamColor(lua_State *L)
 {
 	int team = luaL_checkinteger(L, 1);
 	::ClearTeamColor(team);
@@ -3283,7 +3289,7 @@ static int ClearTeamColor(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI MakeInert(Handle h);
-static int MakeInert(lua_State *L)
+int MakeInert(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	::MakeInert(h);
@@ -3294,7 +3300,7 @@ static int MakeInert(lua_State *L)
 //inline Vector GetPositionNear(Handle h, float MinRadiusAway, float MaxRadiusAway) { return GetPositionNear(GetPosition(h), MinRadiusAway, MaxRadiusAway); }
 //inline Vector GetPositionNear(Matrix m, float MinRadiusAway, float MaxRadiusAway) { return GetPositionNear(m.posit, MinRadiusAway, MaxRadiusAway); }
 //inline Vector GetPositionNear(Name Path, int Point, float MinRadiusAway, float MaxRadiusAway) { return GetPositionNear(GetVectorFromPath(Path, Point), MinRadiusAway, MaxRadiusAway); }
-static int GetPositionNear(lua_State *L)
+int GetPositionNear(lua_State *L)
 {
 	float minradius = float(luaL_optnumber(L, 2, 0.0f));
 	float maxradius = float(luaL_optnumber(L, 3, 0.0f));
@@ -3327,7 +3333,7 @@ static int GetPositionNear(lua_State *L)
 }
 
 //DLLEXPORT char*  DLLAPI GetPlayerODF(int TeamNum, RandomizeType RType = Randomize_None);
-static int GetPlayerODF(lua_State *L)
+int GetPlayerODF(lua_State *L)
 {
 	int team = luaL_checkinteger(L, 1);
 	RandomizeType rtype = RandomizeType(luaL_optinteger(L, 2, 0));
@@ -3337,7 +3343,7 @@ static int GetPlayerODF(lua_State *L)
 }
 
 //DLLEXPORT Handle DLLAPI BuildEmptyCraftNear(Handle h, char* ODF, int Team, float MinRadiusAway, float MaxRadiusAway);
-static int BuildEmptyCraftNear(lua_State *L)
+int BuildEmptyCraftNear(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	const char *odf = luaL_checkstring(L, 2);
@@ -3349,7 +3355,7 @@ static int BuildEmptyCraftNear(lua_State *L)
 }
 
 //Vector GetCircularPos(const Vector &CenterPos, const float Radius, const float Angle)
-static int GetCircularPos(lua_State *L)
+int GetCircularPos(lua_State *L)
 {
 	if (Vector *pos = GetVector(L, 1))
 	{
@@ -3362,14 +3368,14 @@ static int GetCircularPos(lua_State *L)
 }
 
 //DLLEXPORT Vector DLLAPI GetSafestSpawnpoint(void);
-static int GetSafestSpawnpoint(lua_State *L)
+int GetSafestSpawnpoint(lua_State *L)
 {
 	*NewVector(L) = ::GetSafestSpawnpoint();
 	return 1;
 }
 
 //DLLEXPORT Vector DLLAPI GetSpawnpoint(int TeamNum);
-static int GetSpawnpoint(lua_State *L)
+int GetSpawnpoint(lua_State *L)
 {
 	int team = luaL_checkinteger(L, 1);
 	*NewVector(L) = ::GetSpawnpoint(team);
@@ -3377,7 +3383,7 @@ static int GetSpawnpoint(lua_State *L)
 }
 
 //DLLEXPORT Handle DLLAPI GetSpawnpointHandle(int TeamNum);
-static int GetSpawnpointHandle(lua_State *L)
+int GetSpawnpointHandle(lua_State *L)
 {
 	int team = luaL_checkinteger(L, 1);
 	PushHandle(L, ::GetSpawnpointHandle(team));
@@ -3385,7 +3391,7 @@ static int GetSpawnpointHandle(lua_State *L)
 }
 
 //DLLEXPORT Vector DLLAPI GetRandomSpawnpoint(int TeamNum = -1);
-static int GetRandomSpawnpoint(lua_State *L)
+int GetRandomSpawnpoint(lua_State *L)
 {
 	int team = luaL_optinteger(L, 1, -1);
 	*NewVector(L) = ::GetRandomSpawnpoint(team);
@@ -3393,7 +3399,7 @@ static int GetRandomSpawnpoint(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetTimerBox(const char* message);
-static int SetTimerBox(lua_State *L)
+int SetTimerBox(lua_State *L)
 {
 	char *msg = const_cast<char *>(luaL_checkstring(L, 1));
 	::SetTimerBox(msg);
@@ -3402,7 +3408,7 @@ static int SetTimerBox(lua_State *L)
 
 //DLLEXPORT void DLLAPI AddToMessagesBox(const char* message);
 //DLLEXPORT void DLLAPI AddToMessagesBox2(const char* message, unsigned long color);
-static int AddToMessagesBox(lua_State *L)
+int AddToMessagesBox(lua_State *L)
 {
 	char *msg = const_cast<char *>(luaL_checkstring(L, 1));
 	if (lua_isnumber(L, 2))
@@ -3423,7 +3429,7 @@ static int AddToMessagesBox(lua_State *L)
 }
 
 //DLLEXPORT int DLLAPI GetDeaths(Handle h);
-static int GetDeaths(lua_State *L)
+int GetDeaths(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushinteger(L, ::GetDeaths(h));
@@ -3431,7 +3437,7 @@ static int GetDeaths(lua_State *L)
 }
 
 //DLLEXPORT int DLLAPI GetKills(Handle h);
-static int GetKills(lua_State *L)
+int GetKills(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushinteger(L, ::GetKills(h));
@@ -3439,7 +3445,7 @@ static int GetKills(lua_State *L)
 }
 
 //DLLEXPORT int DLLAPI GetScore(Handle h);
-static int GetScore(lua_State *L)
+int GetScore(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushinteger(L, ::GetScore(h));
@@ -3447,7 +3453,7 @@ static int GetScore(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetDeaths(Handle h, const int NewValue);
-static int SetDeaths(lua_State *L)
+int SetDeaths(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	int value = luaL_checkinteger(L, 2);
@@ -3456,7 +3462,7 @@ static int SetDeaths(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetKills(Handle h, const int NewValue);
-static int SetKills(lua_State *L)
+int SetKills(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	int value = luaL_checkinteger(L, 2);
@@ -3465,7 +3471,7 @@ static int SetKills(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetScore(Handle h, const int NewValue);
-static int SetScore(lua_State *L)
+int SetScore(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	int value = luaL_checkinteger(L, 2);
@@ -3474,7 +3480,7 @@ static int SetScore(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI AddDeaths(Handle h, const int DeltaValue);
-static int AddDeaths(lua_State *L)
+int AddDeaths(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	int value = luaL_checkinteger(L, 2);
@@ -3483,7 +3489,7 @@ static int AddDeaths(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI AddKills(Handle h, const int DeltaValue);
-static int AddKills(lua_State *L)
+int AddKills(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	int value = luaL_checkinteger(L, 2);
@@ -3492,7 +3498,7 @@ static int AddKills(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI AddScore(Handle h, const int DeltaValue);
-static int AddScore(lua_State *L)
+int AddScore(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	int value = luaL_checkinteger(L, 2);
@@ -3501,7 +3507,7 @@ static int AddScore(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetAsUser(Handle h, int Team);
-static int SetAsUser(lua_State *L)
+int SetAsUser(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	int team = luaL_checkinteger(L, 2);
@@ -3510,7 +3516,7 @@ static int SetAsUser(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetNoScrapFlagByHandle(Handle h);
-static int SetNoScrapFlagByHandle(lua_State *L)
+int SetNoScrapFlagByHandle(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	::SetNoScrapFlagByHandle(h);
@@ -3518,7 +3524,7 @@ static int SetNoScrapFlagByHandle(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI ClearNoScrapFlagByHandle(Handle h);
-static int ClearNoScrapFlagByHandle(lua_State *L)
+int ClearNoScrapFlagByHandle(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	::ClearNoScrapFlagByHandle(h);
@@ -3526,21 +3532,21 @@ static int ClearNoScrapFlagByHandle(lua_State *L)
 }
 
 //DLLEXPORT int DLLAPI GetLocalPlayerTeamNumber(void);
-static int GetLocalPlayerTeamNumber(lua_State *L)
+int GetLocalPlayerTeamNumber(lua_State *L)
 {
 	lua_pushinteger(L, ::GetLocalPlayerTeamNumber());
 	return 1;
 }
 
 //DLLEXPORT DPID DLLAPI GetLocalPlayerDPID(void);
-static int GetLocalPlayerDPID(lua_State *L)
+int GetLocalPlayerDPID(lua_State *L)
 {
 	lua_pushinteger(L, ::GetLocalPlayerDPID());
 	return 1;
 }
 
 //DLLEXPORT void DLLAPI FlagSteal(Handle flag, Handle holder);
-static int FlagSteal(lua_State *L)
+int FlagSteal(lua_State *L)
 {
 	Handle flag = RequireHandle(L, 1);
 	Handle holder = RequireHandle(L, 2);
@@ -3549,7 +3555,7 @@ static int FlagSteal(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI FlagRecover(Handle flag, Handle holder);
-static int FlagRecover(lua_State *L)
+int FlagRecover(lua_State *L)
 {
 	Handle flag = RequireHandle(L, 1);
 	Handle holder = RequireHandle(L, 2);
@@ -3558,7 +3564,7 @@ static int FlagRecover(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI FlagScore(Handle flag, Handle holder);
-static int FlagScore(lua_State *L)
+int FlagScore(lua_State *L)
 {
 	Handle flag = RequireHandle(L, 1);
 	Handle holder = RequireHandle(L, 2);
@@ -3567,7 +3573,7 @@ static int FlagScore(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI MoneyScore(int amount, Handle bagman);
-static int MoneyScore(lua_State *L)
+int MoneyScore(lua_State *L)
 {
 	int amount = luaL_checkinteger(L, 1);
 	Handle bagman = RequireHandle(L, 2);
@@ -3576,14 +3582,14 @@ static int MoneyScore(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI NoteGameoverByTimelimit(void);
-static int NoteGameoverByTimelimit(lua_State *L)
+int NoteGameoverByTimelimit(lua_State *L)
 {
 	::NoteGameoverByTimelimit();
 	return 0;
 }
 
 //DLLEXPORT void DLLAPI NoteGameoverByKillLimit(Handle h);
-static int NoteGameoverByKillLimit(lua_State *L)
+int NoteGameoverByKillLimit(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	::NoteGameoverByKillLimit(h);
@@ -3591,7 +3597,7 @@ static int NoteGameoverByKillLimit(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI NoteGameoverByScore(Handle h);
-static int NoteGameoverByScore(lua_State *L)
+int NoteGameoverByScore(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	::NoteGameoverByScore(h);
@@ -3599,7 +3605,7 @@ static int NoteGameoverByScore(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI NoteGameoverByLastWithBase(Handle h);
-static int NoteGameoverByLastWithBase(lua_State *L)
+int NoteGameoverByLastWithBase(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	::NoteGameoverByLastWithBase(h);
@@ -3607,7 +3613,7 @@ static int NoteGameoverByLastWithBase(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI NoteGameoverByLastTeamWithBase(int Teamgroup);
-static int NoteGameoverByLastTeamWithBase(lua_State *L)
+int NoteGameoverByLastTeamWithBase(lua_State *L)
 {
 	int teamgroup = luaL_checkinteger(L, 1);
 	::NoteGameoverByLastTeamWithBase(teamgroup);
@@ -3615,14 +3621,14 @@ static int NoteGameoverByLastTeamWithBase(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI NoteGameoverByNoBases(void);
-static int NoteGameoverByNoBases(lua_State *L)
+int NoteGameoverByNoBases(lua_State *L)
 {
 	::NoteGameoverByNoBases();
 	return 0;
 }
 
 //DLLEXPORT void DLLAPI DoGameover(float SecondsFromNow);
-static int DoGameover(lua_State *L)
+int DoGameover(lua_State *L)
 {
 	float seconds = float(luaL_checknumber(L, 1));
 	::DoGameover(seconds);
@@ -3630,7 +3636,7 @@ static int DoGameover(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetMPTeamRace(int WhichTeamGroup, char RaceIdentifier);
-static int SetMPTeamRace(lua_State *L)
+int SetMPTeamRace(lua_State *L)
 {
 	int teamgroup = luaL_checkinteger(L, 1);
 	if (const char *race = luaL_checkstring(L, 2))
@@ -3641,7 +3647,7 @@ static int SetMPTeamRace(lua_State *L)
 }
 
 //Handle GetTarget(Handle h);
-static int GetTarget(lua_State *L)
+int GetTarget(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	Handle t = ::GetTarget(h);
@@ -3650,7 +3656,7 @@ static int GetTarget(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI IFace_ConsoleCmd(const char* pStr, bool bSquelchOutput = true);
-static int IFace_ConsoleCmd(lua_State *L)
+int IFace_ConsoleCmd(lua_State *L)
 {
 	char *msg = const_cast<char *>(luaL_checkstring(L, 1));
 	bool squelch = luaL_optboolean(L, 2, TRUE);
@@ -3659,7 +3665,7 @@ static int IFace_ConsoleCmd(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI Network_SetString(Name name, Name value);
-static int Network_SetString(lua_State *L)
+int Network_SetString(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
 	Name v = Name(luaL_checkstring(L, 2));
@@ -3668,7 +3674,7 @@ static int Network_SetString(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI Network_SetInteger(Name name, int value);
-static int Network_SetInteger(lua_State *L)
+int Network_SetInteger(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
 	int v = luaL_checkinteger(L, 2);
@@ -3677,7 +3683,7 @@ static int Network_SetInteger(lua_State *L)
 }
 
 //Vector GetVelocity(Handle h);
-static int GetVelocity(lua_State *L)
+int GetVelocity(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	*NewVector(L) = ::GetVelocity(h);
@@ -3711,7 +3717,7 @@ Get_Weapon3GOClass,
 Get_Weapon4GOClass,
 */
 //Get_CFG
-static int GetObjInfo_CFG(lua_State *L)
+int GetObjInfo_CFG(lua_State *L)
 {
 	Handle h = GetHandle(L, 1);
 	char buffer[MAX_ODF_LENGTH] = { 0 };
@@ -3724,7 +3730,7 @@ static int GetObjInfo_CFG(lua_State *L)
 }
 
 //Get_ODF //char *GetOdf(Handle h)
-static int GetObjInfo_ODF(lua_State *L)
+int GetObjInfo_ODF(lua_State *L)
 {
 	Handle h = GetHandle(L, 1);
 	char buffer[MAX_ODF_LENGTH] = { 0 };
@@ -3737,7 +3743,7 @@ static int GetObjInfo_ODF(lua_State *L)
 }
 
 //Get_GOClass_gCfg // Was char *GetBase(Handle h) in BZ1?
-static int GetObjInfo_GOClass_gCfg(lua_State *L)
+int GetObjInfo_GOClass_gCfg(lua_State *L)
 {
 	Handle h = GetHandle(L, 1);
 	char buffer[MAX_ODF_LENGTH] = { 0 };
@@ -3750,7 +3756,7 @@ static int GetObjInfo_GOClass_gCfg(lua_State *L)
 }
 
 //Get_EntityType // Was char *GetClassSig(Handle h) in BZ1?
-static int GetObjInfo_EntityType(lua_State *L)
+int GetObjInfo_EntityType(lua_State *L)
 {
 	Handle h = GetHandle(L, 1);
 	char buffer[MAX_ODF_LENGTH] = { 0 };
@@ -3763,7 +3769,7 @@ static int GetObjInfo_EntityType(lua_State *L)
 }
 
 //Get_GOClass // Was char *GetClassLabel(Handle h) in BZ1?
-static int GetObjInfo_GOClass(lua_State *L)
+int GetObjInfo_GOClass(lua_State *L)
 {
 	Handle h = GetHandle(L, 1);
 	char buffer[MAX_ODF_LENGTH] = { 0 };
@@ -3776,7 +3782,7 @@ static int GetObjInfo_GOClass(lua_State *L)
 }
 
 //Get_Weapon0Config, 
-static int Get_WeaponConfig(lua_State *L)
+int Get_WeaponConfig(lua_State *L)
 {
 	Handle h = GetHandle(L, 1);
 	if (h == 0)
@@ -3794,7 +3800,7 @@ static int Get_WeaponConfig(lua_State *L)
 }
 
 //Get_Weapon0ODF, 
-static int Get_WeaponODF(lua_State *L)
+int Get_WeaponODF(lua_State *L)
 {
 	Handle h = GetHandle(L, 1);
 	if (h == 0)
@@ -3812,7 +3818,7 @@ static int Get_WeaponODF(lua_State *L)
 }
 
 //Get_Weapon0GOClass, 
-static int Get_WeaponGOClass(lua_State *L)
+int Get_WeaponGOClass(lua_State *L)
 {
 	Handle h = GetHandle(L, 1);
 	if (h == 0)
@@ -3830,7 +3836,7 @@ static int Get_WeaponGOClass(lua_State *L)
 }
 
 //DLLEXPORT bool DLLAPI DoesODFExist(char* odf);
-static int DoesODFExist(lua_State *L)
+int DoesODFExist(lua_State *L)
 {
 	char *odf = const_cast<char *>(luaL_checkstring(L, 1));
 	lua_pushboolean(L, ::DoesODFExist(odf));
@@ -3838,7 +3844,7 @@ static int DoesODFExist(lua_State *L)
 }
 
 //DLLEXPORT bool DLLAPI IsAlive2(Handle h);
-static int IsAlive2(lua_State *L)
+int IsAlive2(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushboolean(L, ::IsAlive2(h));
@@ -3846,7 +3852,7 @@ static int IsAlive2(lua_State *L)
 }
 
 //DLLEXPORT bool DLLAPI IsFlying2(Handle h);
-static int IsFlying2(lua_State *L)
+int IsFlying2(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushboolean(L, ::IsFlying2(h));
@@ -3854,7 +3860,7 @@ static int IsFlying2(lua_State *L)
 }
 
 //DLLEXPORT bool DLLAPI IsAliveAndPilot2(Handle h);
-static int IsAliveAndPilot2(lua_State *L)
+int IsAliveAndPilot2(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushboolean(L, ::IsAliveAndPilot2(h));
@@ -3862,7 +3868,7 @@ static int IsAliveAndPilot2(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI TranslateString2(Name Dst, size_t bufsize, Name Src);
-static int TranslateString2(lua_State *L)
+int TranslateString2(lua_State *L)
 {
 	const char *src = luaL_checkstring(L, 1);
 	size_t size = size_t(luaL_checkinteger(L, 2));
@@ -3874,7 +3880,7 @@ static int TranslateString2(lua_State *L)
 }
 
 //DLLEXPORT int DLLAPI GetScavengerCurScrap(Handle h);
-static int GetScavengerCurScrap(lua_State *L)
+int GetScavengerCurScrap(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushinteger(L, ::GetScavengerCurScrap(h));
@@ -3882,7 +3888,7 @@ static int GetScavengerCurScrap(lua_State *L)
 }
 
 //DLLEXPORT int DLLAPI GetScavengerMaxScrap(Handle h);
-static int GetScavengerMaxScrap(lua_State *L)
+int GetScavengerMaxScrap(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushinteger(L, ::GetScavengerMaxScrap(h));
@@ -3890,7 +3896,7 @@ static int GetScavengerMaxScrap(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetScavengerCurScrap(Handle h, int aNewScrap);
-static int SetScavengerCurScrap(lua_State *L)
+int SetScavengerCurScrap(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	int scrap = luaL_checkinteger(L, 2);
@@ -3899,7 +3905,7 @@ static int SetScavengerCurScrap(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetScavengerMaxScrap(Handle h, int aNewScrap);
-static int SetScavengerMaxScrap(lua_State *L)
+int SetScavengerMaxScrap(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	int scrap = luaL_checkinteger(L, 2);
@@ -3908,7 +3914,7 @@ static int SetScavengerMaxScrap(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SelfDamage(Handle him, float amt);
-static int SelfDamage(lua_State *L)
+int SelfDamage(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	float amt = float(luaL_checknumber(L, 2));
@@ -3917,14 +3923,14 @@ static int SelfDamage(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI WantBotKillMessages(void);
-static int WantBotKillMessages(lua_State *L)
+int WantBotKillMessages(lua_State *L)
 {
 	::WantBotKillMessages();
 	return 0;
 }
 
 //DLLEXPORT void DLLAPI EnableHighTPS(int& newRate);
-static int EnableHighTPS(lua_State *L)
+int EnableHighTPS(lua_State *L)
 {
 	int tpsrate;
 	::EnableHighTPS(tpsrate);
@@ -3933,21 +3939,21 @@ static int EnableHighTPS(lua_State *L)
 }
 
 //DLLEXPORT Handle DLLAPI GetLocalUserInspectHandle(void);
-static int GetLocalUserInspectHandle(lua_State *L)
+int GetLocalUserInspectHandle(lua_State *L)
 {
 	PushHandle(L, ::GetLocalUserInspectHandle());
 	return 1;
 }
 
 //DLLEXPORT Handle DLLAPI GetLocalUserSelectHandle(void);
-static int GetLocalUserSelectHandle(lua_State *L)
+int GetLocalUserSelectHandle(lua_State *L)
 {
 	PushHandle(L, ::GetLocalUserSelectHandle());
 	return 1;
 }
 
 //DLLEXPORT void DLLAPI ResetTeamSlot(Handle h);
-static int ResetTeamSlot(lua_State *L)
+int ResetTeamSlot(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	::ResetTeamSlot(h);
@@ -3955,7 +3961,7 @@ static int ResetTeamSlot(lua_State *L)
 }
 
 //DLLEXPORT int DLLAPI GetCategoryTypeOverride(Handle h);
-static int GetCategoryTypeOverride(lua_State *L)
+int GetCategoryTypeOverride(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushinteger(L, ::GetCategoryTypeOverride(h));
@@ -3963,7 +3969,7 @@ static int GetCategoryTypeOverride(lua_State *L)
 }
 
 //DLLEXPORT int DLLAPI GetCategoryType(Handle h);
-static int GetCategoryType(lua_State *L)
+int GetCategoryType(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushinteger(L, ::GetCategoryType(h));
@@ -3974,7 +3980,7 @@ static int GetCategoryType(lua_State *L)
 
 //DLLEXPORT int DLLAPI GetODFHexInt(const char* file, const char* block, const char* name, int* value = NULL, int defval = 0);
 //extern int GetODFHexInt(Handle h, const char* block, const char* name, int* value = NULL, int defval = 0);
-static int GetODFHexInt(lua_State *L)
+int GetODFHexInt(lua_State *L)
 {
 	const char *section = luaL_checkstring(L, 2);
 	const char *label = luaL_checkstring(L, 3);
@@ -4001,7 +4007,7 @@ static int GetODFHexInt(lua_State *L)
 
 //DLLEXPORT int DLLAPI GetODFInt(const char* file, const char* block, const char* name, int* value = NULL, int defval = 0);
 //extern int GetODFInt(Handle h, const char* block, const char* name, int* value = NULL, int defval = 0);
-static int GetODFInt(lua_State *L)
+int GetODFInt(lua_State *L)
 {
 	const char *section = luaL_checkstring(L, 2);
 	const char *label = luaL_checkstring(L, 3);
@@ -4028,7 +4034,7 @@ static int GetODFInt(lua_State *L)
 
 //DLLEXPORT int DLLAPI GetODFLong(const char* file, const char* block, const char* name, long* value = NULL, long defval = 0);
 //extern int GetODFLong(Handle h, const char* block, const char* name, long* value = NULL, long defval = 0);
-static int GetODFLong(lua_State *L)
+int GetODFLong(lua_State *L)
 {
 	const char *section = luaL_checkstring(L, 2);
 	const char *label = luaL_checkstring(L, 3);
@@ -4055,7 +4061,7 @@ static int GetODFLong(lua_State *L)
 
 //DLLEXPORT int DLLAPI GetODFFloat(const char* file, const char* block, const char* name, float* value = NULL, float defval = 0.0f);
 //extern int GetODFFloat(Handle h, const char* block, const char* name, float* value = NULL, float defval = 0.0f);
-static int GetODFFloat(lua_State *L)
+int GetODFFloat(lua_State *L)
 {
 	const char *section = luaL_checkstring(L, 2);
 	const char *label = luaL_checkstring(L, 3);
@@ -4082,7 +4088,7 @@ static int GetODFFloat(lua_State *L)
 
 //DLLEXPORT int DLLAPI GetODFDouble(const char* file, const char* block, const char* name, double* value = NULL, double defval = 0.0);
 //extern int GetODFDouble(Handle h, const char* block, const char* name, double* value = NULL, double defval = 0.0);
-static int GetODFDouble(lua_State *L)
+int GetODFDouble(lua_State *L)
 {
 	const char *section = luaL_checkstring(L, 2);
 	const char *label = luaL_checkstring(L, 3);
@@ -4109,7 +4115,7 @@ static int GetODFDouble(lua_State *L)
 
 //DLLEXPORT int DLLAPI GetODFChar(const char* file, const char* block, const char* name, char* value = NULL, char defval = '\0');
 //extern int GetODFChar(Handle h, const char* block, const char* name, char* value = NULL, char defval = '\0');
-static int GetODFChar(lua_State *L)
+int GetODFChar(lua_State *L)
 {
 	const char *section = luaL_checkstring(L, 2);
 	const char *label = luaL_checkstring(L, 3);
@@ -4136,7 +4142,7 @@ static int GetODFChar(lua_State *L)
 
 //DLLEXPORT int DLLAPI GetODFBool(const char* file, const char* block, const char* name, bool* value = NULL, bool defval = false);
 //extern int GetODFBool(Handle h, const char* block, const char* name, bool* value = NULL, bool defval = false);
-static int GetODFBool(lua_State *L)
+int GetODFBool(lua_State *L)
 {
 	const char *section = luaL_checkstring(L, 2);
 	const char *label = luaL_checkstring(L, 3);
@@ -4163,7 +4169,7 @@ static int GetODFBool(lua_State *L)
 
 //DLLEXPORT int DLLAPI GetODFString(const char* file, const char* block, const char* name, size_t ValueLen = 0, char* value = NULL, const char* defval = NULL);
 //extern int GetODFString(Handle h, const char* block, const char* name, size_t ValueLen = 0, char* value = NULL, const char* defval = NULL);
-static int GetODFString(lua_State *L)
+int GetODFString(lua_State *L)
 {
 	const char *section = luaL_checkstring(L, 2);
 	const char *label = luaL_checkstring(L, 3);
@@ -4191,7 +4197,7 @@ static int GetODFString(lua_State *L)
 
 //DLLEXPORT int DLLAPI GetODFColor(const char* file, const char* block, const char* name, DWORD* value = NULL, DWORD defval = 0);
 //extern int GetODFColor(Handle h, const char* block, const char* name, DWORD* value = NULL, DWORD defval = 0);
-static int GetODFColor(lua_State *L)
+int GetODFColor(lua_State *L)
 {
 	const char *section = luaL_checkstring(L, 2);
 	const char *label = luaL_checkstring(L, 3);
@@ -4218,7 +4224,7 @@ static int GetODFColor(lua_State *L)
 
 //DLLEXPORT int DLLAPI GetODFVector(const char* file, const char* block, const char* name, Vector* value = NULL, Vector defval = Vector(0.0f, 0.0f, 0.0f));
 //extern int GetODFVector(Handle h, const char* block, const char* name, Vector* value = NULL, Vector defval = Vector(0.0f, 0.0f, 0.0f));
-static int GetODFVector(lua_State *L)
+int GetODFVector(lua_State *L)
 {
 	const char *section = luaL_checkstring(L, 2);
 	const char *label = luaL_checkstring(L, 3);
@@ -4247,7 +4253,7 @@ static int GetODFVector(lua_State *L)
 
 /* // Functions removed, the above functions handle it internally.
 //DLLEXPORT bool DLLAPI OpenODF(char *name);
-static int OpenODF(lua_State *L)
+int OpenODF(lua_State *L)
 {
 const char *file = luaL_checkstring(L, 1);
 lua_pushboolean(L, OpenODF(file));
@@ -4255,7 +4261,7 @@ return 1;
 }
 
 //DLLEXPORT bool DLLAPI CloseODF(char *name);
-static int CloseODF(lua_State *L)
+int CloseODF(lua_State *L)
 {
 const char *file = luaL_checkstring(L, 1);
 lua_pushboolean(L, CloseODF(file));
@@ -4264,7 +4270,7 @@ return 1;
 */
 
 //DLLEXPORT void DLLAPI NoteGameoverWithCustomMessage(const char* pString);
-static int NoteGameoverWithCustomMessage(lua_State *L)
+int NoteGameoverWithCustomMessage(lua_State *L)
 {
 	const char *msg = luaL_checkstring(L, 1);
 	::NoteGameoverWithCustomMessage(msg);
@@ -4272,7 +4278,7 @@ static int NoteGameoverWithCustomMessage(lua_State *L)
 }
 
 //DLLEXPORT int DLLAPI SetBestGroup(Handle h);
-static int SetBestGroup(lua_State *L)
+int SetBestGroup(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushinteger(L, ::SetBestGroup(h));
@@ -4281,7 +4287,7 @@ static int SetBestGroup(lua_State *L)
 
 //DLLEXPORT void DLLAPI GetGroup(int team, int group, ObjectInfoType type, char pBuffer[ 64 ]);
 //DLLEXPORT int DLLAPI GetGroup(Handle h);
-static int GetGroup(lua_State *L)
+int GetGroup(lua_State *L)
 {
 	if (lua_isnumber(L, 2))
 	{
@@ -4296,12 +4302,13 @@ static int GetGroup(lua_State *L)
 	else
 	{
 		Handle h = RequireHandle(L, 1);
+		lua_pushnumber(L, ::GetGroup(h));
 	}
 	return 1;
 }
 
 //DLLEXPORT int DLLAPI GetGroupCount(int team, int group);
-static int GetGroupCount(lua_State *L)
+int GetGroupCount(lua_State *L)
 {
 	int team = luaL_checkinteger(L, 1);
 	int group = luaL_checkinteger(L, 2);
@@ -4310,7 +4317,7 @@ static int GetGroupCount(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetLifespan(Handle h, float timeout);
-static int SetLifespan(lua_State *L)
+int SetLifespan(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	float timeout = float(luaL_checknumber(L, 2));
@@ -4319,7 +4326,7 @@ static int SetLifespan(lua_State *L)
 }
 
 //DLLEXPORT bool DLLAPI DoesFileExist(const char* filename);
-static int DoesFileExist(lua_State *L)
+int DoesFileExist(lua_State *L)
 {
 	const char *file = luaL_checkstring(L, 1);
 	lua_pushboolean(L, ::DoesFileExist(file));
@@ -4327,7 +4334,7 @@ static int DoesFileExist(lua_State *L)
 }
 
 //DLLEXPORT bool DLLAPI LoadFile(const char* filename, void* pData, size_t& bufSize);
-static int LoadFile(lua_State *L)
+int LoadFile(lua_State *L)
 {
 	size_t size;
 	const char* filename = luaL_checklstring(L, 1, &size);
@@ -4350,7 +4357,7 @@ static int LoadFile(lua_State *L)
 //DLLEXPORT DLLAudioHandle DLLAPI StartAudio3D(const char *const name, float x, float y, float z, DLLAudioCategory cat = AUDIO_CAT_UNKNOWN, bool loop = false);
 //inline DLLAudioHandle StartAudio3D(const char *const name, Vector Pos, DLLAudioCategory cat = AUDIO_CAT_UNKNOWN, bool loop = false) { return StartAudio3D(name, Pos.x, Pos.y, Pos.z, cat, loop); }
 //inline DLLAudioHandle StartAudio3D(const char *const name, Matrix Mat, DLLAudioCategory cat = AUDIO_CAT_UNKNOWN, bool loop = false) { return StartAudio3D(name, Mat.Posit.x, Mat.Posit.y, Mat.Posit.z, cat, loop); }
-static int StartAudio3D(lua_State *L)
+int StartAudio3D(lua_State *L)
 {
 	const char *msg = luaL_checkstring(L, 1);
 
@@ -4388,7 +4395,7 @@ static int StartAudio3D(lua_State *L)
 
 
 //DLLEXPORT DLLAudioHandle DLLAPI StartAudio2D(const char *const name, float volume, float pan, float rate, bool loop = false, bool isMusic = false);
-static int StartAudio2D(lua_State *L)
+int StartAudio2D(lua_State *L)
 {
 	const char *msg = luaL_checkstring(L, 1);
 	float vol = float(luaL_checknumber(L, 2));
@@ -4401,7 +4408,7 @@ static int StartAudio2D(lua_State *L)
 }
 
 //DLLEXPORT bool DLLAPI IsAudioPlaying(DLLAudioHandle &h);
-static int IsAudioPlaying(lua_State *L)
+int IsAudioPlaying(lua_State *L)
 {
 	DLLAudioHandle h = DLLAudioHandle(luaL_checknumber(L, 1));
 	lua_pushboolean(L, ::IsAudioPlaying(h));
@@ -4409,7 +4416,7 @@ static int IsAudioPlaying(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI StopAudio(DLLAudioHandle h);
-static int StopAudio(lua_State *L)
+int StopAudio(lua_State *L)
 {
 	DLLAudioHandle h = DLLAudioHandle(luaL_checknumber(L, 1));
 	::StopAudio(h);
@@ -4417,7 +4424,7 @@ static int StopAudio(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI PauseAudio(DLLAudioHandle h);
-static int PauseAudio(lua_State *L)
+int PauseAudio(lua_State *L)
 {
 	DLLAudioHandle h = DLLAudioHandle(luaL_checknumber(L, 1));
 	::PauseAudio(h);
@@ -4425,7 +4432,7 @@ static int PauseAudio(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI ResumeAudio(DLLAudioHandle h);
-static int ResumeAudio(lua_State *L)
+int ResumeAudio(lua_State *L)
 {
 	DLLAudioHandle h = DLLAudioHandle(luaL_checknumber(L, 1));
 	::ResumeAudio(h);
@@ -4433,7 +4440,7 @@ static int ResumeAudio(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetVolume(DLLAudioHandle h, float vol, bool adjustByVolumes = true);
-static int SetVolume(lua_State *L)
+int SetVolume(lua_State *L)
 {
 	DLLAudioHandle h = DLLAudioHandle(luaL_checknumber(L, 1));
 	float vol = float(luaL_checknumber(L, 2));
@@ -4443,7 +4450,7 @@ static int SetVolume(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetPan(DLLAudioHandle h, float pan);
-static int SetPan(lua_State *L)
+int SetPan(lua_State *L)
 {
 	DLLAudioHandle h = DLLAudioHandle(luaL_checknumber(L, 1));
 	float pan = float(luaL_checknumber(L, 2));
@@ -4452,7 +4459,7 @@ static int SetPan(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetRate(DLLAudioHandle h, float rate);
-static int SetRate(lua_State *L)
+int SetRate(lua_State *L)
 {
 	DLLAudioHandle h = DLLAudioHandle(luaL_checknumber(L, 1));
 	float rate = float(luaL_checknumber(L, 2));
@@ -4461,7 +4468,7 @@ static int SetRate(lua_State *L)
 }
 
 //DLLEXPORT float DLLAPI GetAudioFileDuration(DLLAudioHandle h);
-static int GetAudioFileDuration(lua_State *L)
+int GetAudioFileDuration(lua_State *L)
 {
 	DLLAudioHandle h = DLLAudioHandle(luaL_checknumber(L, 1));
 	lua_pushnumber(L, ::GetAudioFileDuration(h));
@@ -4469,7 +4476,7 @@ static int GetAudioFileDuration(lua_State *L)
 }
 
 //DLLEXPORT bool DLLAPI IsPlayingLooped(DLLAudioHandle h);
-static int IsPlayingLooped(lua_State *L)
+int IsPlayingLooped(lua_State *L)
 {
 	DLLAudioHandle h = DLLAudioHandle(luaL_checknumber(L, 1));
 	lua_pushboolean(L, ::IsPlayingLooped(h));
@@ -4477,7 +4484,7 @@ static int IsPlayingLooped(lua_State *L)
 }
 
 //DLLEXPORT Handle DLLAPI GetNearestPowerup(Handle h, bool ignoreSpawnpoints, float maxDist = 450.0f);
-static int GetNearestPowerup(lua_State *L)
+int GetNearestPowerup(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	bool ignorespawn = lua_toboolean(L, 2);
@@ -4487,7 +4494,7 @@ static int GetNearestPowerup(lua_State *L)
 }
 
 //DLLEXPORT Handle DLLAPI GetNearestPerson(Handle h, bool skipFriendlies, float maxDist = 450.0f);
-static int GetNearestPerson(lua_State *L)
+int GetNearestPerson(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	bool skipfriendlies = lua_toboolean(L, 2);
@@ -4502,7 +4509,7 @@ static int GetNearestPerson(lua_State *L)
 
 //DLLEXPORT void DLLAPI SetCommand(Handle me, int cmd, int priority, Handle who, const Vector& where, int param = 0);
 //DLLEXPORT void DLLAPI SetCommand(Handle me, int cmd, int priority = 0, Handle who = 0, const Name path = NULL, int param = 0);
-static int SetCommand(lua_State *L)
+int SetCommand(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 
@@ -4534,7 +4541,7 @@ static int SetCommand(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetGravity(float gravity = 12.5f);
-static int SetGravity(lua_State *L)
+int SetGravity(lua_State *L)
 {
 	const float gravity = float(luaL_optnumber(L, 1, 12.5f));
 	::SetGravity(gravity);
@@ -4542,7 +4549,7 @@ static int SetGravity(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetAutoGroupUnits(bool autoGroup = true);
-static int SetAutoGroupUnits(lua_State *L)
+int SetAutoGroupUnits(lua_State *L)
 {
 	bool autogroup = luaL_optboolean(L, 2, TRUE);
 	::SetAutoGroupUnits(autogroup);
@@ -4550,7 +4557,7 @@ static int SetAutoGroupUnits(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI KickPlayer(Handle h, const char* pExplanationStr = "", bool banAlso = false);
-static int KickPlayer(lua_State *L)
+int KickPlayer(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	const char *Explination_THIS_IS_SPARTA = luaL_checkstring(L, 2);
@@ -4564,7 +4571,7 @@ static int KickPlayer(lua_State *L)
 //inline bool TerrainIsWater(Matrix mat) { return TerrainIsWater(mat.posit); }
 //inline bool TerrainIsWater(Name Path, int Point = 0) { return TerrainIsWater(GetVectorFromPath(Path, Point)); }
 //inline bool TerrainIsWater(Handle h) { return TerrainIsWater(GetPosition(h)); }
-static int TerrainIsWater(lua_State *L)
+int TerrainIsWater(lua_State *L)
 {
 	if (Matrix *mat = GetMatrix(L, 1))
 	{
@@ -4594,7 +4601,7 @@ static int TerrainIsWater(lua_State *L)
 }
 
 //DLLEXPORT bool DLLAPI TerrainGetHeightAndNormal(const Vector& pos, float& outHeight, Vector& outNormal, bool useWater);
-static int GetTerrainHeightAndNormal(lua_State *L)
+int GetTerrainHeightAndNormal(lua_State *L)
 {
 	float height;
 	Vector normal;
@@ -4634,7 +4641,7 @@ static int GetTerrainHeightAndNormal(lua_State *L)
 
 // A safe way to write a file with Lua, for custom logs or saved scores.
 // extern void WriteToFile(lua_string filename, lua_string towrite, bool append = true)
-static int WriteToFile(lua_State *L)
+int WriteToFile(lua_State *L)
 {
 	size_t fileNameSize = 0;
 	const char* filename = luaL_checklstring(L, 1, &fileNameSize);
@@ -4649,7 +4656,7 @@ static int WriteToFile(lua_State *L)
 }
 
 //DLLEXPORT bool DLLAPI GetPathPoints(Name path, size_t& bufSize, float* pData);
-static int GetPathPoints(lua_State *L)
+int GetPathPoints(lua_State *L)
 {
 	Name path = Name(luaL_checkstring(L, 1));
 	size_t bufSize = 0;
@@ -4669,7 +4676,7 @@ static int GetPathPoints(lua_State *L)
 }
 
 //Handle GetOwner(Handle h);
-static int GetOwner(lua_State *L)
+int GetOwner(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	Handle o = ::GetOwner(h);
@@ -4678,7 +4685,7 @@ static int GetOwner(lua_State *L)
 }
 
 //void SetTarget(Handle h, Handle target);
-static int SetTarget(lua_State *L)
+int SetTarget(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	Handle t = RequireHandle(L, 2);
@@ -4688,7 +4695,7 @@ static int SetTarget(lua_State *L)
 
 
 //void SetOwner(Handle h, Handle target);
-static int SetOwner(lua_State *L)
+int SetOwner(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	Handle o = RequireHandle(L, 2);
@@ -4697,7 +4704,7 @@ static int SetOwner(lua_State *L)
 }
 
 //void SetPilotClass(Handle h, char *odf)
-static int SetPilotClass(lua_State *L)
+int SetPilotClass(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	char *odf = const_cast<char *>(luaL_checkstring(L, 2));
@@ -4706,7 +4713,7 @@ static int SetPilotClass(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI AllowRandomTracks(bool bAllow = true);
-static int AllowRandomTracks(lua_State *L)
+int AllowRandomTracks(lua_State *L)
 {
 	bool allow = luaL_optboolean(L, 2, TRUE);
 	::AllowRandomTracks(allow);
@@ -4714,7 +4721,7 @@ static int AllowRandomTracks(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetFFATeamColors(TEAMCOLOR_TYPE type);
-static int SetFFATeamColors(lua_State *L)
+int SetFFATeamColors(lua_State *L)
 {
 	TEAMCOLOR_TYPE type = TEAMCOLOR_TYPE(luaL_checkinteger(L, 1));
 	::SetFFATeamColors(type);
@@ -4722,7 +4729,7 @@ static int SetFFATeamColors(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetTeamStratColors(TEAMCOLOR_TYPE type);
-static int SetTeamStratColors(lua_State *L)
+int SetTeamStratColors(lua_State *L)
 {
 	TEAMCOLOR_TYPE type = TEAMCOLOR_TYPE(luaL_checkinteger(L, 1));
 	::SetTeamStratColors(type);
@@ -4730,7 +4737,7 @@ static int SetTeamStratColors(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI GetFFATeamColor(TEAMCOLOR_TYPE type, int team, int& red, int& green, int& blue);
-static int GetFFATeamColor(lua_State *L)
+int GetFFATeamColor(lua_State *L)
 {
 	TEAMCOLOR_TYPE type = TEAMCOLOR_TYPE(luaL_checkinteger(L, 1));
 	int team = luaL_checkinteger(L, 2);
@@ -4742,7 +4749,7 @@ static int GetFFATeamColor(lua_State *L)
 	return 3;
 }
 //inline Vector GetFFATeamColor(TEAMCOLOR_TYPE Type, int Team) { int r = 0, g = 0, b = 0; GetFFATeamColor(Type, Team, r, g, b); return Vector(float(r),float(g),float(b)); }
-static int GetFFATeamColorVector(lua_State *L)
+int GetFFATeamColorVector(lua_State *L)
 {
 	TEAMCOLOR_TYPE type = TEAMCOLOR_TYPE(luaL_checkinteger(L, 1));
 	int team = luaL_checkinteger(L, 2);
@@ -4751,7 +4758,7 @@ static int GetFFATeamColorVector(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI GetTeamStratColor(TEAMCOLOR_TYPE type, int team, int& red, int& green, int& blue);
-static int GetTeamStratColor(lua_State *L)
+int GetTeamStratColor(lua_State *L)
 {
 	TEAMCOLOR_TYPE type = TEAMCOLOR_TYPE(luaL_checkinteger(L, 1));
 	int team = luaL_checkinteger(L, 2);
@@ -4763,7 +4770,7 @@ static int GetTeamStratColor(lua_State *L)
 	return 3;
 }
 //inline Vector GetTeamStratColor(TEAMCOLOR_TYPE Type, int Team) { int r = 0, g = 0, b = 0; GetTeamStratColor(Type, Team, r, g, b); return Vector(float(r),float(g),float(b)); }
-static int GetTeamStratColorVector(lua_State *L)
+int GetTeamStratColorVector(lua_State *L)
 {
 	TEAMCOLOR_TYPE type = TEAMCOLOR_TYPE(luaL_checkinteger(L, 1));
 	int team = luaL_checkinteger(L, 2);
@@ -4772,21 +4779,21 @@ static int GetTeamStratColorVector(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SwapTeamStratColors(void);
-static int SwapTeamStratColors(lua_State *L)
+int SwapTeamStratColors(lua_State *L)
 {
 	::SwapTeamStratColors();
 	return 0;
 }
 
 //DLLEXPORT bool DLLAPI GetTeamColorsAreFFA(void);
-static int GetTeamColorsAreFFA(lua_State *L)
+int GetTeamColorsAreFFA(lua_State *L)
 {
 	lua_pushboolean(L, ::GetTeamColorsAreFFA());
 	return 1;
 }
 
 //DLLEXPORT void DLLAPI SetTeamColors(TEAMCOLOR_TYPE type);
-static int SetTeamColors(lua_State *L)
+int SetTeamColors(lua_State *L)
 {
 	TEAMCOLOR_TYPE type = TEAMCOLOR_TYPE(luaL_checkinteger(L, 1));
 	::SetTeamColors(type);
@@ -4794,7 +4801,7 @@ static int SetTeamColors(lua_State *L)
 }
 
 //DLLEXPORT int DLLAPI AddPower(TeamNum t, int v);
-static int AddPower(lua_State *L)
+int AddPower(lua_State *L)
 {
 	TeamNum t = TeamNum(luaL_checkinteger(L, 1));
 	int v = luaL_checkinteger(L, 2);
@@ -4803,7 +4810,7 @@ static int AddPower(lua_State *L)
 }
 
 //DLLEXPORT int DLLAPI SetPower(TeamNum t, int v);
-static int SetPower(lua_State *L)
+int SetPower(lua_State *L)
 {
 	TeamNum t = TeamNum(luaL_checkinteger(L, 1));
 	int v = luaL_checkinteger(L, 2);
@@ -4812,7 +4819,7 @@ static int SetPower(lua_State *L)
 }
 
 //DLLEXPORT int DLLAPI GetPower(TeamNum t);
-static int GetPower(lua_State *L)
+int GetPower(lua_State *L)
 {
 	TeamNum t = TeamNum(luaL_checkinteger(L, 1));
 	lua_pushinteger(L, ::GetPower(t));
@@ -4820,7 +4827,7 @@ static int GetPower(lua_State *L)
 }
 
 //DLLEXPORT int DLLAPI GetMaxPower(TeamNum t);
-static int GetMaxPower(lua_State *L)
+int GetMaxPower(lua_State *L)
 {
 	TeamNum t = TeamNum(luaL_checkinteger(L, 1));
 	lua_pushinteger(L, ::GetMaxPower(t));
@@ -4828,7 +4835,7 @@ static int GetMaxPower(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI AddMaxPower(TeamNum t, int v);
-static int AddMaxPower(lua_State *L)
+int AddMaxPower(lua_State *L)
 {
 	TeamNum t = TeamNum(luaL_checkinteger(L, 1));
 	int v = luaL_checkinteger(L, 2);
@@ -4838,7 +4845,7 @@ static int AddMaxPower(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetMaxPower(TeamNum t, int v);
-static int SetMaxPower(lua_State *L)
+int SetMaxPower(lua_State *L)
 {
 	TeamNum t = TeamNum(luaL_checkinteger(L, 1));
 	int v = luaL_checkinteger(L, 2);
@@ -4848,7 +4855,7 @@ static int SetMaxPower(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI GetTeamStratIndividualColor(TEAMCOLOR_TYPE type, int team, int& red, int& green, int& blue);
-static int GetTeamStratIndividualColor(lua_State *L)
+int GetTeamStratIndividualColor(lua_State *L)
 {
 	TEAMCOLOR_TYPE type = TEAMCOLOR_TYPE(luaL_checkinteger(L, 1));
 	int team = luaL_checkinteger(L, 2);
@@ -4860,7 +4867,7 @@ static int GetTeamStratIndividualColor(lua_State *L)
 	return 3;
 }
 //inline Vector GetTeamStratIndividualColor(TEAMCOLOR_TYPE Type, int Team) { int r = 0, g = 0, b = 0; GetTeamStratIndividualColor(Type, Team, r, g, b); return Vector(float(r),float(g),float(b)); }
-static int GetTeamStratIndividualColorVector(lua_State *L)
+int GetTeamStratIndividualColorVector(lua_State *L)
 {
 	TEAMCOLOR_TYPE type = TEAMCOLOR_TYPE(luaL_checkinteger(L, 1));
 	int team = luaL_checkinteger(L, 2);
@@ -4869,14 +4876,14 @@ static int GetTeamStratIndividualColorVector(lua_State *L)
 }
 
 // GetMapTRNFilename
-static int GetMapTRNFilename(lua_State *L)
+int GetMapTRNFilename(lua_State *L)
 {
 	lua_pushstring(L, ::GetMapTRNFilename());
 	return 1;
 }
 
 //DLLEXPORT bool DLLAPI IsNotDeadAndPilot2(Handle h);
-static int IsNotDeadAndPilot2(lua_State *L)
+int IsNotDeadAndPilot2(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushboolean(L, ::IsNotDeadAndPilot2(h));
@@ -4884,7 +4891,7 @@ static int IsNotDeadAndPilot2(lua_State *L)
 }
 
 //DLLEXPORT const char* DLLAPI GetLabel(Handle h);
-static int GetLabel(lua_State *L)
+int GetLabel(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	if (const char *label = ::GetLabel(h))
@@ -4896,7 +4903,7 @@ static int GetLabel(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetLabel(Handle h, const char* pLabel);
-static int SetLabel(lua_State *L)
+int SetLabel(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	const char *label = luaL_checkstring(L, 2);
@@ -4905,7 +4912,7 @@ static int SetLabel(lua_State *L)
 }
 
 //DLLEXPORT Handle DLLAPI GetTap(Handle h, int index);
-static int GetTap(lua_State *L)
+int GetTap(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	int index = luaL_checkinteger(L, 2);
@@ -4915,7 +4922,7 @@ static int GetTap(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetTap(Handle baseObjectHandle, int index, Handle tapObjectHandle);
-static int SetTap(lua_State *L)
+int SetTap(lua_State *L)
 {
 	Handle h1 = RequireHandle(L, 1);
 	int index = luaL_checkinteger(L, 2);
@@ -4925,7 +4932,7 @@ static int SetTap(lua_State *L)
 }
 
 //DLLEXPORT float DLLAPI GetCurLocalAmmo(Handle h, int weaponIndex);
-static int GetCurLocalAmmo(lua_State *L)
+int GetCurLocalAmmo(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	int index = luaL_checkinteger(L, 2);
@@ -4934,7 +4941,7 @@ static int GetCurLocalAmmo(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI AddLocalAmmo(Handle h, float v, int weaponIndex);
-static int AddLocalAmmo(lua_State *L)
+int AddLocalAmmo(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	float v = float(luaL_checknumber(L, 2));
@@ -4944,7 +4951,7 @@ static int AddLocalAmmo(lua_State *L)
 }
 
 //DLLEXPORT float DLLAPI GetMaxLocalAmmo(Handle h, int weaponIndex);
-static int GetMaxLocalAmmo(lua_State *L)
+int GetMaxLocalAmmo(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	int index = luaL_checkinteger(L, 2);
@@ -4953,7 +4960,7 @@ static int GetMaxLocalAmmo(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetCurLocalAmmo(Handle h, float v, int weaponIndex);
-static int SetCurLocalAmmo(lua_State *L)
+int SetCurLocalAmmo(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	float v = float(luaL_checknumber(L, 2));
@@ -4963,7 +4970,7 @@ static int SetCurLocalAmmo(lua_State *L)
 }
 
 //DLLEXPORT const char* DLLAPI GetNetworkListItem(NETWORK_LIST_TYPE listType, size_t item);
-static int GetNetworkListItem(lua_State *L)
+int GetNetworkListItem(lua_State *L)
 {
 	NETWORK_LIST_TYPE type = NETWORK_LIST_TYPE(luaL_checkinteger(L, 1));
 	int size = luaL_checkinteger(L, 2);
@@ -4972,7 +4979,7 @@ static int GetNetworkListItem(lua_State *L)
 }
 
 //DLLEXPORT size_t DLLAPI GetNetworkListCount(NETWORK_LIST_TYPE listType);
-static int GetNetworkListCount(lua_State *L)
+int GetNetworkListCount(lua_State *L)
 {
 	NETWORK_LIST_TYPE type = NETWORK_LIST_TYPE(luaL_checkinteger(L, 1));
 	lua_pushinteger(L, ::GetNetworkListCount(type));
@@ -4980,7 +4987,7 @@ static int GetNetworkListCount(lua_State *L)
 }
 
 //DLLEXPORT TEAMRELATIONSHIP DLLAPI GetTeamRelationship(Handle h1, Handle h2);
-static int GetTeamRelationship(lua_State *L)
+int GetTeamRelationship(lua_State *L)
 {
 	Handle h1 = RequireHandle(L, 1);
 	Handle h2 = RequireHandle(L, 2);
@@ -4989,7 +4996,7 @@ static int GetTeamRelationship(lua_State *L)
 }
 
 //DLLEXPORT bool DLLAPI HasPilot(Handle h);
-static int HasPilot(lua_State *L)
+int HasPilot(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushboolean(L, ::HasPilot(h));
@@ -4997,7 +5004,7 @@ static int HasPilot(lua_State *L)
 }
 
 //DLLEXPORT const char* DLLAPI GetPilotClass(Handle h);
-static int GetPilotClass(lua_State *L)
+int GetPilotClass(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	if (const char *pilotclass = ::GetPilotClass(h))
@@ -5009,7 +5016,7 @@ static int GetPilotClass(lua_State *L)
 }
 
 //DLLEXPORT int DLLAPI GetBaseScrapCost(Handle h);
-static int GetBaseScrapCost(lua_State *L)
+int GetBaseScrapCost(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushinteger(L, ::GetBaseScrapCost(h));
@@ -5017,7 +5024,7 @@ static int GetBaseScrapCost(lua_State *L)
 }
 
 //DLLEXPORT int DLLAPI GetActualScrapCost(Handle h);
-static int GetActualScrapCost(lua_State *L)
+int GetActualScrapCost(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushinteger(L, ::GetActualScrapCost(h));
@@ -5025,14 +5032,14 @@ static int GetActualScrapCost(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI PetWatchdogThread(void);
-static int PetWatchdogThread(lua_State *L)
+int PetWatchdogThread(lua_State *L)
 {
 	::PetWatchdogThread();
 	return 0;
 }
 
 //TeamNum GetPerceivedTeam(Handle h);
-static int GetPerceivedTeam(lua_State *L)
+int GetPerceivedTeam(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushinteger(L, ::GetPerceivedTeam(h));
@@ -5040,7 +5047,7 @@ static int GetPerceivedTeam(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetLastCurrentPosition(Handle h, const Matrix &lastMatrix, const Matrix &curMatrix);
-static int SetLastCurrentPosition(lua_State *L)
+int SetLastCurrentPosition(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	Matrix CurMatrix = Identity_Matrix;
@@ -5056,7 +5063,7 @@ static int SetLastCurrentPosition(lua_State *L)
 }
 
 //DLLEXPORT float DLLAPI GetRemainingLifespan(Handle h);
-static int GetRemainingLifespan(lua_State *L)
+int GetRemainingLifespan(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushnumber(L, ::GetRemainingLifespan(h));
@@ -5064,7 +5071,7 @@ static int GetRemainingLifespan(lua_State *L)
 }
 
 //DLLEXPORT size_t DLLAPI GetAllSpawnpoints(SpawnpointInfo*& pSpawnPointInfo, int baseTeamNumber = 0);
-static int GetAllSpawnpoints(lua_State *L)
+int GetAllSpawnpoints(lua_State *L)
 {
 	int team = luaL_optinteger(L, 1, 0);
 	SpawnpointInfo* info;
@@ -5096,7 +5103,7 @@ static int GetAllSpawnpoints(lua_State *L)
 }
 
 //DLLEXPORT const char* DLLAPI GetPlan(int team);
-static int GetPlan(lua_State *L)
+int GetPlan(lua_State *L)
 {
 	int team = luaL_checkinteger(L, 1);
 	if (const char *aipname = ::GetPlan(team))
@@ -5108,7 +5115,7 @@ static int GetPlan(lua_State *L)
 }
 
 //DLLEXPORT int DLLAPI GetIndependence(Handle h);
-static int GetIndependence(lua_State *L)
+int GetIndependence(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushnumber(L, ::GetIndependence(h));
@@ -5116,7 +5123,7 @@ static int GetIndependence(lua_State *L)
 }
 
 //DLLEXPORT int DLLAPI GetSkill(Handle h);
-static int GetSkill(lua_State *L)
+int GetSkill(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushnumber(L, ::GetSkill(h));
@@ -5124,7 +5131,7 @@ static int GetSkill(lua_State *L)
 }
 
 //DLLEXPORT const char* DLLAPI GetObjectiveName(Handle h);
-static int GetObjectiveName(lua_State *L)
+int GetObjectiveName(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	if (const char *objectivename = ::GetObjectiveName(h))
@@ -5136,7 +5143,7 @@ static int GetObjectiveName(lua_State *L)
 }
 
 //DLLEXPORT long DLLAPI GetWeaponMask(Handle h);
-static int GetWeaponMask(lua_State *L)
+int GetWeaponMask(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushnumber(L, ::GetWeaponMask(h));
@@ -5145,7 +5152,7 @@ static int GetWeaponMask(lua_State *L)
 
 //DLLEXPORT void DLLAPI SetInterpolablePosition(Handle h, const Matrix* pLastMat = NULL, const Matrix* pTrueMat = NULL, bool bSetPosition = true);
 //DLLEXPORT void DLLAPI SetInterpolablePosition(Handle h, const Vector* pLastPos = NULL, const Vector* pTruePos = NULL);
-static int SetInterpolablePosition(lua_State *L)
+int SetInterpolablePosition(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 
@@ -5177,14 +5184,14 @@ static int SetInterpolablePosition(lua_State *L)
 }
 
 //DLLEXPORT int DLLAPI SecondsToTurns(float timeSeconds);
-static int SecondsToTurns(lua_State *L)
+int SecondsToTurns(lua_State *L)
 {
 	float time = float(luaL_checknumber(L, 1));
 	lua_pushnumber(L, ::SecondsToTurns(time));
 	return 1;
 }
 //DLLEXPORT float DLLAPI TurnsToSeconds(int turns);
-static int TurnsToSeconds(lua_State *L)
+int TurnsToSeconds(lua_State *L)
 {
 	int turns = luaL_checkinteger(L, 1);
 	lua_pushnumber(L, ::TurnsToSeconds(turns));
@@ -5192,7 +5199,7 @@ static int TurnsToSeconds(lua_State *L)
 }
 
 //float DLLAPI GetLifeSpan(Handle h);
-static int GetLifeSpan(lua_State *L)
+int GetLifeSpan(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushnumber(L, ::GetLifeSpan(h));
@@ -5200,7 +5207,7 @@ static int GetLifeSpan(lua_State *L)
 }
 
 //Vector DLLAPI GetCurrentCommandWhere(Handle h);
-static int GetCurrentCommandWhere(lua_State *L)
+int GetCurrentCommandWhere(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	*NewVector(L) = ::GetCurrentCommandWhere(h);
@@ -5208,7 +5215,7 @@ static int GetCurrentCommandWhere(lua_State *L)
 }
 
 //DLLEXPORT bool DLLAPI GetAllGameObjectHandles(size_t& bufSize, Handle* pData);
-static int GetAllGameObjectHandles(lua_State *L)
+int GetAllGameObjectHandles(lua_State *L)
 {
 	size_t bufSize = 0;
 	::GetAllGameObjectHandles(bufSize, NULL);
@@ -5227,7 +5234,7 @@ static int GetAllGameObjectHandles(lua_State *L)
 }
 
 //DLLEXPORT Vector DLLAPI GetOmega(Handle h);
-static int GetOmega(lua_State *L)
+int GetOmega(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	*NewVector(L) = ::GetOmega(h);
@@ -5235,7 +5242,7 @@ static int GetOmega(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetOmega(Handle h, const Vector& omega);
-static int SetOmega(lua_State *L)
+int SetOmega(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	if (Vector *v = GetVector(L, 2))
@@ -5245,7 +5252,7 @@ static int SetOmega(lua_State *L)
 }
 
 //DLLEXPORT bool DLLAPI IsCraftButNotPerson(Handle me);
-static int IsCraftButNotPerson(lua_State *L)
+int IsCraftButNotPerson(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushboolean(L, ::IsCraftButNotPerson(h));
@@ -5253,7 +5260,7 @@ static int IsCraftButNotPerson(lua_State *L)
 }
 
 //DLLEXPORT bool DLLAPI IsCraftOrPerson(Handle me);
-static int IsCraftOrPerson(lua_State *L)
+int IsCraftOrPerson(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushboolean(L, ::IsCraftOrPerson(h));
@@ -5261,7 +5268,7 @@ static int IsCraftOrPerson(lua_State *L)
 }
 
 //DLLEXPORT bool DLLAPI IsBuilding(Handle me);
-static int IsBuilding(lua_State *L)
+int IsBuilding(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushboolean(L, ::IsBuilding(h));
@@ -5269,7 +5276,7 @@ static int IsBuilding(lua_State *L)
 }
 
 //DLLEXPORT bool DLLAPI IsPowerup(Handle me);
-static int IsPowerup(lua_State *L)
+int IsPowerup(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushboolean(L, ::IsPowerup(h));
@@ -5277,7 +5284,7 @@ static int IsPowerup(lua_State *L)
 }
 
 //DLLEXPORT void DLLAPI SetCanSnipe(Handle me, int canSnipe = -1);
-static int SetCanSnipe(lua_State *L)
+int SetCanSnipe(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	int cansnipe = luaL_checkinteger(L, 2);
@@ -5286,7 +5293,7 @@ static int SetCanSnipe(lua_State *L)
 }
 
 //DLLEXPORT bool DLLAPI GetCanSnipe(Handle me);
-static int GetCanSnipe(lua_State *L)
+int GetCanSnipe(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	lua_pushboolean(L, ::GetCanSnipe(h));
@@ -5294,7 +5301,7 @@ static int GetCanSnipe(lua_State *L)
 }
 
 //DLLEXPORT bool DLLAPI WhoIsTargeting(size_t& bufSize, Handle* pData, Handle me);
-static int WhoIsTargeting(lua_State *L)
+int WhoIsTargeting(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
 	size_t bufSize = 0;
@@ -5319,7 +5326,7 @@ static int WhoIsTargeting(lua_State *L)
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 //extern void SetAngle(Handle h, float Degrees);
-static int SetAngle(lua_State *L)
+int SetAngle(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	float degrees = float(luaL_checknumber(L, 2));
@@ -5328,7 +5335,7 @@ static int SetAngle(lua_State *L)
 }
 
 //extern bool CameraPos(Handle me, Handle him, Vector &PosA, Vector &PosB, float Increment);
-static int CameraPos(lua_State *L)
+int CameraPos(lua_State *L)
 {
 	Handle h1 = RequireHandle(L, 1);
 	Handle h2 = RequireHandle(L, 2);
@@ -5340,7 +5347,7 @@ static int CameraPos(lua_State *L)
 }
 
 //Handle ReplaceObject(Handle h, char* ODF = NULL, int Team = -1, float HeightOffset = 0.0f, int Empty = -1, bool RestoreWeapons = true, int Group = -1, bool KeepCommand = true, int NewCommand = -1, Handle NewWho = -1);
-static int ReplaceObject(lua_State *L)
+int ReplaceObject(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	const char *replace = luaL_optstring(L, 2, NULL);
@@ -5359,7 +5366,7 @@ static int ReplaceObject(lua_State *L)
 
 
 // read a lua value from the file
-static bool LoadValue(lua_State *L, bool push)
+bool LoadValue(lua_State *L, bool push)
 {
 	bool ret = true;
 	unsigned char type = '0';
@@ -5475,7 +5482,7 @@ static bool LoadValue(lua_State *L, bool push)
 }
 
 // save a Lua value to the file
-static bool SaveValue(lua_State *L, int i)
+bool SaveValue(lua_State *L, int i)
 {
 	bool ret = true;
 	if (i < 0)
