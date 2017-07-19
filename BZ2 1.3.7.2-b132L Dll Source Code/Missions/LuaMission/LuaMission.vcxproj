@@ -265,11 +265,13 @@
     <ClCompile Include="..\Shared\MathUtils.cpp" />
     <ClCompile Include="..\Shared\ScriptUtilsExtention.cpp" />
     <ClCompile Include="LuaMission.cpp" />
+    <ClCompile Include="LuaBindings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Shared\DllBase.h" />
     <ClInclude Include="..\Shared\MathUtils.h" />
     <ClInclude Include="..\Shared\ScriptUtilsExtention.h" />
+    <ClInclude Include="LuaBindings.h" />
     <ClInclude Include="LuaMission.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

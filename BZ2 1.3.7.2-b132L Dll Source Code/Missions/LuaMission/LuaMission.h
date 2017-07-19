@@ -2,14 +2,12 @@
 #define LUAMISSION_H__
 
 #include "..\Shared\DLLBase.h"
-#include "..\lua_5_1_5\src\lua.hpp"
+#include "LuaBindings.h"
 #include <vector>
 #include <hash_map>
 #include <algorithm>
 
-#define lua_pushglobaltable(L) lua_pushvalue(L, LUA_GLOBALSINDEX);
 
-struct lua_State;
 
 class LuaMission : public DLLBase
 {
