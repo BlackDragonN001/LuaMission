@@ -4335,9 +4335,8 @@ int LoadFile(lua_State *L)
 	const char* filename = luaL_checklstring(L, 1, &size);
 
 	size_t bufSize = 0;
-	char* FileBuffer = NULL;
 	::LoadFile(filename, NULL, bufSize);
-	FileBuffer = static_cast<char *>(malloc(bufSize + 1));
+	char *FileBuffer = static_cast<char *>(malloc(bufSize + 1));
 	::LoadFile(filename, FileBuffer, bufSize);
 	FileBuffer[bufSize] = '\0';
 
@@ -4356,27 +4355,7 @@ int StartAudio3D(lua_State *L)
 {
 	const char *msg = luaL_checkstring(L, 1);
 
-	if (lua_isboolean(L, 4))
-	{
-		Handle h = RequireHandle(L, 2);
-		DLLAudioCategory cat = DLLAudioCategory(luaL_checkinteger(L, 3));
-		bool loop = luaL_optboolean(L, 4, FALSE);
-		bool stoplast = luaL_optboolean(L, 5, FALSE);
-		lua_pushnumber(L, ::StartAudio3D(msg, h, cat, loop, stoplast));
-	}
-	else if (Matrix *mat = GetMatrix(L, 2))
-	{
-		DLLAudioCategory cat = DLLAudioCategory(luaL_checkinteger(L, 5));
-		bool loop = luaL_optboolean(L, 6, FALSE);
-		lua_pushnumber(L, ::StartAudio3D(msg, mat->posit, cat, loop));
-	}
-	else if (Vector *pos = GetVector(L, 2))
-	{
-		DLLAudioCategory cat = DLLAudioCategory(luaL_checkinteger(L, 5));
-		bool loop = luaL_optboolean(L, 6, FALSE);
-		lua_pushnumber(L, ::StartAudio3D(msg, *pos, cat, loop));
-	}
-	else
+	if (lua_isnumber(L, 2))
 	{
 		float x = float(luaL_checknumber(L, 2));
 		float y = float(luaL_checknumber(L, 3));
@@ -4384,6 +4363,26 @@ int StartAudio3D(lua_State *L)
 		DLLAudioCategory cat = DLLAudioCategory(luaL_checkinteger(L, 5));
 		bool loop = luaL_optboolean(L, 6, FALSE);
 		lua_pushnumber(L, ::StartAudio3D(msg, x, y, z, cat, loop));
+	}
+	else if (Matrix *mat = GetMatrix(L, 2))
+	{
+		DLLAudioCategory cat = DLLAudioCategory(luaL_checkinteger(L, 3));
+		bool loop = luaL_optboolean(L, 4, FALSE);
+		lua_pushnumber(L, ::StartAudio3D(msg, mat->posit, cat, loop));
+	}
+	else if (Vector *pos = GetVector(L, 2))
+	{
+		DLLAudioCategory cat = DLLAudioCategory(luaL_checkinteger(L, 3));
+		bool loop = luaL_optboolean(L, 4, FALSE);
+		lua_pushnumber(L, ::StartAudio3D(msg, *pos, cat, loop));
+	}
+	else
+	{
+		Handle h = RequireHandle(L, 2);
+		DLLAudioCategory cat = DLLAudioCategory(luaL_checkinteger(L, 3));
+		bool loop = luaL_optboolean(L, 4, FALSE);
+		bool stoplast = luaL_optboolean(L, 5, FALSE);
+		lua_pushnumber(L, ::StartAudio3D(msg, h, cat, loop, stoplast));
 	}
 	return 1;
 }
