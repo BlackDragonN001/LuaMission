@@ -4891,9 +4891,12 @@ int GetLabel(lua_State *L)
 	if (const char *label = ::GetLabel(h))
 	{
 		lua_pushstring(L, label);
-		return 1;
 	}
-	return 0;
+	else
+	{
+		lua_pushnil(L);
+	}
+	return 1;
 }
 
 //DLLEXPORT void DLLAPI SetLabel(Handle h, const char* pLabel);
@@ -5004,9 +5007,12 @@ int GetPilotClass(lua_State *L)
 	if (const char *pilotclass = ::GetPilotClass(h))
 	{
 		lua_pushstring(L, pilotclass);
-		return 1;
 	}
-	return 0;
+	else
+	{
+		lua_pushnil(L);
+	}
+	return 1;
 }
 
 //DLLEXPORT int DLLAPI GetBaseScrapCost(Handle h);
@@ -5109,9 +5115,12 @@ int GetPlan(lua_State *L)
 	if (const char *aipname = ::GetPlan(team))
 	{
 		lua_pushstring(L, aipname);
-		return 1;
 	}
-	return 0;
+	else
+	{
+		lua_pushnil(L);
+	}
+	return 1;
 }
 
 //DLLEXPORT int DLLAPI GetIndependence(Handle h);
@@ -5137,9 +5146,12 @@ int GetObjectiveName(lua_State *L)
 	if (const char *objectivename = ::GetObjectiveName(h))
 	{
 		lua_pushstring(L, objectivename);
-		return 1;
 	}
-	return 0;
+	else
+	{
+		lua_pushnil(L);
+	}
+	return 1;
 }
 
 //DLLEXPORT long DLLAPI GetWeaponMask(Handle h);
@@ -5176,7 +5188,7 @@ int SetInterpolablePosition(lua_State *L)
 	/*
 	else
 	{
-	SetInterpolablePosition(h); //error C2668: 'SetInterpolablePosition' : ambiguous call to overloaded function
+		SetInterpolablePosition(h); //error C2668: 'SetInterpolablePosition' : ambiguous call to overloaded function
 	}
 	*/
 
