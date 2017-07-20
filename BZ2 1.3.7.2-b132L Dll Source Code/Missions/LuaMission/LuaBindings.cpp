@@ -2180,21 +2180,21 @@ int TerrainFindFloor(lua_State *L)
 	{
 		lua_pushnumber(L, ::TerrainFindFloor(*pos));
 	}
+	else if (Handle h = GetHandle(L, 1))
+	{
+		lua_pushnumber(L, ::TerrainFindFloor(h));
+	}
+	else if (lua_isnumber(L, 1))
+	{
+		float x = float(lua_tonumber(L, 1));
+		float z = float(luaL_checknumber(L, 2));
+		lua_pushnumber(L, ::TerrainFindFloor(x, z));
+	}
 	else if (lua_isstring(L, 1))
 	{
 		Name path = Name(lua_tostring(L, 1));
 		int point = luaL_optinteger(L, 2, 0);
 		lua_pushnumber(L, ::TerrainFindFloor(path, point));
-	}
-	else if (Handle h = GetHandle(L, 1))
-	{
-		lua_pushnumber(L, ::TerrainFindFloor(h));
-	}
-	else
-	{
-		float x = float(luaL_checknumber(L, 1));
-		float z = float(luaL_checknumber(L, 2));
-		lua_pushnumber(L, ::TerrainFindFloor(x, z));
 	}
 
 	return 1;
@@ -4575,21 +4575,21 @@ int TerrainIsWater(lua_State *L)
 	{
 		lua_pushboolean(L, ::TerrainIsWater(*pos));
 	}
+	else if (Handle h = GetHandle(L, 1))
+	{
+		lua_pushboolean(L, ::TerrainIsWater(h));
+	}
+	else if (lua_isnumber(L, 1))
+	{
+		float x = float(luaL_checknumber(L, 1));
+		float z = float(luaL_checknumber(L, 2));
+		lua_pushboolean(L, ::TerrainIsWater(x, z));
+	}
 	else if (lua_isstring(L, 1))
 	{
 		Name path = Name(lua_tostring(L, 3));
 		int point = luaL_optinteger(L, 4, 0);
 		lua_pushboolean(L, ::TerrainIsWater(path, point));
-	}
-	else if (Handle h = GetHandle(L, 1))
-	{
-		lua_pushboolean(L, ::TerrainIsWater(h));
-	}
-	else
-	{
-		float x = float(luaL_checknumber(L, 1));
-		float z = float(luaL_checknumber(L, 2));
-		lua_pushboolean(L, ::TerrainIsWater(x, z));
 	}
 	return 1;
 }
