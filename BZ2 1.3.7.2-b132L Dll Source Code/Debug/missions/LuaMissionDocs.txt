@@ -1967,6 +1967,12 @@ Returns true when the terrain system believes the cell type is water. This is a 
 Returns the terrain height and normal vector at the position of the transform matrix. UseWater is a flag to use WaterHeight or not, if the position is on water.
 
 
+-boolean WriteToFile ( string filename, string content, [ bool append = true ] )
+
+Writes a string to the specified file name. If append is true, it adds to the contents, if false it erases the contents before writing. Returns true if successful, false if otherwise.
+The file is stored either in My Documents/My Games/Battlezone II - BZC/ or in Battlezone II root folder. Can be used to make custom log files, saved score settings, etc. You can add existing paths to it, by telling it a filename like "BZCaddon/blah.txt"
+
+
 -table GetPathPoints ( string Path )
 
 Returns sets of x and z point coordinates for each point in the path.
@@ -2200,9 +2206,11 @@ Units on the game object's perceived team will treat it as friendly until it "bl
 Units on the game object's real team will treat it as friendly regardless of its perceived team.
 
 
--SetLastCurrentPosition ( Handle h, Matrix LastPos, Matrix CurPos )
+-SetLastCurrentPosition ( Handle h, Matrix LastPos, [ Matrix CurPos ] )
 
 For DLLs that are trying to get full control of an object's position, this allows the last and current orientation & positions to be set simultaneously. The caller should take care to set lastMatrix to what was passed in as the curMatrix last frame, or jittering can occur. Note: repeatedly calling this on tracked vehicles is likely to make the physics system unhappy.
+
+CurPos is optional, it will use the objects current position if not specified.
 
 
 -float GetRemainingLifeSpan ( Handle h )
@@ -2364,6 +2372,22 @@ Gets all GameObject handles that are targeting the specified 'me'. Note that thi
 
 
 
+
+
+============ BZ1 Backwards Compatability Stuff ======================
+
+-boolean CanCommand ( handle me )
+
+Returns true if the game object can be commanded. Returns false otherwise.
+
+
+-SetTransform ( handle h, matrix transform )
+
+Teleports the game object to the given transform matrix.
+
+-matrix GetTransform ( handle h )
+
+Returns the game object's transform matrix. Returns nil if none exists.
 
 
 

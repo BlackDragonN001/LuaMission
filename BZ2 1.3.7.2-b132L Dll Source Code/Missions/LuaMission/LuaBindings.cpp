@@ -1488,12 +1488,13 @@ int GetFront(lua_State *L)
 int SetPosition(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
+	/* // Moved to SetTransform
 	if (Matrix *mat = GetMatrix(L, 2))
 	{
 		::SetPosition(h, *mat);
 		::SetVectorPosition(h, mat->posit); // Corrects height. -GBD
 	}
-	else if (Vector *pos = GetVector(L, 2))
+	else */ if (Vector *pos = GetVector(L, 2))
 	{
 		::SetVectorPosition(h, *pos);
 	}
@@ -1547,7 +1548,11 @@ int GetHealth(lua_State *L)
 int GetCurHealth(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
-	lua_pushinteger(L, ::GetCurHealth(me));
+	long curhealth = ::GetCurHealth(me);
+	if (curhealth != -1234)
+		lua_pushinteger(L, curhealth);
+	else
+		lua_pushnil(L);
 	return 1;
 }
 
@@ -1555,7 +1560,11 @@ int GetCurHealth(lua_State *L)
 int GetMaxHealth(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
-	lua_pushinteger(L, ::GetMaxHealth(me));
+	long maxhealth = ::GetMaxHealth(me);
+	if (maxhealth != -1234)
+		lua_pushinteger(L, maxhealth);
+	else
+		lua_pushnil(L);
 	return 1;
 }
 
@@ -1598,7 +1607,11 @@ int GetAmmo(lua_State *L)
 int GetCurAmmo(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
-	lua_pushinteger(L, ::GetCurAmmo(me));
+	long curammo = ::GetCurAmmo(me);
+	if (curammo != -1234)
+		lua_pushinteger(L, curammo);
+	else
+		lua_pushnil(L);
 	return 1;
 }
 
@@ -1606,7 +1619,11 @@ int GetCurAmmo(lua_State *L)
 int GetMaxAmmo(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
-	lua_pushinteger(L, ::GetMaxAmmo(me));
+	long maxammo = ::GetMaxAmmo(me);
+	if (maxammo != -1234)
+		lua_pushinteger(L, maxammo);
+	else
+		lua_pushnil(L);
 	return 1;
 }
 
@@ -5028,12 +5045,18 @@ int SetLastCurrentPosition(lua_State *L)
 	Handle h = RequireHandle(L, 1);
 	Matrix CurMatrix = Identity_Matrix;
 
+	if (Matrix *mat = GetMatrix(L, 3))
+	{
+		CurMatrix = *mat;
+	}
+	else
+	{
+		CurMatrix = ::GetMatrixPosition(h);
+	}
+
 	if (Matrix *mat = GetMatrix(L, 2))
 	{
-		SetPosition(h, *mat);
 		::SetLastCurrentPosition(h, *mat, CurMatrix);
-		*NewMatrix(L) = CurMatrix;
-		return 1;
 	}
 	return 0;
 }
@@ -5360,6 +5383,7 @@ int GetTransform(lua_State *L)
 }
 
 //void SetTransform(Handle h, Matrix &m);
+//void SetTransform(Handle h1, Handle h2);
 int SetTransform(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
