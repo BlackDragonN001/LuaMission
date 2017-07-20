@@ -2571,13 +2571,15 @@ int IFace_AddTextItem(lua_State *L)
 int IFace_GetSelectedItem(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
-	Name v = Name(luaL_checkstring(L, 2));
-	int size = luaL_checkinteger(L, 3);
+	int size = luaL_checkinteger(L, 2);
+	Name v = Name(alloca(size + 1));
 	::IFace_GetSelectedItem(n, v, size);
-	return 0;
+	v[size] = '\0';
+	lua_pushstring(L, v);
+	return 1;
 }
 
-//DLLEXPORT void DLLAPI SetSkill(Handle h,int s);
+//DLLEXPORT void DLLAPI SetSkill(Handle h, int s);
 int SetSkill(lua_State *L)
 {
 	Handle me = RequireHandle(L, 1);
@@ -2928,10 +2930,10 @@ int AddObjective(lua_State *L)
 	char *name = const_cast<char *>(luaL_checkstring(L, 1));
 	unsigned long color = WHITE;
 
-	if (lua_isstring(L, 2))
-		color = GetColor(luaL_optstring(L, 2, "WHITE"));
-	else if (lua_isnumber(L, 2))
+	if (lua_isnumber(L, 2))
 		color = unsigned long(luaL_checklong(L, 2));
+	else if (lua_isstring(L, 2))
+		color = GetColor(luaL_optstring(L, 2, "WHITE"));
 
 	float showtime = float(luaL_optnumber(L, 3, 8.0f));
 
@@ -3435,7 +3437,7 @@ int AddToMessagesBox(lua_State *L)
 	}
 	else if (lua_isstring(L, 2))
 	{
-		long color = GetColor(lua_tostring(L, 2));
+		unsigned long color = GetColor(lua_tostring(L, 2));
 		::AddToMessagesBox2(msg, color);
 	}
 	else
@@ -5384,12 +5386,21 @@ int GetTransform(lua_State *L)
 
 //void SetTransform(Handle h, Matrix &m);
 //void SetTransform(Handle h1, Handle h2);
+//void SetTransform(Handle h, Name path);
 int SetTransform(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	if (Matrix *m = GetMatrix(L, 2))
 	{
 		SetPosition(h, *m);
+	}
+	else if (lua_isstring(L, 2))
+	{
+		Name path = Name(lua_tostring(L, 2));
+		Vector pos = GetVectorFromPath(path, 0);
+		//Vector front = Normalize_Vector(GetVectorFromPath(path, 1) - pos);
+		//Matrix mat = Build_Directinal_Matrix(pos, Normalize_Vector(GetVectorFromPath(path, 1) - pos));
+		SetPosition(h, Build_Directinal_Matrix(pos, GetVectorFromPath(path, 1) - pos));
 	}
 	else
 	{

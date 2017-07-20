@@ -402,9 +402,8 @@ Returns the game object's front vector. Returns nil if none exists.
 -SetPosition ( handle h, string path, [ integer point ] )
 -SetPosition ( handle h, vector position )
 -SetPosition ( handle h, handle h2 )
--SetPosition ( handle h, matrix transform )
 
-Teleports the game object to the position of the transform matrix.
+Teleports the game object to the position Vector.
 
 
 -Damage ( handle h, number amount )
