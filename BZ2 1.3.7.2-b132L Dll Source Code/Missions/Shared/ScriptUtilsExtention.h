@@ -262,6 +262,9 @@ extern void FormatToMessagesBox(const char *format, const unsigned long color, .
 // Get a Vector from a Path point. Code from Nielk1. Height is the Terrain height at the position. Returns Vector(0, 0, 0) if path is invalid.
 extern Vector GetVectorFromPath(const char* path, const int point = 0);
 
+// Gets a position as a Matrix.
+inline Matrix GetMatrixPosition(const Handle h) { Matrix m; GetPosition(h, m); return m; }
+
 // Overload functions that take const parameters.
 inline Handle BuildObject(const char* odf, const int Team, const Handle him) { return BuildObject(const_cast<char *>(odf), Team, him); }
 inline Handle BuildObject(const char* odf, const int Team, const char *APath) { return BuildObject(const_cast<char *>(odf), Team, const_cast<Name>(APath)); }
@@ -332,7 +335,7 @@ inline void SetPosition(const Handle h, const Vector v) { SetVectorPosition(h, v
 inline void SetPosition(const Handle h1, const Handle h2) { SetVectorPosition(h1, GetPosition(h2)); }
 inline void SetPositionPath(const Handle h1, const char* Path, const int Point = 0) { SetVectorPosition(h1, GetVectorFromPath(Path, Point)); }
 // Version that uses a Matrix to take rotation into account.
-extern void SetPositionM(const Handle h1, const Handle h2);
+inline void SetPositionM(const Handle h1, const Handle h2) { Matrix Position = GetMatrixPosition(h2); SetPosition(h1, Position); }
 // Gets the distance between a Handle and a Vector/Matrix.
 inline float GetDistance(const Handle h, const Vector v) { return GetDistance2D(GetPosition(h), v); }
 inline float GetDistance(const Handle h, const Matrix m) { return GetDistance2D(GetPosition(h), m.posit); }
@@ -435,9 +438,6 @@ Handle ReplaceObject(const Handle h, const char *ODF = NULL, const int Team = -1
 // Returns the current TPS rate in use. (and sets it for the clients)
 extern int GetTPS(void);
 
-// Gets a position as a Matrix.
-inline Matrix GetMatrixPosition(const Handle h) { Matrix m; GetPosition(h, m); return m; }
-
 // Version that gets/sets a percent.
 extern float GetScavengerScrap(const Handle h);
 extern void SetScavengerScrap(const Handle h, const float Percent);
@@ -471,6 +471,12 @@ extern void CheckODFName(char *ODFName);
 extern bool IsInfo(const Handle h);
 // Returns true if Handle me is following Handle him.
 extern bool IsFollowing(const Handle me, const Handle him);
+
+// Gets the current priority of the unit. (Gueses based on IsAround() + GetGroup())
+//inline int GetPriority(const Handle h) { if (!IsAround(h)) return -1; else return GetGroup(h) == -1; }; // Moved to below function.
+
+// Get CanCommand, backported from BZ1. //[11 / 13 / 2016 7:55 : 55 PM] Kenneth Miller : It returns true if it's not the player, not destroyed, not empty, and not running a priority command
+inline bool CanCommand(const Handle h) { if (!IsAround(h)) return false; else return (!IsPlayer(h) && IsAliveAndPilot2(h) && GetGroup(h) != -1); }; //GetPriority(h)); };
 
 // This function checks the validity of an ODF name retrieved by GetObjInfo Get_ODF, and cuts off the .odf from the end. Returns true if successful, otherwise returns false.
 extern bool GetODFName(const Handle h, char *ODFName);

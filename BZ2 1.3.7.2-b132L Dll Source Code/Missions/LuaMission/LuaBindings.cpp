@@ -5339,7 +5339,41 @@ int ReplaceObject(lua_State *L)
 	return 1;
 }
 
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------
+// BZ1 Lua Backwards Compatability Functions:
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+//inline bool CanCommand(const Handle h) //bool CanCommand(Handle me);
+int CanCommand(lua_State *L)
+{
+	Handle me = GetHandle(L, 1);
+	lua_pushboolean(L, ::CanCommand(me));
+	return 1;
+}
+
+//Matrix GetTransform(Handle h);
+int GetTransform(lua_State *L)
+{
+	Handle h = RequireHandle(L, 1);
+	*NewMatrix(L) = ::GetMatrixPosition(h);
+	return 1;
+}
+
+//void SetTransform(Handle h, Matrix &m);
+int SetTransform(lua_State *L)
+{
+	Handle h = RequireHandle(L, 1);
+	if (Matrix *m = GetMatrix(L, 2))
+	{
+		SetPosition(h, *m);
+	}
+	else
+	{
+		Handle h2 = RequireHandle(L, 2);
+		SetPositionM(h, h2);
+	}
+	return 0;
+}
 
 // read a lua value from the file
 bool LoadValue(lua_State *L, bool push)
