@@ -93,6 +93,16 @@ bool CameraPos(const Handle me, const Handle him, const Vector &PosA, const Vect
 	return false;
 }
 
+// Sets the Camera to the specified Pos offset, facing the direction of the handle.
+void CameraOf(const Handle me, const Vector &Offset)
+{
+	if (!IsAround(me))
+		return;
+
+	Vector dir = Normalize_Vector(GetFront(me));
+	SetCameraPosition(Add_Vectors(GetPosition(me), (Offset * dir)), dir);
+}
+
 /////////////////////////////////////////////////////////////
 // New things :)
 /////////////////////////////////////////////////////////////

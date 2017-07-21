@@ -85,8 +85,8 @@ extern "C" static int LuaPrint(lua_State *L)
 extern "C" int LuaPanic(lua_State *L)
 {
 	const char * error = lua_tostring(L, -1);
-	//	OutputDebugString(error);
-	//	OutputDebugString("\n");
+//	OutputDebugString(error);
+//	OutputDebugString("\n");
 	//FormatLogMessage("Lua panic: %s", error);
 	FormatConsoleMessage("Lua panic: %s", error);
 	FormatToMessagesBox("Lua panic: %s", RED, error);
@@ -100,8 +100,8 @@ bool LuaCheckStatus(int status, lua_State *L, const char *format)
 	{
 		// error?
 		const char *error = lua_tostring(L, -1);
-		//		OutputDebugString(error);
-		//		OutputDebugString("\n");
+//		OutputDebugString(error);
+//		OutputDebugString("\n");
 		//FormatLogMessage(const_cast<char *>(format), error);
 		FormatConsoleMessage(const_cast<char *>(format), error);
 		FormatToMessagesBox(const_cast<char *>(format), RED, error);
@@ -564,7 +564,7 @@ int Normalize(lua_State *L)
 int Length(lua_State *L)
 {
 	Vector *v = RequireVector(L, 1);
-	lua_pushnumber(L, GetLength2D(*v));
+	lua_pushnumber(L, GetLength3D(*v));
 	return 1;
 }
 
@@ -5356,6 +5356,15 @@ int CameraPos(lua_State *L)
 	float inc = float(luaL_checknumber(L, 5));
 	lua_pushboolean(L, ::CameraPos(h1, h2, *v1, *v2, inc));
 	return 1;
+}
+
+//extern bool CameraOf(Handle me, Vector &Offset);
+int CameraOf(lua_State *L)
+{
+	Handle h1 = RequireHandle(L, 1);
+	Vector *v1 = RequireVector(L, 2);
+	::CameraOf(h1, *v1);
+	return 0;
 }
 
 //Handle ReplaceObject(Handle h, char* ODF = NULL, int Team = -1, float HeightOffset = 0.0f, int Empty = -1, bool RestoreWeapons = true, int Group = -1, bool KeepCommand = true, int NewCommand = -1, Handle NewWho = -1);

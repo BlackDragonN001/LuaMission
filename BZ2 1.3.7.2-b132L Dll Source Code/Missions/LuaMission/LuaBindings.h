@@ -502,6 +502,7 @@ namespace LuaBindings {
 	// BZScriptor Backwards Compatability functions.
 	int SetAngle(lua_State *L);
 	int CameraPos(lua_State *L);
+	int CameraOf(lua_State *L);
 	int ReplaceObject(lua_State *L);
 	// BZ1 Lua backwards compatability functions.
 	int CanCommand(lua_State *L);
@@ -892,6 +893,7 @@ namespace LuaBindings {
 		// BZScriptor Backwards Compatability.
 		{ "SetAngle", SetAngle },
 		{ "CameraPos", CameraPos },
+		{ "CameraOf", CameraOf },
 		{ "ReplaceObject", ReplaceObject },
 
 		//BZ1 Functions/Backwards Compatability.

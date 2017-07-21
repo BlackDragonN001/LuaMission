@@ -428,6 +428,9 @@ extern Vector HRotateFront(const Vector Front, const float HAngleDifference);
 // Camera Pos function from Bob "BS-er" Stewert, moves the camera between two positions at the incrument speed. Tweaked by GBD and Ken Miller.
 extern bool CameraPos(const Handle me, const Handle him, const Vector &PosA, const Vector &PosB, const float Increment);
 
+// Positions the camera from the perspective of the handle with the specified offset.
+extern void CameraOf(const Handle me, const Vector &Offset);
+
 // Replaces an object with another object, retaining as much information about it as possible, with optional team switching, height offset, replacing of 
 // weapons with what it currently has, group, if it can be sniped, and current command info (may not work for all commands).
 Handle ReplaceObject(const Handle h, const char *ODF = NULL, const int Team = -1, const float HeightOffset = 0.0f, const int Empty = -1,
