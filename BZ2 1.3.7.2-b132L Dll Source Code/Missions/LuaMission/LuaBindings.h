@@ -242,6 +242,8 @@ namespace LuaBindings {
 	int CameraCancelled(lua_State *L);
 	int FreeCamera(lua_State *L);
 	int FreeFinish(lua_State *L);
+	int FreeCamera(lua_State *L);
+	int FreeFinish(lua_State *L);
 	int PlayMovie(lua_State *L);
 	int StopMovie(lua_State *L);
 	int PlayMove(lua_State *L);
@@ -680,6 +682,8 @@ namespace LuaBindings {
 		{ "CameraObject", CameraObject },
 		{ "CameraFinish", CameraFinish },
 		{ "CameraCancelled", CameraCancelled },
+		{ "FreeCamera", FreeCamera },
+		{ "FreeFinish", FreeFinish },
 		{ "PlayMovie", PlayMovie },
 		{ "StopMovie", StopMovie },
 		{ "PlayMove", PlayMove },
