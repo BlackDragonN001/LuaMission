@@ -827,3 +827,23 @@ void LuaMission::PostRun(void)
 	}
 
 }
+
+char * LuaMission::GetNextRandomVehicleODF(int Team)
+{
+	return GetNextRandomVehicleODF(Team);
+}
+
+void LuaMission::SetWorld(int nextWorld)
+{
+	SetWorld(nextWorld);
+}
+
+void LuaMission::ProcessCommand(unsigned long crc)
+{
+	ProcessCommand(crc);
+}
+
+void LuaMission::SetRandomSeed(unsigned long seed)
+{
+	SetRandomSeed(seed);
+}

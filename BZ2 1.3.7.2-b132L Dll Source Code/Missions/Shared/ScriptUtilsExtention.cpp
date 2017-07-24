@@ -114,21 +114,17 @@ bool Move(const Handle h, const float TurnSpeed, const float MoveSpeed, const Ve
 	Matrix OldMat = GetMatrixPosition(h);
 	Matrix NewMat = OldMat; // Fill this in for now.
 
-	Vector Pos = OldMat.posit;
-
 	// Rotate the object's new matrix.
 	if (TurnSpeed)
 	{
-		Vector Front = GetFront(h);
-		Front = HRotateFront(Front, (TurnSpeed * dt) * DEG_2_RAD);
-		NewMat = Build_Directinal_Matrix(Pos, Front);
+		NewMat = Build_Directinal_Matrix(OldMat.posit, HRotateFront(GetFront(h), (TurnSpeed * dt) * DEG_2_RAD));
 	}
 
 	// If the object is moving, move it's new matrix.
 	if (MoveSpeed)
 	{
 		// Get the difference vector between the object and the destination
-		Vector DiffVector = Sub_Vectors(Dest, Pos);
+		Vector DiffVector = Sub_Vectors(Dest, OldMat.posit);
 		// Get the length.
 		float DiffLength = GetLength3D(DiffVector);
 
@@ -140,7 +136,7 @@ bool Move(const Handle h, const float TurnSpeed, const float MoveSpeed, const Ve
 		{
 			// Normalize the Vector.
 			DiffVector = Normalize_Vector(DiffVector);
-			NewMat.posit = Add_Mult_Vectors(Pos, DiffVector, Speed);
+			NewMat.posit = Add_Mult_Vectors(OldMat.posit, DiffVector, Speed);
 			//SetVectorPosition(h, Pos);
 
 			//float MPS = MoveSpeed * 0.001f; // What is this exactly? does it need to scale with TPS? -GBD
@@ -181,10 +177,7 @@ bool Move(const Handle h, const float TurnSpeed, const float Time)
 	// Rotate the object's new matrix.
 	if (TurnSpeed)
 	{
-		Vector Pos = OldMat.posit;
-		Vector Front = GetFront(h);
-		Front = HRotateFront(Front, (TurnSpeed * dt) * DEG_2_RAD);
-		NewMat = Build_Directinal_Matrix(Pos, Front);
+		NewMat = Build_Directinal_Matrix(NewMat.posit, HRotateFront(GetFront(h), (TurnSpeed * dt) * DEG_2_RAD));
 	}
 	else
 	{
@@ -192,7 +185,7 @@ bool Move(const Handle h, const float TurnSpeed, const float Time)
 	}
 
 	SetLastCurrentPosition(h, OldMat, NewMat);
-	SetInterpolablePosition(h, &NewMat, &OldMat, true); // Move the object.
+	SetInterpolablePosition(h, &NewMat, &OldMat, false); // Move the object.
 
 	return false;
 }

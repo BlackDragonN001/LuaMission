@@ -63,6 +63,12 @@ namespace LuaBindings {
 
 	int Make_RGB(lua_State *L);
 	int Make_RGBA(lua_State *L);
+	/*
+	int GetNextRandomVehicleODF(lua_State *L);
+	int SetWorld(lua_State *L);
+	int ProcessCommand(lua_State *L);
+	int SetRandomSeed(lua_State *L);
+	*/
 	int FailMission(lua_State *L);
 	int SucceedMission(lua_State *L);
 	int ChangeSide(lua_State *L);
@@ -517,6 +523,12 @@ namespace LuaBindings {
 		{ "GetHandle", GetHandle },
 		{ "Make_RGB", Make_RGB },
 		{ "Make_RGBA", Make_RGBA },
+		/*
+		{ "GetNextRandomVehicleODF", GetNextRandomVehicleODF },
+		{ "SetWorld", SetWorld },
+		{ "ProcessCommand", ProcessCommand },
+		{ "SetRandomSeed", SetRandomSeed },
+		*/
 		// BZ2 Script Utils Inlines.
 		{ "FailMission", FailMission },
 		{ "SucceedMission", SucceedMission },

@@ -747,6 +747,40 @@ int Make_RGBA(lua_State *L)
 	return 1;
 }
 
+/* // !!-- How to add these? -GBD
+//char* (DLLAPI *GetNextRandomVehicleODF)(int ForTeam);
+int GetNextRandomVehicleODF(lua_State *L)
+{
+	TeamNum t = TeamNum(luaL_checkinteger(L, 1));
+	lua_pushstring(L, ::GetNextRandomVehicleODF(t));
+	return 1;
+}
+//void (DLLAPI *SetWorld)(int nextWorld);
+int SetWorld(lua_State *L)
+{
+	Time t = Time(luaL_checknumber(L, 1));
+	DLLBase::SetWorld(t);
+	return 0;
+}
+
+//void (DLLAPI *ProcessCommand)(unsigned long crc);
+int ProcessCommand(lua_State *L)
+{
+	Time t = Time(luaL_checknumber(L, 1));
+	::ProcessCommand(t);
+	return 0;
+}
+
+//void (DLLAPI *SetRandomSeed)(unsigned long seed);
+int SetRandomSeed(lua_State *L)
+{
+	Time t = Time(luaL_checknumber(L, 1));
+	::SetRandomSeed(t);
+	return 0;
+}
+*/
+
+
 //void FailMission(Time t, char *fileName = NULL);
 int FailMission(lua_State *L)
 {
@@ -2483,9 +2517,9 @@ int IFace_GetString(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
 	//int size = luaL_checkinteger(L, 2);
-	Name v = Name(alloca(MAX_NAME_LENGTH + 1));
-	::IFace_GetString(n, v, MAX_NAME_LENGTH);
-	v[MAX_NAME_LENGTH] = '\0';
+	Name v = Name(alloca(MAX_MESSAGE_LENGTH + 1));
+	::IFace_GetString(n, v, MAX_MESSAGE_LENGTH);
+	v[MAX_MESSAGE_LENGTH] = '\0';
 	lua_pushstring(L, v);
 	return 1;
 }
@@ -2574,9 +2608,9 @@ int IFace_GetSelectedItem(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
 	//int size = luaL_checkinteger(L, 2);
-	Name v = Name(alloca(MAX_NAME_LENGTH + 1));
-	::IFace_GetSelectedItem(n, v, MAX_NAME_LENGTH);
-	v[MAX_NAME_LENGTH] = '\0';
+	Name v = Name(alloca(MAX_MESSAGE_LENGTH + 1));
+	::IFace_GetSelectedItem(n, v, MAX_MESSAGE_LENGTH);
+	v[MAX_MESSAGE_LENGTH] = '\0';
 	lua_pushstring(L, v);
 	return 1;
 }
@@ -5358,8 +5392,7 @@ int CameraOf(lua_State *L)
 	Handle h1 = RequireHandle(L, 1);
 	if (Vector *dest = GetVector(L, 2))
 	{
-		Vector *v1 = RequireVector(L, 2);
-		::CameraOf(h1, *v1);
+		::CameraOf(h1, *dest);
 	}
 	else
 	{
