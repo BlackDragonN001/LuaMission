@@ -890,29 +890,29 @@ Creates a string with the desired value.
 Sets a string to the desired value.
 
 
--IFace_GetString ( string Name, string Value, int MaxSize )
+-string IFace_GetString ( string Name )
 
 Gets the value of a string? 
 
 
--IFace_CreateInterger ( string Name, int Value )
+-IFace_CreateInteger ( string Name, int Value )
 
-Creates an interger with the desired value.
-
-
--IFace_SetInterger ( string Name, int Value )
-
-Sets the interger to the specified value.
+Creates an integer with the desired value.
 
 
--number IFace_GetInterger (string Name )
+-IFace_SetInteger ( string Name, int Value )
 
-Gets the value of the specified interger.
+Sets the integer to the specified value.
 
 
--IFace_SetIntergerRange (string Name, interger Min, interger Max )
+-number IFace_GetInteger (string Name )
 
-Sets the range of the specified interger to the min and max.
+Gets the value of the specified integer.
+
+
+-IFace_SetIntegerRange (string Name, interger Min, interger Max )
+
+Sets the range of the specified integer to the min and max.
 
 
 -IFace_CreateFloat ( string Name, float Value )
@@ -940,12 +940,12 @@ Clears the specified listbox.
 Adds a value to the specified ListBox.
 
 
--IFace_GetSelectedItem ( string Name, string Value, interger MaxSize )
+-IFace_GetSelectedItem ( string Name, string Value )
 
 Gets the value of the selected Listbox item.
 
 
--SetSkill ( Handle h, interger Skill )
+-SetSkill ( Handle h, integer Skill )
 
 Sets the skill level of the handle. Valid values are 0 - 3.
 
@@ -1193,7 +1193,7 @@ Adds the named animation as the units Idle Animation?
 Returns true if the unit is idle.
 
 
--interger here, interger coming CountThreats ( Handle h )
+-integer here, integer coming CountThreats ( Handle h )
 
 Counts the enemy units within 200m of a h as here, and all enemy units on map as coming.
 
@@ -1228,17 +1228,17 @@ Calculates the cliffs around the handles?
 Calculates the cliffs along a path?
 
 
--interger StartSoundEffect ( string file, Handle h )
+-integer StartSoundEffect ( string file, Handle h )
 
 Starts a sound effect at the specified handle.
 
 
--interger FindSoundEffect ( string file, Handle h )
+-integer FindSoundEffect ( string file, Handle h )
 
 Finds a sound effect at the specified handle.
 
 
--StopSoundEffect ( interger sound )
+-StopSoundEffect ( integer sound )
 
 Stops the specified sound effect.
 
@@ -1284,25 +1284,25 @@ Returns true if a dedicated server.
 Returns true if TeamPlay is on.
 
 
--interter CountPlayers() 
+-integer CountPlayers() 
 
 Returns the number of players currently in the game.
 
 
--interger GetCommanderTeam ( int Team )
+-integer GetCommanderTeam ( int Team )
 
 In TeamPlay, returns the commander's Team, in non TeamPlay, returns the team.
 
 
--interger GetFirstAlliedTeam (int Team )
--interger GetLastAlliedTeam (int Team )
+-integer GetFirstAlliedTeam (int Team )
+-integer GetLastAlliedTeam (int Team )
 
 Returns the ranges (inclusive) of team #s allied with a specified team.  
 
 Note: these teams may have no players on them; check if GetPlayerHandle(x) returns anything to see if the team # is actually in use.
 
 
--interger DefensiveTeam, -interger OffensiveMinTeamNum, -interger OffensiveMaxTeamNum GetTeamplayRanges ( int WhichTeam )
+-integer DefensiveTeam, -integer OffensiveMinTeamNum, -integer OffensiveMaxTeamNum GetTeamplayRanges ( int WhichTeam )
 
 Alternat to above -- qeries the game for the teamplay team # ranges based on which team-group (0,1) is asked.
 
@@ -1641,12 +1641,12 @@ Returns true if the specified ODF exists, e.g. DoesODFExist("avtank")
 Translates a string from Localize.odf, e.g. TranslateString(tempstr, sizeof(tempstr), "MissionS0503");
 
 
--interger GetScavengerCurScrap ( Handle h )
+-integer GetScavengerCurScrap ( Handle h )
 
 Returns the current scrap inside the specified handle, if it is a scavenger. Returns -1 if the handle is not a Scavenger.
 
 
--interger GetScavengerMaxScrap( Handle h )
+-integer GetScavengerMaxScrap( Handle h )
 
 Returns the max scrap storage of the specified handle, if it is a scavenger. Returns -1 if the handle is not a Scavenger.
 

@@ -2482,10 +2482,10 @@ int IFace_SetString(lua_State *L)
 int IFace_GetString(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
-	int size = luaL_checkinteger(L, 2);
-	Name v = Name(alloca(size + 1));
-	::IFace_GetString(n, v, size);
-	v[size] = '\0';
+	//int size = luaL_checkinteger(L, 2);
+	Name v = Name(alloca(MAX_NAME_LENGTH + 1));
+	::IFace_GetString(n, v, MAX_NAME_LENGTH);
+	v[MAX_NAME_LENGTH] = '\0';
 	lua_pushstring(L, v);
 	return 1;
 }
@@ -2573,10 +2573,10 @@ int IFace_AddTextItem(lua_State *L)
 int IFace_GetSelectedItem(lua_State *L)
 {
 	Name n = Name(luaL_checkstring(L, 1));
-	int size = luaL_checkinteger(L, 2);
-	Name v = Name(alloca(size + 1));
-	::IFace_GetSelectedItem(n, v, size);
-	v[size] = '\0';
+	//int size = luaL_checkinteger(L, 2);
+	Name v = Name(alloca(MAX_NAME_LENGTH + 1));
+	::IFace_GetSelectedItem(n, v, MAX_NAME_LENGTH);
+	v[MAX_NAME_LENGTH] = '\0';
 	lua_pushstring(L, v);
 	return 1;
 }
