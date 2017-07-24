@@ -431,6 +431,11 @@ extern bool CameraPos(const Handle me, const Handle him, const Vector &PosA, con
 // Positions the camera from the perspective of the handle with the specified offset.
 extern void CameraOf(const Handle me, const Vector &Offset);
 
+// Move function from Bob "BS-ser" Stewert, moves the object to the Dest Position at the specified MoveSpeed. Rotates the object at the specified RotateSpeed in deg/sec. Returns true when the object has arrived.
+extern bool Move(const Handle h, const float TurnSpeed, const float MoveSpeed, const Vector &Dest);
+// Move function, spins the object in place until the specified GetTime(). Returns true when the game time has exceeded the specified time.
+extern bool Move(const Handle h, const float TurnSpeed, const float Time);
+
 // Replaces an object with another object, retaining as much information about it as possible, with optional team switching, height offset, replacing of 
 // weapons with what it currently has, group, if it can be sniped, and current command info (may not work for all commands).
 Handle ReplaceObject(const Handle h, const char *ODF = NULL, const int Team = -1, const float HeightOffset = 0.0f, const int Empty = -1,

@@ -70,6 +70,20 @@ inline bool operator!=(const Vector &a, const Vector &b){ return !(a == b); }
 inline bool operator==(const Matrix &a, const Matrix &b){ return a.front == b.front && a.up == b.up && a.right == b.right && a.posit == b.posit; }
 inline bool operator!=(const Matrix &a, const Matrix &b){ return !(a == b); }
 
+inline Vector & operator +=(Vector &a, const Vector &b) { a.x += b.x; a.y += b.y; a.z += b.z; return a; }
+inline Vector & operator -=(Vector &a, const Vector &b) { a.x -= b.x; a.y -= b.y; a.z -= b.z; return a; }
+inline Vector & operator *=(Vector &a, const Vector &b) { a.x *= b.x; a.y *= b.y; a.z *= b.z; return a; }
+inline Vector & operator /=(Vector &a, const Vector &b) { a.x /= b.x; a.y /= b.y; a.z /= b.z; return a; }
+
+inline Vector & operator -=(Vector &v, const float s) { v.x -= s; v.y -= s; v.z -= s; return v; }
+inline Vector & operator +=(Vector &v, const float s) { v.x += s; v.y += s; v.z += s; return v; }
+inline Vector & operator *=(Vector &v, const float s) { v.x *= s; v.y *= s; v.z *= s; return v; }
+inline Vector & operator /=(Vector &v, const float s) { v.x /= s; v.y /= s; v.z /= s; return v; }
+inline Vector & operator -=(const float s, Vector &v) { v.x -= s; v.y -= s; v.z -= s; return v; }
+inline Vector & operator +=(const float s, Vector &v) { v.x += s; v.y += s; v.z += s; return v; }
+inline Vector & operator *=(const float s, Vector &v) { v.x *= s; v.y *= s; v.z *= s; return v; }
+inline Vector & operator /=(const float s, Vector &v) { v.x /= s; v.y /= s; v.z /= s; return v; }
+
 // Is it close enough to the tolerance?
 inline bool const close_enough(const float &F1, const float &F2, const float Tolerance) { return fabsf(F2 - F1) < Tolerance; }
 inline bool const close_enough(const Vector &V1, const Vector &V2, const float Tolerance) { return close_enough( V1.x, V2.x, Tolerance) && close_enough( V1.y, V2.y, Tolerance) && close_enough( V1.z, V2.z, Tolerance); }

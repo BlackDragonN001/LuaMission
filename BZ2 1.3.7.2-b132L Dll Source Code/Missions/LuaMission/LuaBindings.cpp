@@ -2399,10 +2399,12 @@ int HoppedOutOf(lua_State *L)
 //DLLEXPORT void DLLAPI GetCameraPosition(Vector &pos, Vector &dir);
 int GetCameraPosition(lua_State *L)
 {
-	Vector *pos = GetVector(L, 1);
-	Vector *dir = GetVector(L, 2);
-	::GetCameraPosition(*pos, *dir);
-	return 0;
+	Vector pos = Vector(0, 0, 0);
+	Vector dir = Vector(0, 0, 0);
+	::GetCameraPosition(pos, dir);
+	*NewVector(L) = pos;
+	*NewVector(L) = dir;
+	return 2;
 }
 
 //DLLEXPORT void DLLAPI SetCameraPosition(const Vector &pos, const Vector &dir);
@@ -3237,13 +3239,11 @@ int GetLastAlliedTeam(lua_State *L)
 	return 1;
 }
 
-//DLLEXPORT void DLLAPI GetTeamplayRanges(int WhichTeam,int &DefenseTeamNum,int &OffenseMinTeamNum,int &OffenseMaxTeamNum);
+//DLLEXPORT void DLLAPI GetTeamplayRanges(int WhichTeam, int &DefenseTeamNum, int &OffenseMinTeamNum, int &OffenseMaxTeamNum);
 int GetTeamplayRanges(lua_State *L)
 {
 	int team = luaL_checkinteger(L, 1);
-	int DefenseTeamNum = luaL_checkinteger(L, 2);
-	int OffenseMinTeamNum = luaL_checkinteger(L, 3);
-	int OffenseMaxTeamNum = luaL_checkinteger(L, 4);
+	int DefenseTeamNum = 0, OffenseMinTeamNum = 0, OffenseMaxTeamNum = 0;
 	::GetTeamplayRanges(team, DefenseTeamNum, OffenseMinTeamNum, OffenseMaxTeamNum);
 	lua_pushnumber(L, DefenseTeamNum);
 	lua_pushnumber(L, OffenseMinTeamNum);
@@ -5185,12 +5185,6 @@ int SetInterpolablePosition(lua_State *L)
 		else
 			::SetInterpolablePosition(h, pos1, NULL);
 	}
-	/*
-	else
-	{
-		SetInterpolablePosition(h); //error C2668: 'SetInterpolablePosition' : ambiguous call to overloaded function
-	}
-	*/
 
 	return 0;
 }
@@ -5365,6 +5359,26 @@ int CameraOf(lua_State *L)
 	Vector *v1 = RequireVector(L, 2);
 	::CameraOf(h1, *v1);
 	return 0;
+}
+
+//extern bool Move(Handle h, float TurnSpeed, float MoveSpeed, Vector &Dest);
+//extern bool Move(Handle h, float TurnSpeed, float Time);
+int Move(lua_State *L)
+{
+	Handle h1 = RequireHandle(L, 1);
+	float turnspeed = float(luaL_checknumber(L, 2));
+
+	if (Vector *dest = GetVector(L, 4))
+	{
+		float movespeed = float(luaL_checknumber(L, 3));
+		lua_pushboolean(L, ::Move(h1, turnspeed, movespeed, *dest));
+	}
+	else
+	{
+		float time = float(luaL_checknumber(L, 3));
+		lua_pushboolean(L, ::Move(h1, turnspeed, time));
+	}
+	return 1;
 }
 
 //Handle ReplaceObject(Handle h, char* ODF = NULL, int Team = -1, float HeightOffset = 0.0f, int Empty = -1, bool RestoreWeapons = true, int Group = -1, bool KeepCommand = true, int NewCommand = -1, Handle NewWho = -1);

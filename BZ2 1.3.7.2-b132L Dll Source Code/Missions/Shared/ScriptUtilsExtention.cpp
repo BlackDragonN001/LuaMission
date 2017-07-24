@@ -99,8 +99,102 @@ void CameraOf(const Handle me, const Vector &Offset)
 	if (!IsAround(me))
 		return;
 
-	Vector dir = Normalize_Vector(GetFront(me));
-	SetCameraPosition(Add_Vectors(GetPosition(me), (Offset * dir)), dir);
+	SetCameraPosition(Vector_Transform(GetMatrixPosition(me), Offset), GetFront(me));
+}
+
+// Moves the handle from it's current position to it's final position at the specified speed, optionally rotating the object the direction while moving it.
+bool Move(const Handle h, const float TurnSpeed, const float MoveSpeed, const Vector &Dest)
+{
+	if (!IsAround(h))
+		return true; // Handle is gone, abort.
+
+	float dt = 1.0f / GetTPS(); // Delta time, per turn.
+
+	// Get the object's current position and rotation.
+	Matrix OldMat = GetMatrixPosition(h);
+	Matrix NewMat = OldMat; // Fill this in for now.
+
+	Vector Pos = OldMat.posit;
+
+	// Rotate the object's new matrix.
+	if (TurnSpeed)
+	{
+		Vector Front = GetFront(h);
+		Front = HRotateFront(Front, (TurnSpeed * dt) * DEG_2_RAD);
+		NewMat = Build_Directinal_Matrix(Pos, Front);
+	}
+
+	// If the object is moving, move it's new matrix.
+	if (MoveSpeed)
+	{
+		// Get the difference vector between the object and the destination
+		Vector DiffVector = Sub_Vectors(Dest, Pos);
+		// Get the length.
+		float DiffLength = GetLength3D(DiffVector);
+
+		// See if the object is about to go past the destination
+		float Speed = MoveSpeed * dt;
+
+		// If we're not here yet...
+		if (DiffLength >= Speed)
+		{
+			// Normalize the Vector.
+			DiffVector = Normalize_Vector(DiffVector);
+			NewMat.posit = Add_Mult_Vectors(Pos, DiffVector, Speed);
+			//SetVectorPosition(h, Pos);
+
+			//float MPS = MoveSpeed * 0.001f; // What is this exactly? does it need to scale with TPS? -GBD
+			float MPS = Speed / 10.0f;
+			DiffVector *= MPS; // Apply speed?
+			SetVelocity(h, DiffVector);
+		}
+		else
+		{
+			return true; // We're here, return true.
+		}
+	}
+	else
+	{
+		return true; // No movement speed specified, return true.
+	}
+
+	SetLastCurrentPosition(h, OldMat, NewMat);
+	SetInterpolablePosition(h, &NewMat, &OldMat, true); // Move the object.
+
+	return false;
+}
+// Rotates the handle at the specified speed, for the specified time.
+bool Move(const Handle h, const float TurnSpeed, const float Time)
+{
+	if (!IsAround(h))
+		return true; // Handle is gone, abort.
+
+	if (GetTime() >= Time)
+		return true; // Timer done.
+
+	float dt = 1.0f / GetTPS(); // Delta time, per turn.
+
+	// Get the object's current position and rotation.
+	Matrix OldMat = GetMatrixPosition(h);
+	Matrix NewMat = OldMat; // Fill this in for now.
+
+	// Rotate the object's new matrix.
+	if (TurnSpeed)
+	{
+		Vector Pos = OldMat.posit;
+		Vector Front = GetFront(h);
+		Front = HRotateFront(Front, (TurnSpeed * dt) * DEG_2_RAD);
+		NewMat = Build_Directinal_Matrix(Pos, Front);
+	}
+	else
+	{
+		return true; // No movement speed specified, return true.
+	}
+
+	SetLastCurrentPosition(h, OldMat, NewMat);
+	SetInterpolablePosition(h, &NewMat, &OldMat, true); // Move the object.
+
+	return false;
 }
 
 /////////////////////////////////////////////////////////////
