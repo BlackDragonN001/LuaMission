@@ -840,7 +840,7 @@ Removes the vehicle's pilot cleanly.
 Returns the vehicle that the pilot most recently hopped out of.
 
 
--GetCameraPosition( Vector &position, Vector &direction )
+-Vector position, -Vector direction GetCameraPosition()
 
 Returns the camera's current Position and Direction into the passed in variables.
 
@@ -1193,7 +1193,7 @@ Adds the named animation as the units Idle Animation?
 Returns true if the unit is idle.
 
 
--CountThreats ( Handle h, int &here, int &coming )
+-interger here, interger coming CountThreats ( Handle h )
 
 Counts the enemy units within 200m of a h as here, and all enemy units on map as coming.
 
@@ -1302,7 +1302,7 @@ Returns the ranges (inclusive) of team #s allied with a specified team.
 Note: these teams may have no players on them; check if GetPlayerHandle(x) returns anything to see if the team # is actually in use.
 
 
--GetTeamplayRanges ( int WhichTeam, int &DefensiveTeam, int &OffensiveMinTeamNum, int &OffensiveMaxTeamNum )
+-interger DefensiveTeam, -interger OffensiveMinTeamNum, -interger OffensiveMaxTeamNum GetTeamplayRanges ( int WhichTeam )
 
 Alternat to above -- qeries the game for the teamplay team # ranges based on which team-group (0,1) is asked.
 
@@ -1366,9 +1366,9 @@ Returns the next Player ODF, RandomizeType is 0 = None, 1 = Race, 2 = Any.
 Builds an empty ship near the specified handle, on the team, between the min and max radius.
 
 
--SetCircularPos( Vector CenterPos, float Radius, float Angle, Vector &NewPos )
+-Vector NewPos GetCircularPos( Vector CenterPos, float Radius, float Angle)
 
-Sets the specified Vector and returns it into the passed in NewPos vector.
+Gets a new position around a central point. The y-posn is the terrain at that location.
 
 
 -vector GetCircularPos ( vector center, [ number radius ], [ number angle ] )
@@ -2371,6 +2371,34 @@ Gets all GameObject handles that are targeting the specified 'me'. Note that thi
 
 
 
+============ BZScriptor Backwards Compatability Stuff ======================
+
+
+-SetAngle ( Handle h, int Centigrees )
+
+Sets the horizontal angle of an object to the specified angle, in centigrees, based on world coordinates (0 = North). e.g. SetAngle(tank, 9000) is 90 degrees to the right.
+
+
+-boolean CameraPos ( Handle me, Handle him, Vector StartPos, Vector EndPos, float Incrument )
+
+Does a CameraObject camera sequence, and moves the camera from Start to End Positions, at the set incrument.
+
+
+- CameraOf( Handle me, Vector Offset )
+- CameraOf( Handle me, float ZOffset )
+
+Sets the Camera to the perspective of the handle, with the specified offset.
+
+
+-boolean Move ( Handle h, float TurnSpeed, float MoveSpeed, Vector DestinationPosition )
+-boolean Move ( Handle h, float TurnSpeed, float Time )
+
+Moves the handle to the destination position, at the specified speed/sec, and optionally rotating at the specified turnspeed in deg/sec. If only the Time is specified, it spins the object until the result of GetTime() is >= the specified time.
+
+
+-Handle ReplaceObject ( Handle h, [ string ODF ], [ int Team = -1 ], [ float HeightOffset = 0.0f ], [ int Empty = -1 ], [ bool RestoreWeapons = true ], [ int Group = -1 ], [ bool KeepCommand = true ], [ int NewCommand = -1 ], [ Handle NewWho = -1 ] )
+
+Replaces an object with another object, retaining as much information about it as possible, with optional team switching, height offset, replacing of weapons with ones it currently has, group, and current command info (may not work for all commands).
 
 
 ============ BZ1 Backwards Compatability Stuff ======================

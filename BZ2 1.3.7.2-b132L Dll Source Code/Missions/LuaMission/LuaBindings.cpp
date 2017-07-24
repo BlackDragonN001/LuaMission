@@ -5356,8 +5356,16 @@ int CameraPos(lua_State *L)
 int CameraOf(lua_State *L)
 {
 	Handle h1 = RequireHandle(L, 1);
-	Vector *v1 = RequireVector(L, 2);
-	::CameraOf(h1, *v1);
+	if (Vector *dest = GetVector(L, 2))
+	{
+		Vector *v1 = RequireVector(L, 2);
+		::CameraOf(h1, *v1);
+	}
+	else
+	{
+		float zoffset = float(luaL_checknumber(L, 2));
+		::CameraOf(h1, zoffset);
+	}
 	return 0;
 }
 

@@ -430,6 +430,8 @@ extern bool CameraPos(const Handle me, const Handle him, const Vector &PosA, con
 
 // Positions the camera from the perspective of the handle with the specified offset.
 extern void CameraOf(const Handle me, const Vector &Offset);
+// Version that takes a Z offset float.
+inline void CameraOf(const Handle me, const float ZOffset) { CameraOf(me, Vector(0, 0, ZOffset)); }
 
 // Move function from Bob "BS-ser" Stewert, moves the object to the Dest Position at the specified MoveSpeed. Rotates the object at the specified RotateSpeed in deg/sec. Returns true when the object has arrived.
 extern bool Move(const Handle h, const float TurnSpeed, const float MoveSpeed, const Vector &Dest);
