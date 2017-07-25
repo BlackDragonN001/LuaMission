@@ -16,10 +16,11 @@ extern Matrix Build_Directinal_Matrix (const Vector &Position, const Vector &Dir
 extern Matrix Interpolate_Matrix(const Matrix &m0, const Matrix &m1, const float t);
 extern Quaternion Interpolate_Quaternion(const Quaternion &q0, const Quaternion &q1, const float t);
 extern Quaternion Normalize_Quaternion (const Quaternion &q);
-extern Quaternion Matrix_to_Quaternion(const Matrix &M, Quaternion &Q, Vector &P);
 extern Vector Interpolate_Position(const Vector &p0, const Vector &p1, const float t);
 extern void Matrix_to_QuatPos(const Matrix &M, Quaternion &Q, Vector &P);
+inline Quaternion Matrix_to_Quaternion(const Matrix &M) { Quaternion q; Vector v; Matrix_to_QuatPos(M, q, v); return q; }
 extern void QuatPos_to_Matrix(const Quaternion &Q, const Vector &P, Matrix &M);
+inline Matrix QuatPos_to_Matrix(const Quaternion &Q, const Vector &P) { Matrix m; QuatPos_to_Matrix(Q, P, m); return m; }
 
 // Math stuff from Ken Miller.
 extern Vector Vector_Transform(const Matrix &M, const Vector &v);
@@ -40,6 +41,7 @@ inline Vector Add_Vectors(const Vector &v1, const Vector &v2) { return Vector(v1
 inline Vector Vector_Scale(const Vector &V, const float Mult) { return Vector(V.x * Mult, V.y * Mult, V.z * Mult); }
 inline Vector Vector_Scale(const float Mult, const Vector &V) { return Vector(V.x * Mult, V.y * Mult, V.z * Mult); }
 inline Vector Add_Mult_Vectors(const Vector &v1, const Vector &v2, float Mult) { return Vector(v1.x + v2.x * Mult, v1.y + v2.y * Mult, v1.z + v2.z * Mult); }
+inline Vector Vector_Multiply(const Vector &v1, const Vector &v2) { return Vector(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z); }
 inline Vector Neg_Vector(const Vector &v1) { return Vector(-v1.x, -v1.y, -v1.z); }
 inline Matrix Build_Identity_Matrix(const Vector &Pos) { return Matrix(Vector(1, 0, 0),Vector(0, 1, 0), Vector(0, 0, 1), Pos); }
 
@@ -136,7 +138,7 @@ inline Vector Vector2DToVector(const VECTOR_2D v, const float y = 0.0f) { return
 inline Vector GetFacingDirection(const Vector A, const Vector B) { return Normalize_Vector(Sub_Vectors(B, A)); }
 // Geta a Front Vector from Position A, facing position B, keeping it horizontally level.
 inline Vector GetFacingDrection2D(const VECTOR_2D A, const VECTOR_2D B) { return Vector2DToVector(Normalize_Vector2D(Sub_Vectors2D(B, A))); }
-// Version that takes a 3d Vector.
+// Version that takes a 3D Vector.
 inline Vector GetFacingDrection2D(const Vector A, const Vector B) { return GetFacingDrection2D(VectorToVector2D(A), VectorToVector2D(B)); }
 
 // Square a value.

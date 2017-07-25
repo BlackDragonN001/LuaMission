@@ -325,7 +325,7 @@ inline void TranslateString(char* Dst, const char* Src) { TranslateString2(Dst, 
 inline void Network_SetString(const char* name, const char* value) { Network_SetString(const_cast<Name>(name), const_cast<Name>(value)); }
 inline void Network_SetInteger(const char* name, const int value) { Network_SetInteger(const_cast<Name>(name), value); }
 inline bool GetPathPoints(const char* path, size_t& bufSize, float* pData) { return GetPathPoints(const_cast<Name>(path), bufSize, pData); }
-inline void SetPosition(const Handle h, const Matrix &m) { SetPosition(h, m); }
+//inline void SetPosition(const Handle h, const Matrix &m) { SetPosition(h, m); }
 inline void Build(const Handle me, const char* odf, const int priority = 1) { Build(me, const_cast<char *>(odf), priority); }
 inline void GiveWeapon(const Handle me, const int slot, const char* weapon) { GiveWeapon(me, slot, const_cast<Name>(weapon)); }
 

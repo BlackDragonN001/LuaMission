@@ -206,6 +206,39 @@ Matrix *NewMatrix(lua_State *L)
 	return m;
 }
 
+// get a Quaternion from the lua stack
+// returns NULL if the item is not a vector
+Quaternion *GetQuaternion(lua_State *L, int n)
+{
+	return static_cast<Quaternion *>(luaL_testudata(L, n, "Quaternion"));
+}
+
+// get a required Quaternion from the lua stack
+Quaternion *RequireQuaternion(lua_State *L, int n)
+{
+	return static_cast<Quaternion *>(luaL_checkudata(L, n, "Quaternion"));
+}
+
+// create a Quaternion on the lua stack
+Quaternion *NewQuaternion(lua_State *L)
+{
+	Quaternion *q = static_cast<Quaternion *>(lua_newuserdata(L, sizeof(Quaternion)));
+	luaL_getmetatable(L, "Quaternion");
+	lua_setmetatable(L, -2);
+	return q;
+}
+
+// construct a Quaternion from four numbers
+int SetQuaternion(lua_State *L)
+{
+	float s = float(luaL_optnumber(L, 1, 1.0f));
+	float x = float(luaL_optnumber(L, 2, 0.0f));
+	float y = float(luaL_optnumber(L, 3, 0.0f));
+	float z = float(luaL_optnumber(L, 4, 0.0f));
+	*NewQuaternion(L) = Quaternion(s, Vector(x, y, z));
+	return 1;
+}
+
 // Optional Boolean.
 bool luaL_optboolean(lua_State *L, int n, int defval)
 {
@@ -307,7 +340,7 @@ int Vector_Mul(lua_State *L)
 	{
 		Vector *v1 = RequireVector(L, 1);
 		Vector *v2 = RequireVector(L, 2);
-		*NewVector(L) = Vector(v1->x * v2->x, v1->y * v2->y, v1->z * v2->z);
+		*NewVector(L) = Vector_Multiply(*v1, *v2);
 		return 1;
 	}
 }
@@ -524,6 +557,70 @@ int Matrix_ToString(lua_State *L)
 	return 1;
 }
 
+// Quaternion index (read)
+// receives (userdata, key)
+int Quaternion_Index(lua_State *L)
+{
+	Quaternion *q = GetQuaternion(L, 1);
+	if (!q)
+		return 0;
+	const char *key = luaL_checkstring(L, 2);
+	switch (Hash(key))
+	{
+	case 0xf60c4582 /* "s" */:
+		lua_pushnumber(L, q->s);
+		return 1;
+	case 0xfd0c5087 /* "x" */:
+		lua_pushnumber(L, q->v.x);
+		return 1;
+	case 0xfc0c4ef4 /* "y" */:
+		lua_pushnumber(L, q->v.y);
+		return 1;
+	case 0xff0c53ad /* "z" */:
+		lua_pushnumber(L, q->v.z);
+		return 1;
+	default:
+		return 0;
+	}
+}
+
+// Quaternion newindex (write)
+// receives (userdata, key, value)
+int Quaternion_NewIndex(lua_State *L)
+{
+	Quaternion *q = GetQuaternion(L, 1);
+	if (!q)
+		return 0;
+	const char *key = luaL_checkstring(L, 2);
+	switch (Hash(key))
+	{
+	case 0xf60c4582 /* "s" */:
+		q->s = float(luaL_checknumber(L, 3));
+		return 0;
+	case 0xfd0c5087 /* "x" */:
+		q->v.x = float(luaL_checknumber(L, 3));
+		return 0;
+	case 0xfc0c4ef4 /* "y" */:
+		q->v.y = float(luaL_checknumber(L, 3));
+		return 0;
+	case 0xff0c53ad /* "z" */:
+		q->v.z = float(luaL_checknumber(L, 3));
+		return 0;
+	default:
+		return 0;
+	}
+}
+
+// Quaternion to string
+int Quaternion_ToString(lua_State *L)
+{
+	Quaternion *q = RequireQuaternion(L, 1);
+	char buf[MAX_ODF_LENGTH] = { 0 };
+	sprintf_s(buf, "{s=%f, x=%f, y=%f, z=%f}", q->s, q->v.x, q->v.y, q->v.z);
+	lua_pushstring(L, buf);
+	return 1;
+}
+
 // construct a vector from three numbers
 int SetVector(lua_State *L)
 {
@@ -572,7 +669,7 @@ int Length(lua_State *L)
 int LengthSquared(lua_State *L)
 {
 	Vector *v = RequireVector(L, 1);
-	lua_pushnumber(L, Dot_Product(*v, *v));
+	lua_pushnumber(L, GetLength3DSquared(*v));
 	return 1;
 }
 
@@ -725,6 +822,227 @@ int BuildDirectionalMatrix(lua_State *L)
 	return 1;
 }
 
+//extern Matrix Interpolate_Matrix(const Matrix &m0, const Matrix &m1, const float t);
+int Interpolate_Matrix(lua_State *L)
+{
+	const Matrix *m1 = GetMatrix(L, 1);
+	const Matrix *m2 = GetMatrix(L, 2);
+	float t = float(luaL_checknumber(L, 3));
+	*NewMatrix(L) = Interpolate_Matrix(*m1, *m2, t);
+	return 1;
+}
+
+
+//extern Quaternion Interpolate_Quaternion(const Quaternion &q0, const Quaternion &q1, const float t);
+int Interpolate_Quaternion(lua_State *L)
+{
+	const Quaternion *q1 = GetQuaternion(L, 1);
+	const Quaternion *q2 = GetQuaternion(L, 2);
+	float t = float(luaL_checknumber(L, 3));
+	*NewQuaternion(L) = Interpolate_Quaternion(*q1, *q2, t);
+	return 1;
+}
+
+//extern Quaternion Normalize_Quaternion(const Quaternion &q);
+int Normalize_Quaternion(lua_State *L)
+{
+	const Quaternion *q1 = GetQuaternion(L, 1);
+	*NewQuaternion(L) = Normalize_Quaternion(*q1);
+	return 1;
+}
+
+//extern void Matrix_to_QuatPos(const Matrix &M, Quaternion &Q, Vector &P);
+int Matrix_to_QuatPos(lua_State *L)
+{
+	const Matrix *m1 = GetMatrix(L, 1);
+	Quaternion q;
+	Vector v;
+	Matrix_to_QuatPos(*m1, q, v);
+	*NewQuaternion(L) = q;
+	*NewVector(L) = v;
+	return 2;
+}
+//inline Quaternion Matrix_to_Quaternion(const Matrix &M) { Quaternion q; Vector v; Matrix_to_QuatPos(M, q, v); return q; }
+int Matrix_to_Quaternion(lua_State *L)
+{
+	const Matrix *m1 = GetMatrix(L, 1);
+	Quaternion q;
+	Vector v;
+	Matrix_to_QuatPos(*m1, q, v);
+	*NewQuaternion(L) = q;
+	return 1;
+}
+
+//extern void QuatPos_to_Matrix(const Quaternion &Q, const Vector &P, Matrix &M);
+int QuatPos_to_Matrix(lua_State *L)
+{
+	const Quaternion *q1 = GetQuaternion(L, 1);
+	//const Vector *v1 = GetVector(L, 2);
+	float x, y, z;
+	if (const Vector *posit = GetVector(L, 2))
+	{
+		x = posit->x;
+		y = posit->y;
+		z = posit->z;
+	}
+	else
+	{
+		x = float(luaL_optnumber(L, 2, 0.0f));
+		y = float(luaL_optnumber(L, 3, 0.0f));
+		z = float(luaL_optnumber(L, 4, 0.0f));
+	}
+	*NewMatrix(L) = QuatPos_to_Matrix(*q1, Vector(x, y, z));
+	return 1;
+}
+
+//extern Vector Vector_TransformInv(const Matrix &M, const Vector &v);
+int Vector_TransformInv(lua_State *L)
+{
+	const Matrix *m = GetMatrix(L, 1);
+	//const Vector *v = GetVector(L, 2);
+	float x, y, z;
+	if (const Vector *posit = GetVector(L, 2))
+	{
+		x = posit->x;
+		y = posit->y;
+		z = posit->z;
+	}
+	else
+	{
+		x = float(luaL_optnumber(L, 2, 0.0f));
+		y = float(luaL_optnumber(L, 3, 0.0f));
+		z = float(luaL_optnumber(L, 4, 0.0f));
+	}
+	*NewVector(L) = Vector_TransformInv(*m, Vector(x, y, z));
+	return 1;
+}
+
+//extern Vector Vector_Rotate(const Matrix &M, const Vector &v);
+int Vector_Rotate(lua_State *L)
+{
+	const Matrix *m = GetMatrix(L, 1);
+	//const Vector *v = GetVector(L, 2);
+	float x, y, z;
+	if (const Vector *posit = GetVector(L, 2))
+	{
+		x = posit->x;
+		y = posit->y;
+		z = posit->z;
+	}
+	else
+	{
+		x = float(luaL_optnumber(L, 2, 0.0f));
+		y = float(luaL_optnumber(L, 3, 0.0f));
+		z = float(luaL_optnumber(L, 4, 0.0f));
+	}
+	*NewVector(L) = Vector_Rotate(*m, Vector(x, y, z));
+	return 1;
+}
+
+//extern Vector Vector_RotateInv(const Matrix &M, const Vector &v);
+int Vector_RotateInv(lua_State *L)
+{
+	const Matrix *m = GetMatrix(L, 1);
+	//const Vector *v = GetVector(L, 2);
+	float x, y, z;
+	if (const Vector *posit = GetVector(L, 2))
+	{
+		x = posit->x;
+		y = posit->y;
+		z = posit->z;
+	}
+	else
+	{
+		x = float(luaL_optnumber(L, 2, 0.0f));
+		y = float(luaL_optnumber(L, 3, 0.0f));
+		z = float(luaL_optnumber(L, 4, 0.0f));
+	}
+	*NewVector(L) = Vector_RotateInv(*m, Vector(x, y, z));
+	return 1;
+}
+
+//extern Matrix Matrix_Inverse(const Matrix &M);
+int Matrix_Inverse(lua_State *L)
+{
+	const Matrix *m1 = GetMatrix(L, 1);
+	*NewMatrix(L) = Matrix_Inverse(*m1);
+	return 1;
+}
+
+//extern Matrix Build_Yaw_Matrix(const float Yaw, const Vector &Position = Vector(0, 0, 0));
+int Build_Yaw_Matrix(lua_State *L)
+{
+	float angle = float(luaL_optnumber(L, 1, 0.0f));
+	float x, y, z;
+	if (const Vector *axis = GetVector(L, 2))
+	{
+		x = axis->x;
+		y = axis->y;
+		z = axis->z;
+	}
+	else
+	{
+		x = float(luaL_optnumber(L, 2, 0.0f));
+		y = float(luaL_optnumber(L, 3, 0.0f));
+		z = float(luaL_optnumber(L, 4, 0.0f));
+	}
+	*NewMatrix(L) = Build_Yaw_Matrix(angle, Vector(x, y, z));
+	return 1;
+}
+
+//inline Vector Add_Mult_Vectors(const Vector &v1, const Vector &v2, float Mult) { return Vector(v1.x + v2.x * Mult, v1.y + v2.y * Mult, v1.z + v2.z * Mult); }
+int Add_Mult_Vectors(lua_State *L)
+{
+	int StartArg = 1;
+	const Vector *v1 = RequireVector(L, 1);
+	const Vector *v2 = RequireVector(L, 2);
+	float mult = float(luaL_checknumber(L, StartArg));
+	*NewVector(L) = Add_Mult_Vectors(*v1, *v2, mult);
+	return 1;
+}
+
+//inline bool IsNullVector(Vector v) { return ((v.x * v.x) + (v.y * v.y) + (v.z * v.z) < 0.1f); }
+int IsNullVector(lua_State *L)
+{
+	Vector *v1 = RequireVector(L, 1);
+	lua_pushboolean(L, ::IsNullVector(*v1));
+	return 1;
+}
+
+//inline float FrontToRadian(const Vector front) { return portable_atan2(front.x, front.z); }
+int FrontToRadian(lua_State *L)
+{
+	Vector *v1 = RequireVector(L, 1);
+	lua_pushnumber(L, ::FrontToRadian(*v1));
+	return 1;
+}
+
+//inline float FrontToDegrees(const Vector front) { return FrontToRadian(front) * RAD_2_DEG; }
+int FrontToDegrees(lua_State *L)
+{
+	Vector *v1 = RequireVector(L, 1);
+	lua_pushnumber(L, ::FrontToDegrees(*v1));
+	return 1;
+}
+
+//inline Vector GetFacingDirection(const Vector A, const Vector B) { return Normalize_Vector(Sub_Vectors(B, A)); }
+int GetFacingDirection(lua_State *L)
+{
+	Vector *v1 = RequireVector(L, 1);
+	Vector *v2 = RequireVector(L, 2);
+	*NewVector(L) = ::GetFacingDirection(*v1, *v2);
+	return 1;
+}
+
+//inline Vector GetFacingDrection2D(const Vector A, const Vector B) { return GetFacingDrection2D(VectorToVector2D(A), VectorToVector2D(B)); }
+int GetFacingDrection2D(lua_State *L)
+{
+	Vector *v1 = RequireVector(L, 1);
+	Vector *v2 = RequireVector(L, 2);
+	*NewVector(L) = ::GetFacingDrection2D(*v1, *v2);
+	return 1;
+}
+
 
 // Script Util Functions:
 
@@ -746,40 +1064,6 @@ int Make_RGBA(lua_State *L)
 	lua_pushinteger(L, RGBA_MAKE(r, g, b, a));
 	return 1;
 }
-
-/* // !!-- How to add these? -GBD
-//char* (DLLAPI *GetNextRandomVehicleODF)(int ForTeam);
-int GetNextRandomVehicleODF(lua_State *L)
-{
-	TeamNum t = TeamNum(luaL_checkinteger(L, 1));
-	lua_pushstring(L, ::GetNextRandomVehicleODF(t));
-	return 1;
-}
-//void (DLLAPI *SetWorld)(int nextWorld);
-int SetWorld(lua_State *L)
-{
-	Time t = Time(luaL_checknumber(L, 1));
-	DLLBase::SetWorld(t);
-	return 0;
-}
-
-//void (DLLAPI *ProcessCommand)(unsigned long crc);
-int ProcessCommand(lua_State *L)
-{
-	Time t = Time(luaL_checknumber(L, 1));
-	::ProcessCommand(t);
-	return 0;
-}
-
-//void (DLLAPI *SetRandomSeed)(unsigned long seed);
-int SetRandomSeed(lua_State *L)
-{
-	Time t = Time(luaL_checknumber(L, 1));
-	::SetRandomSeed(t);
-	return 0;
-}
-*/
-
 
 //void FailMission(Time t, char *fileName = NULL);
 int FailMission(lua_State *L)
@@ -5474,8 +5758,8 @@ int SetTransform(lua_State *L)
 		Name path = Name(lua_tostring(L, 2));
 		Vector pos = GetVectorFromPath(path, 0);
 		//Vector front = Normalize_Vector(GetVectorFromPath(path, 1) - pos);
-		//Matrix mat = Build_Directinal_Matrix(pos, Normalize_Vector(GetVectorFromPath(path, 1) - pos));
-		SetPosition(h, Build_Directinal_Matrix(pos, GetVectorFromPath(path, 1) - pos));
+		Matrix mat = Build_Directinal_Matrix(pos, GetVectorFromPath(path, 1) - pos);
+		SetPosition(h, mat);
 	}
 	else
 	{
@@ -5583,6 +5867,15 @@ bool LoadValue(lua_State *L, bool push)
 				*NewMatrix(L) = m;
 		}
 		break;
+		case 0xf3e6468d /* "Quaternion" */:
+		{
+			Quaternion q;
+			//in(fp, &q, sizeof(q));
+			ret = ret && Read(&q, sizeof(q));
+			if (push)
+				*NewQuaternion(L) = q;
+		}
+		break;
 		//	case 0x79fa9618 /* "AiPath" */:
 		//		{
 		//			AiPath *p;
@@ -5688,6 +5981,10 @@ bool SaveValue(lua_State *L, int i)
 			case 0x15c2f8ec /* "Matrix" */:
 				//out(fp, GetMatrix(L, i), sizeof(Matrix));
 				ret = ret && Write(GetMatrix(L, i), sizeof(Matrix));
+				break;
+			case 0xf3e6468d /* "Quaternion" */:
+				//out(fp, GetQuaternion(L, i), sizeof(Quaternion));
+				ret = ret && Write(GetQuaternion(L, i), sizeof(Quaternion));
 				break;
 				//	case 0x79fa9618 /* "AiPath" */:
 				//		ret = ret && Write(GetAiPath(L, i), sizeof(AiPath));

@@ -856,13 +856,6 @@ void instantMission::DoGenericStrategy()
 {
 	m_TimeCount++;
 
-	// Wait until after start done to cloak the ship so it doesn't interrupt the previous command.
-	if ((m_StartDone) && (!TestCloakBool))
-	{
-		TestCloakBool = true;
-		SetCommand(TestCloaker, CMD_MORPH_SETDEPLOYED, 0); // Cloak the object.
-	}
-
 	if(!m_StartDone)
 	{
 		m_StartDone=true;
@@ -1015,47 +1008,6 @@ void instantMission::DoGenericStrategy()
 		// Build initial items for Human team based on selections
 
 		int grp=GetFirstEmptyGroup();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		// Test code for MorphTank AI Cloaking and with a Defending support unit. -GBD
-		Vector CloakerPos = GetPositionNear(GetPosition(GetPlayerHandle()), 20.0f, 30.0f);
-		TestCloaker = BuildObject("fvtanktest", 1, CloakerPos);
-		SetObjectiveName(TestCloaker, "Cloaker");
-		SetObjectiveOn(TestCloaker);
-		PrintConsoleMessage("Spawning Cloaker");
-		Goto(TestCloaker, m_EnemyRecycler); // Go to their base.
-//		SetCommand(TestCloaker, CMD_MORPH_SETDEPLOYED, 0); // Cloak the object.
-		// Spawn Defender.
-		Vector DefenderPos = GetPositionNear(CloakerPos, 15.0f, 20.0f);
-		TestDefender = BuildObject("fvscout", 1, DefenderPos);
-		Defend2(TestDefender, TestCloaker, 1); // Command to defend the unit.
-		SetObjectiveName(TestDefender, "Defender");
-		SetObjectiveOn(TestDefender);
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 		// Note: contents of options.instant.string# not copied to member
 		// varbs, as recommended above. Why not? It's only used in

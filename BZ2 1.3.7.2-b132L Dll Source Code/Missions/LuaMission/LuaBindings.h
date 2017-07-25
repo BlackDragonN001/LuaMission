@@ -20,27 +20,40 @@ namespace LuaBindings {
 	Handle GetHandle(lua_State *L, int n);
 	Handle RequireHandle(lua_State *L, int n);
 	int Handle_ToString(lua_State *L);
+	bool luaL_optboolean(lua_State *L, int n, int defval);
+
+	// Math Stuff
 	Vector *GetVector(lua_State *L, int n);
 	Vector *RequireVector(lua_State *L, int n);
 	Vector *NewVector(lua_State *L);
-	Matrix *GetMatrix(lua_State *L, int n);
-	Matrix *RequireMatrix(lua_State *L, int n);
-	Matrix *NewMatrix(lua_State *L);
-	bool luaL_optboolean(lua_State *L, int n, int defval);
 	int Vector_Index(lua_State *L);
 	int Vector_NewIndex(lua_State *L);
+	int Vector_ToString(lua_State *L);
 	int Vector_Neg(lua_State *L);
 	int Vector_Add(lua_State *L);
 	int Vector_Sub(lua_State *L);
 	int Vector_Mul(lua_State *L);
 	int Vector_Div(lua_State *L);
 	int Vector_Eq(lua_State *L);
-	int Vector_ToString(lua_State *L);
+	int SetVector(lua_State *L);
+
+	Matrix *GetMatrix(lua_State *L, int n);
+	Matrix *RequireMatrix(lua_State *L, int n);
+	Matrix *NewMatrix(lua_State *L);
 	int Matrix_Index(lua_State *L);
 	int Matrix_NewIndex(lua_State *L);
 	int Matrix_Mul(lua_State *L);
 	int Matrix_ToString(lua_State *L);
-	int SetVector(lua_State *L);
+	int SetMatrix(lua_State *L);
+
+	Quaternion *GetQuaternion(lua_State *L, int n);
+	Quaternion *RequireQuaternion(lua_State *L, int n);
+	Quaternion *NewQuaternion(lua_State *L);
+	int Quaternion_Index(lua_State *L);
+	int Quaternion_NewIndex(lua_State *L);
+	int Quaternion_ToString(lua_State *L);
+	int SetQuaternion(lua_State *L);
+
 	int DotProduct(lua_State *L);
 	int CrossProduct(lua_State *L);
 	int Normalize(lua_State *L);
@@ -50,7 +63,7 @@ namespace LuaBindings {
 	int Distance2DSquared(lua_State *L);
 	int Distance3D(lua_State *L);
 	int Distance3DSquared(lua_State *L);
-	int SetMatrix(lua_State *L);
+
 	int BuildAxisRotationMatrix(lua_State *L);
 	int BuildPositionRotationMatrix(lua_State *L);
 	const Vector zero(0.0f, 0.0f, 0.0f);
@@ -58,6 +71,26 @@ namespace LuaBindings {
 	const Vector z_axis(0.0f, 0.0f, 1.0f);
 	int BuildOrthogonalMatrix(lua_State *L);
 	int BuildDirectionalMatrix(lua_State *L);
+
+	int SetQuaternion(lua_State *L);
+	int Interpolate_Matrix(lua_State *L);
+	int Interpolate_Quaternion(lua_State *L);
+	int Normalize_Quaternion(lua_State *L);
+	int Matrix_to_QuatPos(lua_State *L);
+	int Matrix_to_Quaternion(lua_State *L);
+	int QuatPos_to_Matrix(lua_State *L);
+	int Vector_TransformInv(lua_State *L);
+	int Vector_Rotate(lua_State *L);
+	int Vector_RotateInv(lua_State *L);
+	int Matrix_Inverse(lua_State *L);
+	int Build_Yaw_Matrix(lua_State *L);
+	int Add_Mult_Vectors(lua_State *L);
+
+	int IsNullVector(lua_State *L);
+	int FrontToRadian(lua_State *L);
+	int FrontToDegrees(lua_State *L);
+	int GetFacingDirection(lua_State *L);
+	int GetFacingDrection2D(lua_State *L);
 
 	// Script Util Functions:
 
@@ -949,6 +982,27 @@ namespace LuaBindings {
 		{ "BuildPositionRotationMatrix", BuildPositionRotationMatrix },
 		{ "BuildOrthogonalMatrix", BuildOrthogonalMatrix },
 		{ "BuildDirectionalMatrix", BuildDirectionalMatrix },
+
+		{ "Build_Yaw_Matrix", Build_Yaw_Matrix },
+		{ "Interpolate_Matrix", Interpolate_Matrix },
+		{ "SetQuaternion", SetQuaternion },
+		{ "Interpolate_Quaternion", Interpolate_Quaternion },
+		{ "Normalize_Quaternion", Normalize_Quaternion },
+		{ "Matrix_to_QuatPos", Matrix_to_QuatPos },
+		{ "Matrix_to_Quaternion", Matrix_to_Quaternion },
+		{ "QuatPos_to_Matrix", QuatPos_to_Matrix },
+		{ "Vector_TransformInv", Vector_TransformInv },
+		{ "Vector_Rotate", Vector_Rotate },
+		{ "Vector_RotateInv", Vector_RotateInv },
+		{ "Matrix_Inverse", Matrix_Inverse },
+		{ "Add_Mult_Vectors", Add_Mult_Vectors },
+
+		{ "IsNullVector", IsNullVector },
+		{ "FrontToRadian", FrontToRadian },
+		{ "FrontToDegrees", FrontToDegrees },
+		{ "GetFacingDirection", GetFacingDirection },
+		{ "GetFacingDrection2D", GetFacingDrection2D },
+
 		{ NULL, NULL }
 	};
 

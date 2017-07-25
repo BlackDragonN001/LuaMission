@@ -43,7 +43,6 @@ private:
 		m_PastAIP0, // true when they've built a recyler building, or we get bored
 		m_CanRespawn, // true if the user can respawn if died (kill/snipe)
 
-		TestCloakBool, // Test
 		b_last;
 
 	// floats
@@ -73,8 +72,6 @@ private:
 		m_Powerup4,
 		m_CPUScavList[MAX_CPU_SCAVS], // List of CPU scav handles, used during cleanup.
 
-		TestCloaker, // Test cloak ship.
-		TestDefender, // Test Defender ship.
 		h_last;
 
 	int m_GameTPS; // How many turns per second there are (10, 15, 20, or 30)
