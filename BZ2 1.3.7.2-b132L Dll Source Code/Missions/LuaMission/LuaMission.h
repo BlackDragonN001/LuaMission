@@ -86,10 +86,12 @@ public:
 	EjectKillRetCodes ObjectKilled(int DeadObjectHandle, int KillersHandle);
 	EjectKillRetCodes ObjectSniped(int DeadObjectHandle, int KillersHandle);
 
+	/*
 	virtual char *GetNextRandomVehicleODF(int Team);
 	virtual void SetWorld(int nextWorld);
 	virtual void ProcessCommand(unsigned long crc);
 	virtual void SetRandomSeed(unsigned long seed);
+	*/
 
 	virtual void PreOrdnanceHit(Handle shooterHandle, Handle victimHandle, int ordnanceTeam, char* pOrdnanceODF);
 	virtual PreSnipeReturnCodes PreSnipe(const int curWorld, Handle shooterHandle, Handle victimHandle, int ordnanceTeam, char* pOrdnanceODF);
