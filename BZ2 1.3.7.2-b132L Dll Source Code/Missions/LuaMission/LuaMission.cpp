@@ -838,14 +838,48 @@ void LuaMission::SetWorld(int nextWorld)
 {
 	DLLBase::SetWorld(nextWorld);
 }
+*/
 
 void LuaMission::ProcessCommand(unsigned long crc)
 {
-	DLLBase::ProcessCommand(crc);
+	if (!StopScript)
+	{
+		if (!L)
+			return;
+
+		// if the script has a PostRun function...
+		lua_getglobal(L, "ProcessCommand");
+		if (lua_isfunction(L, -1))
+		{
+			// call the PostRun function
+			lua_pushinteger(L, crc);
+			LuaBindings::LuaCheckStatus(lua_pcall(L, 1, 0, 0), L, "Lua script ProcessCommand error: '%s'");
+		}
+		else
+		{
+			lua_pop(L, 1);
+		}
+	}
 }
 
 void LuaMission::SetRandomSeed(unsigned long seed)
 {
-	DLLBase::SetRandomSeed(seed);
+	if (!StopScript)
+	{
+		if (!L)
+			return;
+
+		// if the script has a PostRun function...
+		lua_getglobal(L, "SetRandomSeed");
+		if (lua_isfunction(L, -1))
+		{
+			// call the PostRun function
+			lua_pushinteger(L, seed);
+			LuaBindings::LuaCheckStatus(lua_pcall(L, 1, 0, 0), L, "Lua script SetRandomSeed error: '%s'");
+		}
+		else
+		{
+			lua_pop(L, 1);
+		}
+	}
 }
-*/
