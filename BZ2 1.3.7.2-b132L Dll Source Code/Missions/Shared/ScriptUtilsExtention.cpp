@@ -252,7 +252,7 @@ Handle ReplaceObject(const Handle H, const char *ODF, const int Team, const floa
 	hinfo.LifeSpan = GetRemainingLifespan(H);
 	hinfo.Independence = GetIndependence(H);
 	hinfo.Skill = GetSkill(H);
-	hinfo.Group = Group >= 0 ? Group : GetGroup(H) + 1; // If we override Group, do that, or use existing team.
+	hinfo.Group = Group >= 0 ? Group : GetGroup(H); // If we override Group, do that, or use existing team.
 	hinfo.CanSnipe = CanSnipe >= 0 ? CanSnipe : GetCanSnipe(H); // If we override Group, do that, or use existing team.
 	hinfo.CurrCommand = GetCurrentCommand(H);
 	switch (hinfo.CurrCommand)

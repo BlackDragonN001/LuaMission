@@ -457,7 +457,7 @@ extern void SetHealth(const Handle h, const float Percent);
 extern void SetAmmo(const Handle h, const float Percent);
 
 // IsEmpty, returns true if it is a vehicle and empty, else returns false.
-inline bool IsEmpty(const Handle h) { if (!IsAround(h)) return false; else return (!IsNotDeadAndPilot2(h) && !IsPlayer(h)); };
+inline bool IsEmpty(const Handle h) { if (!IsAround(h)) return false; else return (IsCraftOrPerson(h) && !IsAlive2(h) && !IsPlayer(h)); }; //!IsNotDeadAndPilot2(h) && !IsPlayer(h)); };
 
 // Counts the number of taps on an object. Special note: If using this in AddObject, set AddObject to true to properly count taps. AddObject creation makes a dummy tap on the end that requires more detailed check to skip.
 extern int GetTapCount(const Handle h, const bool IgnoreInvincible = false, const bool AddObject = false);
