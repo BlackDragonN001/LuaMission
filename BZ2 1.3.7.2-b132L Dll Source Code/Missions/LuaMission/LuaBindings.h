@@ -693,6 +693,7 @@ namespace LuaBindings {
 		{ "GetCameraPosition", GetCameraPosition },
 		{ "SetCameraPosition", SetCameraPosition },
 		{ "ResetCameraPosition", ResetCameraPosition },
+		{ "CalcCRC", CalcCRC },
 		{ "IFace_Exec", IFace_Exec },
 		{ "IFace_Activate", IFace_Activate },
 		{ "IFace_Deactivate", IFace_Deactivate },
