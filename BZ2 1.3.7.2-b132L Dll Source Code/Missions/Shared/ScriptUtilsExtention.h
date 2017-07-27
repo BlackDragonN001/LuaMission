@@ -7,7 +7,7 @@
 #include "MathUtils.h"
 #include <math.h>
 #include <vector>
-#include <hash_map>
+#include <unordered_map>
 //#include <algorithm>
 //#include <limits.h>
 //#include <float.h>
@@ -239,12 +239,12 @@ extern const char *CommandList[NUM_CMD];
 
 // Saved open ODF Files on this machine.
 struct ODFName { char name[MAX_ODF_LENGTH]; }; // The ODF.
-extern stdext::hash_map<unsigned long, ODFName> ODFNameMap;
+extern std::unordered_map<unsigned long, ODFName> ODFNameMap;
 // Non saved, list of files that code attempted to open but don't exist, such as classlabel strings, e.g. "turret.odf", or "flare.odf"
-extern stdext::hash_map<unsigned long, ODFName> ODFNameBlackListMap;
+extern std::unordered_map<unsigned long, ODFName> ODFNameBlackListMap;
 // Saved open Files on this machine.
-extern stdext::hash_map<const char*, FILE*> FileNameMap;
-typedef stdext::hash_map<const char*, FILE*>::iterator FileMapIt;
+extern std::unordered_map<const char*, FILE*> FileNameMap;
+typedef std::unordered_map<const char*, FILE*>::iterator FileMapIt;
 
 // The Matrix. Free Your Mind...
 static Matrix Identity_Matrix = Matrix(Vector(1, 0, 0), Vector(0, 1, 0), Vector(0, 0, 1), Vector(0, 0, 0));

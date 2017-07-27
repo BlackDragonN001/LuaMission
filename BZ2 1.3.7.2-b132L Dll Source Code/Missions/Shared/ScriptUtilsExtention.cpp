@@ -11,11 +11,11 @@
 // Battlezone 2 ScriptUtils Extention written by General BlackDragon, Ken Miller, and Nielk1.
 
 // This stores a list of all currently open ODFs for this session.
-stdext::hash_map<unsigned long, ODFName> ODFNameMap;
+std::unordered_map<unsigned long, ODFName> ODFNameMap;
 // This stores all the failed attempted open ODFs so we don't try them more then once.
-stdext::hash_map<unsigned long, ODFName> ODFNameBlackListMap;
+std::unordered_map<unsigned long, ODFName> ODFNameBlackListMap;
 // This stored a list of all currently open Files for this session.
-stdext::hash_map<const char*, FILE*> FileNameMap;
+std::unordered_map<const char*, FILE*> FileNameMap;
 
 // List all AI Commands. !!! Update based on aiCommands.h should it ever change! NOTE: # of entries must == NUM_CMD.
 const char *CommandList[NUM_CMD] = { "CMD_NONE", "CMD_SELECT", "CMD_STOP", "CMD_GO", "CMD_ATTACK", "CMD_FOLLOW", "CMD_FORMATION", "CMD_PICKUP",
@@ -1061,7 +1061,7 @@ bool OpenODF2(const char *name)
 void CloseOpenODFs(void)
 {
 	// Close all ODFs we've opened this game.
-	for (stdext::hash_map<unsigned long, ODFName>::iterator iter = ODFNameMap.begin(); iter != ODFNameMap.end(); ++iter)
+	for (std::unordered_map<unsigned long, ODFName>::iterator iter = ODFNameMap.begin(); iter != ODFNameMap.end(); ++iter)
 		CloseODF(iter->second.name);
 
 	ODFNameMap.clear();
