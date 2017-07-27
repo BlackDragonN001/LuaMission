@@ -1351,8 +1351,7 @@ int BuildObject(lua_State *L)
 		int point = luaL_optinteger(L, 4, 0);
 		if (point)
 		{
-			Vector pos = GetVectorFromPath(path, point);
-			o = BuildObject(odf, team, pos);
+			o = BuildObject(odf, team, GetVectorFromPath(path, point));
 		}
 		else
 		{
@@ -5860,10 +5859,10 @@ bool LoadValue(lua_State *L, bool push)
 	break;
 	case LUA_TUSERDATA:
 	{
-		unsigned long type = 0;
-		//in(fp, &type, sizeof(type));
-		ret = ret && Read(&type, sizeof(type));
-		switch (type)
+		unsigned long type2 = 0;
+		//in(fp, &type, sizeof(type2));
+		ret = ret && Read(&type2, sizeof(type2));
+		switch (type2)
 		{
 		case 0x8f89e802 /* "Vector" */:
 		{
@@ -5983,12 +5982,12 @@ bool SaveValue(lua_State *L, int i)
 		if (lua_getmetatable(L, i))
 		{
 			lua_getfield(L, -1, "__type");
-			unsigned long type = Hash(luaL_checkstring(L, -1));
+			unsigned long type2 = Hash(luaL_checkstring(L, -1));
 			lua_pop(L, 2);
 
-			//out(fp, &type, sizeof(type));
-			ret = ret && Write(&type, sizeof(type));
-			switch (type)
+			//out(fp, &type, sizeof(type2));
+			ret = ret && Write(&type2, sizeof(type2));
+			switch (type2)
 			{
 			case 0x8f89e802 /* "Vector" */:
 				//out(fp, GetVector(L, i), sizeof(Vector));
