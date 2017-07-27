@@ -5803,7 +5803,7 @@ bool LoadValue(lua_State *L, bool push)
 		ret = ret && Read(&value, 1);
 		ConvertHandles(&value, 1);
 		if (push)
-			lua_pushlightuserdata(L, (void *)value);
+			PushHandle(L, value);
 	}
 	break;
 	case LUA_TNUMBER:
