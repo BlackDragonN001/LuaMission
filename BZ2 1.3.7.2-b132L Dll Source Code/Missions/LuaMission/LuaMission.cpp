@@ -157,12 +157,12 @@ void LuaMission::InitialSetup(void)
 
 	// Create a metatable for handles
 	lua_pushlightuserdata(L, NULL);
-    luaL_newmetatable(L, "Handle");
-    lua_pushstring(L, "Handle");
-    lua_setfield(L, -2, "__type");
+	luaL_newmetatable(L, "Handle");
+	lua_pushstring(L, "Handle");
+	lua_setfield(L, -2, "__type");
 	lua_pushcfunction(L, LuaBindings::Handle_ToString);
-    lua_setfield(L, -2, "__tostring");
-    lua_setmetatable(L, -2);
+	lua_setfield(L, -2, "__tostring");
+	lua_setmetatable(L, -2);
 	
 	/*
 	// Create a metatable for ParameterDB

@@ -1671,9 +1671,9 @@ Like Damage, but sets the cause of the damage to themselves,
 Enables BZ2 1.2 Style PlayerEjected messages for all units, not just local/remote players.
 
 
--EnableHighTPS ( number NewRate )
+-integer EnableHighTPS ( )
 
-Sets everyone to the same TPS rate as the server, and fills NewRate with the current TPS rate.
+Sets everyone to the same TPS rate as the server, and returns the current TPS rate.
 
 
 -Handle GetLocalUserInspectHandle ( ) 

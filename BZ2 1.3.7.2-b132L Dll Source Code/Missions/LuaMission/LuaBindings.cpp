@@ -1695,7 +1695,10 @@ int GetRace(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
 	char race = ::GetRace(h);
-	lua_pushlstring(L, &race, sizeof(char));
+	if (race)
+		lua_pushlstring(L, &race, sizeof(char));
+	else
+		lua_pushnil(L);
 	return 1;
 }
 
@@ -2252,38 +2255,38 @@ int SetMusicIntensity(lua_State *L)
 // create an AiPath pointer on the lua stack
 AiPath **NewAiPath(lua_State *L)
 {
-AiPath **p = static_cast<AiPath **>(lua_newuserdata(L, sizeof(AiPath *)));
-luaL_getmetatable(L, "AiPath");
-lua_setmetatable(L, -2);
-return p;
+	AiPath **p = static_cast<AiPath **>(lua_newuserdata(L, sizeof(AiPath *)));
+	luaL_getmetatable(L, "AiPath");
+	lua_setmetatable(L, -2);
+	return p;
 }
 
 // get an AiPath pointer from the lua stack
 // returns NULL if the item is not an AiPath pointer
 AiPath **GetAiPath(lua_State *L, int n)
 {
-return static_cast<AiPath **>(luaL_testudata(L, n, "AiPath"));
+	return static_cast<AiPath **>(luaL_testudata(L, n, "AiPath"));
 }
 
 //DLLEXPORT AiPath *DLLAPI FindAiPath(const Vector &start, const Vector &goal);
 int FindAiPath(lua_State *L)
 {
-Vector *start = GetVector(L, 1);
-Vector *goal = GetVector(L, 2);
-AiPath* path = FindAiPath(*start, *goal);
-*NewAiPath(L) = path;
-return 1;
+	Vector *start = GetVector(L, 1);
+	Vector *goal = GetVector(L, 2);
+	AiPath* path = FindAiPath(*start, *goal);
+	*NewAiPath(L) = path;
+	return 1;
 }
 
 //DLLEXPORT void DLLAPI FreeAiPath(AiPath *path);
 int FreeAiPath(lua_State *L)
 {
-if (AiPath **p = GetAiPath(L, 1))
-{
-if (AiPath *path = *p)
-FreeAiPath(path);
-}
-return 0;
+	if (AiPath **p = GetAiPath(L, 1))
+	{
+		if (AiPath *path = *p)
+			FreeAiPath(path);
+	}
+	return 0;
 }
 */
 
@@ -2972,8 +2975,8 @@ int GetInstantMySide(lua_State *L)
 //DLLEXPORT bool DLLAPI StoppedPlayback(void);
 int StoppedPlayback(lua_State *L)
 {
-lua_pushboolean(L, ::StoppedPlayback());
-return 1;
+	lua_pushboolean(L, ::StoppedPlayback());
+	return 1;
 }
 */
 
@@ -3161,28 +3164,28 @@ int StopEmitter(lua_State *L)
 //DLLEXPORT void DLLAPI SaveObjects(char* &buffer, unsigned long &size);
 int SaveObjects(lua_State *L)
 {
-return 0;
+	return 0;
 }
 
 //DLLEXPORT void DLLAPI LoadObjects(char* buffer, unsigned long size);
 int LoadObjects(lua_State *L)
 {
-return 0;
+	return 0;
 }
 
 //DLLEXPORT void DLLAPI IgnoreSync(bool on);
 int IgnoreSync(lua_State *L)
 {
-bool on = lua_toboolean(L, 1);
-IgnoreSync(on);
-return 0;
+	bool on = lua_toboolean(L, 1);
+	IgnoreSync(on);
+	return 0;
 }
 
 //DLLEXPORT bool DLLAPI IsRecording(void);
 int IsRecording(lua_State *L)
 {
-lua_pushboolean(L, IsRecording());
-return 1;
+	lua_pushboolean(L, IsRecording());
+	return 1;
 }
 */
 
@@ -3496,7 +3499,10 @@ int GetRaceOfTeam(lua_State *L)
 {
 	int team = luaL_checkinteger(L, 1);
 	char race = ::GetRaceOfTeam(team);
-	lua_pushlstring(L, &race, sizeof(char));
+	if(race)
+		lua_pushlstring(L, &race, sizeof(char));
+	else
+		lua_pushnil(L);
 	return 1;
 }
 
@@ -4058,8 +4064,7 @@ int GetObjInfo_CFG(lua_State *L)
 {
 	Handle h = GetHandle(L, 1);
 	char buffer[MAX_ODF_LENGTH] = { 0 };
-	::GetObjInfo(h, Get_CFG, buffer);
-	if (h)
+	if(::GetObjInfo(h, Get_CFG, buffer))
 		lua_pushstring(L, buffer);
 	else
 		lua_pushnil(L);
@@ -4071,8 +4076,7 @@ int GetObjInfo_ODF(lua_State *L)
 {
 	Handle h = GetHandle(L, 1);
 	char buffer[MAX_ODF_LENGTH] = { 0 };
-	::GetObjInfo(h, Get_ODF, buffer);
-	if (h)
+	if(::GetObjInfo(h, Get_ODF, buffer))
 		lua_pushstring(L, buffer);
 	else
 		lua_pushnil(L);
@@ -4084,8 +4088,7 @@ int GetObjInfo_GOClass_gCfg(lua_State *L)
 {
 	Handle h = GetHandle(L, 1);
 	char buffer[MAX_ODF_LENGTH] = { 0 };
-	::GetObjInfo(h, Get_GOClass_gCfg, buffer);
-	if (h)
+	if(::GetObjInfo(h, Get_GOClass_gCfg, buffer))
 		lua_pushstring(L, buffer);
 	else
 		lua_pushnil(L);
@@ -4097,8 +4100,7 @@ int GetObjInfo_EntityType(lua_State *L)
 {
 	Handle h = GetHandle(L, 1);
 	char buffer[MAX_ODF_LENGTH] = { 0 };
-	::GetObjInfo(h, Get_EntityType, buffer);
-	if (h)
+	if(::GetObjInfo(h, Get_EntityType, buffer))
 		lua_pushstring(L, buffer);
 	else
 		lua_pushnil(L);
@@ -4110,8 +4112,7 @@ int GetObjInfo_GOClass(lua_State *L)
 {
 	Handle h = GetHandle(L, 1);
 	char buffer[MAX_ODF_LENGTH] = { 0 };
-	::GetObjInfo(h, Get_GOClass, buffer);
-	if (h)
+	if(::GetObjInfo(h, Get_GOClass, buffer))
 		lua_pushstring(L, buffer);
 	else
 		lua_pushnil(L);
@@ -4122,16 +4123,17 @@ int GetObjInfo_GOClass(lua_State *L)
 int Get_WeaponConfig(lua_State *L)
 {
 	Handle h = GetHandle(L, 1);
-	if (h == 0)
-		return 0;
-
-	int slot = luaL_optinteger(L, 2, 0);
-	if (slot < 0 || slot > 4)
-		return 0;
-
-	char buffer[MAX_ODF_LENGTH] = { 0 };
-	::GetObjInfo(h, ObjectInfoType(Get_Weapon0Config + slot), buffer);
-	lua_pushstring(L, buffer);
+	if (h)
+	{
+		int slot = clamp(luaL_optinteger(L, 2, 0), 0, 4);
+		char buffer[MAX_ODF_LENGTH] = { 0 };
+		::GetObjInfo(h, ObjectInfoType(Get_Weapon0Config + slot), buffer);
+		lua_pushstring(L, buffer);
+	}
+	else
+	{
+		lua_pushnil(L);
+	}
 
 	return 1;
 }
@@ -4140,16 +4142,17 @@ int Get_WeaponConfig(lua_State *L)
 int Get_WeaponODF(lua_State *L)
 {
 	Handle h = GetHandle(L, 1);
-	if (h == 0)
-		return 0;
-
-	int slot = luaL_optinteger(L, 2, 0);
-	if (slot < 0 || slot > 4)
-		return 0;
-
-	char buffer[MAX_ODF_LENGTH] = { 0 };
-	::GetObjInfo(h, ObjectInfoType(Get_Weapon0ODF + slot), buffer);
-	lua_pushstring(L, buffer);
+	if (h)
+	{
+		int slot = clamp(luaL_optinteger(L, 2, 0), 0, 4);
+		char buffer[MAX_ODF_LENGTH] = { 0 };
+		::GetObjInfo(h, ObjectInfoType(Get_Weapon0ODF + slot), buffer);
+		lua_pushstring(L, buffer);
+	}
+	else
+	{
+		lua_pushnil(L);
+	}
 
 	return 1;
 }
@@ -4158,16 +4161,17 @@ int Get_WeaponODF(lua_State *L)
 int Get_WeaponGOClass(lua_State *L)
 {
 	Handle h = GetHandle(L, 1);
-	if (h == 0)
-		return 0;
-
-	int slot = luaL_optinteger(L, 2, 0);
-	if (slot < 0 || slot > 4)
-		return 0;
-
-	char buffer[MAX_ODF_LENGTH] = { 0 };
-	::GetObjInfo(h, ObjectInfoType(Get_Weapon0GOClass + slot), buffer);
-	lua_pushstring(L, buffer);
+	if (h)
+	{
+		int slot = clamp(luaL_optinteger(L, 2, 0), 0, 4);
+		char buffer[MAX_ODF_LENGTH] = { 0 };
+		::GetObjInfo(h, ObjectInfoType(Get_Weapon0GOClass + slot), buffer);
+		lua_pushstring(L, buffer);
+	}
+	else
+	{
+		lua_pushnil(L);
+	}
 
 	return 1;
 }
@@ -4448,7 +4452,10 @@ int GetODFChar(lua_State *L)
 		found = ::GetODFChar(h, section, label, &value, value);
 	}
 
-	lua_pushlstring(L, &value, 1);
+	if (value)
+		lua_pushlstring(L, &value, 1);
+	else
+		lua_pushnil(L);
 	lua_pushboolean(L, found);
 	return 2;
 }
@@ -4503,7 +4510,10 @@ int GetODFString(lua_State *L)
 		found = ::GetODFString(h, section, label, MAX_ODF_LENGTH, value, defval);
 	}
 
-	lua_pushstring(L, value);
+	if (value)
+		lua_pushstring(L, value);
+	else
+		lua_pushnil(L);
 	lua_pushboolean(L, found);
 	return 2;
 }
@@ -4568,17 +4578,17 @@ int GetODFVector(lua_State *L)
 //DLLEXPORT bool DLLAPI OpenODF(char *name);
 int OpenODF(lua_State *L)
 {
-const char *file = luaL_checkstring(L, 1);
-lua_pushboolean(L, OpenODF(file));
-return 1;
+	const char *file = luaL_checkstring(L, 1);
+	lua_pushboolean(L, OpenODF(file));
+	return 1;
 }
 
 //DLLEXPORT bool DLLAPI CloseODF(char *name);
 int CloseODF(lua_State *L)
 {
-const char *file = luaL_checkstring(L, 1);
-lua_pushboolean(L, CloseODF(file));
-return 1;
+	const char *file = luaL_checkstring(L, 1);
+	lua_pushboolean(L, CloseODF(file));
+	return 1;
 }
 */
 
@@ -4610,7 +4620,10 @@ int GetGroup(lua_State *L)
 
 		char pBuffer[MAX_ODF_LENGTH] = { 0 };
 		::GetGroup(team, group, type, pBuffer);
-		lua_pushstring(L, pBuffer);
+		if (pBuffer)
+			lua_pushstring(L, pBuffer);
+		else
+			lua_pushnil(L);
 	}
 	else
 	{
@@ -4655,10 +4668,15 @@ int LoadFile(lua_State *L)
 	size_t bufSize = 0;
 	::LoadFile(filename, NULL, bufSize);
 	char *FileBuffer = static_cast<char *>(malloc(bufSize + 1));
-	::LoadFile(filename, FileBuffer, bufSize);
-	FileBuffer[bufSize] = '\0';
-
-	lua_pushlstring(L, FileBuffer, bufSize);
+	if (::LoadFile(filename, FileBuffer, bufSize))
+	{
+		FileBuffer[bufSize] = '\0';
+		lua_pushlstring(L, FileBuffer, bufSize);
+	}
+	else
+	{
+		lua_pushnil(L);
+	}
 
 	free(FileBuffer);
 
@@ -5206,14 +5224,12 @@ int IsNotDeadAndPilot2(lua_State *L)
 int GetLabel(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
+
 	if (const char *label = ::GetLabel(h))
-	{
 		lua_pushstring(L, label);
-	}
 	else
-	{
 		lua_pushnil(L);
-	}
+
 	return 1;
 }
 
@@ -5289,7 +5305,13 @@ int GetNetworkListItem(lua_State *L)
 {
 	NETWORK_LIST_TYPE type = NETWORK_LIST_TYPE(luaL_checkinteger(L, 1));
 	int size = luaL_checkinteger(L, 2);
-	lua_pushstring(L, ::GetNetworkListItem(type, size));
+	const char *itemstr = GetNetworkListItem(type, size);
+
+	if (itemstr)
+		lua_pushstring(L, itemstr);
+	else
+		lua_pushnil(L);
+
 	return 1;
 }
 
@@ -5322,14 +5344,12 @@ int HasPilot(lua_State *L)
 int GetPilotClass(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
+
 	if (const char *pilotclass = ::GetPilotClass(h))
-	{
 		lua_pushstring(L, pilotclass);
-	}
 	else
-	{
 		lua_pushnil(L);
-	}
+
 	return 1;
 }
 
@@ -5430,14 +5450,12 @@ int GetAllSpawnpoints(lua_State *L)
 int GetPlan(lua_State *L)
 {
 	int team = luaL_checkinteger(L, 1);
+
 	if (const char *aipname = ::GetPlan(team))
-	{
 		lua_pushstring(L, aipname);
-	}
 	else
-	{
 		lua_pushnil(L);
-	}
+
 	return 1;
 }
 
@@ -5461,14 +5479,12 @@ int GetSkill(lua_State *L)
 int GetObjectiveName(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
+
 	if (const char *objectivename = ::GetObjectiveName(h))
-	{
 		lua_pushstring(L, objectivename);
-	}
 	else
-	{
 		lua_pushnil(L);
-	}
+
 	return 1;
 }
 
