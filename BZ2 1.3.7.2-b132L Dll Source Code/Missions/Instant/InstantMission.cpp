@@ -172,7 +172,7 @@ void instantMission::SetupExtraVehicles(void)
 			{
 				// 2 underscores in the name, e.g. (mpic#_ivturr_fvturr). Copy
 				// everything between them to ODF1, rest to ODF2.
-				size_t len = (pUnderscore2 - pUnderscore) - 1;
+				len = (pUnderscore2 - pUnderscore) - 1;
 				if(len > (sizeof(ODF2) - 1))
 					len = (sizeof(ODF2) - 1);
 				strncpy_s(ODF1, pUnderscore+1, len);
