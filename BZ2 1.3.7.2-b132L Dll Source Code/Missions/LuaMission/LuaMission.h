@@ -4,10 +4,7 @@
 #include "..\Shared\DLLBase.h"
 #include "LuaBindings.h"
 #include <vector>
-#include <hash_map>
 #include <algorithm>
-
-
 
 class LuaMission : public DLLBase
 {
