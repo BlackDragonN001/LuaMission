@@ -3390,7 +3390,7 @@ int RemoveBirds(lua_State *L)
 //DLLEXPORT void DLLAPI SetColorFade(float ratio, float rate, unsigned long color);
 int SetColorFade(lua_State *L)
 {
-	float ratio = float(luaL_checknumber(L, 2));
+	float ratio = float(luaL_checknumber(L, 1));
 	float fade = float(luaL_checknumber(L, 2));
 	unsigned long color = unsigned long(luaL_checklong(L, 3));
 	::SetColorFade(ratio, fade, color);
