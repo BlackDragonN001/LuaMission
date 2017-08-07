@@ -97,12 +97,12 @@ Returns the handle of the game object with the given label. Returns nil if none 
 
 -long Make_RGB(number red, number green, number blue)
 
-Used to make a color for use in text prints or other color functions.
+Used to make a color for use in text prints or other color functions. Takes 0-255 int ranges.
 
 
 -long Make_RGBA(number red, number green, number blue, number alpha)
 
-Used to make a color for use in text prints or other color functions. This version has an alpha.
+Used to make a color for use in text prints or other color functions. This version has an alpha. Takes 0-255 int ranges.
 
 
 -FailMission ( number time, [ string filename ] )
@@ -227,7 +227,7 @@ Removes the game object with the given handle.
 Returns the first empty group. If a team number is applied, it uses the Player on that team's groups, else it uses the local players groups. 
 
 
--SetGroup(Handle h)
+-SetGroup( Handle h, int group)
 
 Sets the handle to the specified group. 
 
@@ -375,12 +375,12 @@ Returns true if the game object exists. Returns false otherwise.
 
 -handle InBuilding ( handle h )
 
-Returns the handle of the building the handle h is in (logged into?). returns 0 if not in a building.
+Returns the handle of the building the handle h is in (logged into?). returns nil if not in a building.
 
 
 -handle AtTerminal ( handle h )
 
-Returns the handle of the building the handle h is logged into?. returns 0 if not in a building.
+Returns the handle of the building the handle h is logged into?. returns nil if not in a building.
 
 
 -vector GetPosition ( handle h )
@@ -1643,12 +1643,12 @@ Translates a string from Localize.odf, e.g. TranslateString(tempstr, sizeof(temp
 
 -integer GetScavengerCurScrap ( Handle h )
 
-Returns the current scrap inside the specified handle, if it is a scavenger. Returns -1 if the handle is not a Scavenger.
+Returns the current scrap inside the specified handle, if it is a scavenger. Returns nil if the handle is not a Scavenger.
 
 
 -integer GetScavengerMaxScrap( Handle h )
 
-Returns the max scrap storage of the specified handle, if it is a scavenger. Returns -1 if the handle is not a Scavenger.
+Returns the max scrap storage of the specified handle, if it is a scavenger. Returns nil if the handle is not a Scavenger.
 
 
 -SetScavengerCurScrap ( Handle h, int Scrap )
@@ -1800,7 +1800,7 @@ Ends the game shortly, with the custom msg printed as the reason.
 
 -integer SetBestGroup ( Handle h)
 
-Sets the handle to the best fit group. Returns the group #, same as GetFirstEmptyGroup does, or -1 if any problems.
+Sets the handle to the best fit group. Returns the group #, same as GetFirstEmptyGroup does, or nil if any problems.
 
 
 -GetGroup ( int Team, int Group, int ObjectType, string Results )
@@ -1815,7 +1815,7 @@ If any of the params is invalid, or there's nothing in that gruop, pBuffer is se
 
 -integer GetGroup ( Handle h )
 
-Parallels SetGroup(), returns which Group the unit is currently in, [0 .. 9]   If an invalid handle is passed in, will return -1. 
+Parallels SetGroup(), returns which Group the unit is currently in, [0 .. 9]   If an invalid handle is passed in, will return nil. 
 // Note: AI-only teams have much looser group restrictions,
 // and values might be outside of the expected range. Use this on human-
 // controlled teams only.
@@ -2259,7 +2259,7 @@ Returns the current AIP for the specified team.
 
 -integer GetSkill ( Handle h )
 
-Parallels SetSkill(), a get function. See comments on SetSkill() for the return value. Returns -1 if not a valid handle.
+Parallels SetSkill(), a get function. See comments on SetSkill() for the return value. Returns nil if not a valid handle.
 
 
 -integer GetIndependence( handle me )
@@ -2305,7 +2305,7 @@ Allows DLLs to directly set the Last and/or True positions for an object, direct
 -integer GetLifeSpan ( Handle h )
 
 Parallels SetLifespan(), see comments above it. Returns the # of seconds for an object to live. This return value differs subtly from GetRemainingLifespan(). Here's what this function returns:
-// A) If an invalid handle is passed in, will return -1
+// A) If an invalid handle is passed in, will return nil
 // B) If craft has infinite life, will return a value < 0
 // C) If a craft has limited life, returns remaining life in seconds
 

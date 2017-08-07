@@ -1390,7 +1390,10 @@ int GetFirstEmptyGroup(lua_State *L)
 		group = ::GetFirstEmptyGroup();
 	}
 
-	lua_pushinteger(L, group);
+	if (group == -1)
+		lua_pushnil(L);
+	else
+		lua_pushinteger(L, group);
 	return 1;
 }
 
@@ -4199,7 +4202,11 @@ int TranslateString2(lua_State *L)
 int GetScavengerCurScrap(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
-	lua_pushinteger(L, ::GetScavengerCurScrap(h));
+	int curscrap = ::GetScavengerCurScrap(h);
+	if (curscrap == -1)
+		lua_pushnil(L);
+	else
+		lua_pushinteger(L, curscrap);
 	return 1;
 }
 
@@ -4207,7 +4214,11 @@ int GetScavengerCurScrap(lua_State *L)
 int GetScavengerMaxScrap(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
-	lua_pushinteger(L, ::GetScavengerMaxScrap(h));
+	int maxscrap = ::GetScavengerMaxScrap(h);
+	if (maxscrap == -1)
+		lua_pushnil(L);
+	else
+		lua_pushinteger(L, maxscrap);
 	return 1;
 }
 
@@ -4603,7 +4614,11 @@ int NoteGameoverWithCustomMessage(lua_State *L)
 int SetBestGroup(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
-	lua_pushinteger(L, ::SetBestGroup(h));
+	int group = ::SetBestGroup(h);
+	if (group == -1)
+		lua_pushnil(L);
+	else
+		lua_pushinteger(L, group);
 	return 1;
 }
 
@@ -4627,7 +4642,11 @@ int GetGroup(lua_State *L)
 	else
 	{
 		Handle h = RequireHandle(L, 1);
-		lua_pushnumber(L, ::GetGroup(h));
+		int group = ::GetGroup(h);
+		if (group == -1)
+			lua_pushnil(L);
+		else
+			lua_pushinteger(L, group);
 	}
 	return 1;
 }
@@ -5409,7 +5428,11 @@ int SetLastCurrentPosition(lua_State *L)
 int GetRemainingLifespan(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
-	lua_pushnumber(L, ::GetRemainingLifespan(h));
+	float lifespan = ::GetRemainingLifespan(h);
+	if (lifespan == -1)
+		lua_pushnil(L);
+	else
+		lua_pushnumber(L, lifespan);
 	return 1;
 }
 
@@ -5462,7 +5485,11 @@ int GetPlan(lua_State *L)
 int GetIndependence(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
-	lua_pushnumber(L, ::GetIndependence(h));
+	int independence = ::GetIndependence(h);
+	if (independence == -1)
+		lua_pushnil(L);
+	else
+		lua_pushinteger(L, independence);
 	return 1;
 }
 
@@ -5470,7 +5497,11 @@ int GetIndependence(lua_State *L)
 int GetSkill(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
-	lua_pushnumber(L, ::GetSkill(h));
+	int skill = ::GetSkill(h);
+	if (skill == -1)
+		lua_pushnil(L);
+	else
+		lua_pushinteger(L, skill);
 	return 1;
 }
 
@@ -5541,7 +5572,11 @@ int TurnsToSeconds(lua_State *L)
 int GetLifeSpan(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
-	lua_pushnumber(L, ::GetLifeSpan(h));
+	float lifespan = ::GetLifeSpan(h);
+	if (lifespan == -1)
+		lua_pushnil(L);
+	else
+		lua_pushnumber(L, lifespan);
 	return 1;
 }
 
