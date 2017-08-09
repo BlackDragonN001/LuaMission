@@ -470,7 +470,7 @@ PreGetInReturnCodes LuaMission::PreGetIn(const int curWorld, Handle pilotHandle,
 		LuaBindings::PushHandle(L, emptyCraftHandle);
 		LuaBindings::LuaCheckStatus(lua_pcall(L, 3, 1, 0), L, "Lua script PreGetIn error: %s");
 
-		PreGetInReturnCodes returnvalue2 = PreGetInReturnCodes(luaL_optinteger(L, 1, returnvalue));
+		PreGetInReturnCodes returnvalue2 = PreGetInReturnCodes(luaL_optinteger(L, -1, returnvalue));
 
 		if(returnvalue2 != PREGETIN_ALLOW) // If the Lua return was different then the Default behavior, let Lua Override.
 			returnvalue = returnvalue2;
@@ -503,7 +503,7 @@ PreSnipeReturnCodes LuaMission::PreSnipe(const int curWorld, Handle shooterHandl
 		lua_pushinteger(L, ordnanceTeam);
 		lua_pushstring(L, pOrdnanceODF);
 		LuaBindings::LuaCheckStatus(lua_pcall(L, 5, 1, 0), L, "Lua script PreSnipe error: %s");
-		PreSnipeReturnCodes returnvalue2 = PreSnipeReturnCodes(luaL_optinteger(L, 1, returnvalue));
+		PreSnipeReturnCodes returnvalue2 = PreSnipeReturnCodes(luaL_optinteger(L, -1, returnvalue));
 
 		if(returnvalue2 != PRESNIPE_KILLPILOT) // If the Lua return was different then the Default behavior, let Lua Override.
 			returnvalue = returnvalue2;
@@ -535,7 +535,7 @@ PrePickupPowerupReturnCodes LuaMission::PrePickupPowerup(const int curWorld, Han
 		LuaBindings::PushHandle(L, me);
 		LuaBindings::PushHandle(L, powerupHandle);
 		LuaBindings::LuaCheckStatus(lua_pcall(L, 3, 1, 0), L, "Lua script PrePickupPowerup error: %s");
-		PrePickupPowerupReturnCodes returnvalue2 = PrePickupPowerupReturnCodes(luaL_optinteger(L, 1, returnvalue));
+		PrePickupPowerupReturnCodes returnvalue2 = PrePickupPowerupReturnCodes(luaL_optinteger(L, -1, returnvalue));
 
 		if(returnvalue2 != PREPICKUPPOWERUP_ALLOW) // If the Lua return was different then the Default behavior, let Lua Override.
 			returnvalue = returnvalue2;
@@ -696,7 +696,7 @@ EjectKillRetCodes LuaMission::PlayerEjected(Handle DeadObjectHandle)
 		// call the PlayerEjected function
 		LuaBindings::PushHandle(L, DeadObjectHandle);
 		LuaBindings::LuaCheckStatus(lua_pcall(L, 1, 1, 0), L, "Lua script PlayerEjected error: %s");
-		returnvalue = EjectKillRetCodes(luaL_optinteger(L, 1, returnvalue));
+		returnvalue = EjectKillRetCodes(luaL_optinteger(L, -1, returnvalue));
 		lua_pop(L, 1);
 	}
 	else
@@ -727,7 +727,7 @@ EjectKillRetCodes LuaMission::ObjectKilled(int DeadObjectHandle, int KillersHand
 		LuaBindings::PushHandle(L, DeadObjectHandle);
 		LuaBindings::PushHandle(L, KillersHandle);
 		LuaBindings::LuaCheckStatus(lua_pcall(L, 2, 1, 0), L, "Lua script ObjectKilled error: %s");
-		returnvalue = EjectKillRetCodes(luaL_optinteger(L, 1, returnvalue));
+		returnvalue = EjectKillRetCodes(luaL_optinteger(L, -1, returnvalue));
 		lua_pop(L, 1);
 	}
 	else
@@ -758,7 +758,7 @@ EjectKillRetCodes LuaMission::ObjectSniped(int DeadObjectHandle, int KillersHand
 		LuaBindings::PushHandle(L, DeadObjectHandle);
 		LuaBindings::PushHandle(L, KillersHandle);
 		LuaBindings::LuaCheckStatus(lua_pcall(L, 2, 1, 0), L, "Lua script ObjectSniped error: %s");
-		returnvalue = EjectKillRetCodes(luaL_optinteger(L, 1, returnvalue));
+		returnvalue = EjectKillRetCodes(luaL_optinteger(L, -1, returnvalue));
 		lua_pop(L, 1);
 	}
 	else
