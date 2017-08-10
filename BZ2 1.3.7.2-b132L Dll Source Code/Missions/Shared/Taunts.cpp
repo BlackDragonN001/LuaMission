@@ -1,7 +1,20 @@
 #include "..\shared\SubMission.h"
 #include "Taunts.h"
 #include <string.h>
+#include <vector>
 
+static const char *TauntHeaders[] =
+{
+	"GameStart",
+	"HumanEnters",
+	"HumanLeaves",
+	"HumanShipDestroyed",
+	"HumanRecyclerDestroyed",
+	"CPURecyclerDestroyed",
+	"Random",
+};
+
+/*
 // Ain't data-driven code a great way to go? Just dump entries in the
 // following arrays, making sure there's a comma at the end of each
 // line.  The code later figures out all array sizes automatically,
@@ -579,13 +592,20 @@ TauntIndexType TauntIndices[TAUNTS_MAX] =
 	{(char**)CPURecyclerDestroyedTaunts, -1, sizeof(CPURecyclerDestroyedTaunts)/sizeof(CPURecyclerDestroyedTaunts[0])},
 	{(char**)RandomTaunts, -1, sizeof(RandomTaunts)/sizeof(RandomTaunts[0])},
 };
+*/
+
+// New STD String for storing our taunts.
+std::vector<std::string> TauntList[TAUNTS_MAX];
 
 static int *g_pElapsedTime = NULL;
 static int *g_pLastTauntPrintedAt = NULL;
 static int *g_pTPS = NULL;
 
+static bool ReadTaunts = false;
 static bool DeterminedCPUTeamName=false;
 static char CPUTeamName[256]="Team Computer";
+
+int LastTauntPrinted[TAUNTS_MAX] = { -1 };
 
 
 // Required setup call before you call DoTaunt(). pGameTime is used to
@@ -603,14 +623,48 @@ void InitTaunts(int* pGameTime, int* pLastMessagePrintedAt, int* pTPS, const cha
 	// EnableTaunts=IFace_GetInteger("options.play.taunts");
 
 	// Clear last printed to ensure everyone sees the same.
-	int i;
-	for(i=0;i<TAUNTS_MAX;i++)
-		TauntIndices[i].LastTauntPrinted = -1; // won't ever match
+	for(int i = 0; i < TAUNTS_MAX; i++)
+		LastTauntPrinted[i] = -1; //TauntIndices[i].LastTauntPrinted = -1; // won't ever match
 
 	if(pCPUTeamName != NULL)
 	{
 		strcpy_s(CPUTeamName, pCPUTeamName);
 		DeterminedCPUTeamName = true;
+	}
+
+	// Load new taunts from ODF file.
+	if (!ReadTaunts)
+	{
+		char mapTrnFile[128];
+		strcpy_s(mapTrnFile, GetMapTRNFilename());
+		if (OpenODF(mapTrnFile)) // Open the map's .TRN file.
+		{
+			char TauntODFName[64] = { 0 };
+			GetODFString(mapTrnFile, "DLL", "TauntODFFile", 64, TauntODFName, "Taunts"); // Look for specified Taunts.odf file, fallback to Taunts.odf if not specified.
+			strcat_s(TauntODFName, 64, ".odf"); // Add .odf to the end.
+			if (OpenODF(TauntODFName)) // Open the map's Taunts.odf file.
+			{
+				char IndexName[64] = { 0 };
+				char FoundItem[2048] = { 0 };
+				for (int TauntType = 0; TauntType < TAUNTS_MAX; TauntType++)
+				{
+					std::vector<std::string> &Taunts = TauntList[TauntType];
+
+					for (int index = 0;; ++index)
+					{
+						sprintf_s(IndexName, "Taunt%d", index + 1);
+
+						if (GetODFString(TauntODFName, TauntHeaders[TauntType], IndexName, 2048, FoundItem))
+							Taunts.push_back(FoundItem);
+						else
+							break; // Stop reading after the first gap in number sequence.
+					}
+				}
+			}
+			CloseODF(TauntODFName);
+		}
+		CloseODF(mapTrnFile);
+		ReadTaunts = true;
 	}
 }
 
@@ -638,6 +692,7 @@ void DoTaunt(TauntTypes Taunt)
 		DeterminedCPUTeamName=true;
 	}
 
+	/*
 	float TauntsInCategory;
 	int Which;
 
@@ -651,6 +706,28 @@ void DoTaunt(TauntTypes Taunt)
 	TauntIndices[Taunt].LastTauntPrinted = Which;
 
 	sprintf_s(TempBuffer, "%s : %s\n", CPUTeamName, TauntIndices[Taunt].TauntList[Which]);
+	*/
+
+	int Which = 0;
+	int Size = TauntList[Taunt].size();
+
+	if (Size <= 0)
+	{
+		return; // No taunts present, abort!
+	}
+	else if (Size > 1) // If we have more then 1 taunt in the list, else leave it at the initialized index 0.
+	{
+		Which = clamp(int(GetRandomFloat(float(Size))), 0, Size - 1); // Get a random taunt, clamping the value within the range.
+
+		if (Which == LastTauntPrinted[Taunt])
+			++Which; // If this is the previous taunt, bump it up one.
+
+		if (Which >= Size)
+			Which = 0; // Wrap around if we go out of range.
+	}
+
+	LastTauntPrinted[Taunt] = Which;
+	sprintf_s(TempBuffer, "%s : %s\n", CPUTeamName, TauntList[Taunt].at(Which).c_str()); //TauntIndices[Taunt].TauntList[Which]);
 
 	// Message squelching -- only do this *AFTER* all calls to Random()
 	// and things that can affect gamestate. Need to do null pointer checks
@@ -667,7 +744,7 @@ void DoTaunt(TauntTypes Taunt)
 	*g_pLastTauntPrintedAt = *g_pElapsedTime;
 
 	// Always re-read pref; it might have changed.
-	bool bEnableTaunts=IFace_GetInteger("options.play.taunts");
+	bool bEnableTaunts = IFace_GetInteger("options.play.taunts");
 
 	if(bEnableTaunts)
 		AddToMessagesBox(TempBuffer);

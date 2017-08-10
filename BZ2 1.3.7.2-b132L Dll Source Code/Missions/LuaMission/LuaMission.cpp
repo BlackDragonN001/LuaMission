@@ -782,11 +782,6 @@ void LuaMission::Execute(void)
 
 	if(!StopScript)
 	{
-
-/*
-	Here is where you put what happens every frame.  
-*/
-
 		if (!L)
 			return;
 
@@ -801,7 +796,6 @@ void LuaMission::Execute(void)
 		{
 			lua_pop(L, 1);
 		}
-
 	}
 }
 
@@ -823,9 +817,7 @@ void LuaMission::PostRun(void)
 		{
 			lua_pop(L, 1);
 		}
-
 	}
-
 }
 
 /*
