@@ -540,6 +540,8 @@ namespace LuaBindings {
 	int SetCanSnipe(lua_State *L);
 	int GetCanSnipe(lua_State *L);
 	int WhoIsTargeting(lua_State *L);
+	// BZ2 DLL Utility Functions.
+	//int DoTaunt(lua_State *L);
 	// BZScriptor Backwards Compatability functions.
 	int SetAngle(lua_State *L);
 	int CameraPos(lua_State *L);
@@ -941,6 +943,10 @@ namespace LuaBindings {
 		{ "SetCanSnipe", SetCanSnipe },
 		{ "GetCanSnipe", GetCanSnipe },
 		{ "WhoIsTargeting", WhoIsTargeting },
+
+		// BZ2 DLL Utility Functions
+		//{ "DoTaunt", DoTaunt },
+
 		// BZScriptor Backwards Compatability.
 		{ "SetAngle", SetAngle },
 		{ "CameraPos", CameraPos },
@@ -983,7 +989,6 @@ namespace LuaBindings {
 		{ "BuildPositionRotationMatrix", BuildPositionRotationMatrix },
 		{ "BuildOrthogonalMatrix", BuildOrthogonalMatrix },
 		{ "BuildDirectionalMatrix", BuildDirectionalMatrix },
-
 		{ "Build_Yaw_Matrix", Build_Yaw_Matrix },
 		{ "Interpolate_Matrix", Interpolate_Matrix },
 		{ "SetQuaternion", SetQuaternion },
@@ -997,7 +1002,7 @@ namespace LuaBindings {
 		{ "Vector_RotateInv", Vector_RotateInv },
 		{ "Matrix_Inverse", Matrix_Inverse },
 		{ "Add_Mult_Vectors", Add_Mult_Vectors },
-
+		// Utility Math Functions.
 		{ "IsNullVector", IsNullVector },
 		{ "FrontToRadian", FrontToRadian },
 		{ "FrontToDegrees", FrontToDegrees },

@@ -1,6 +1,8 @@
 #include "..\..\source\fun3d\ScriptUtils.h"
 #include "..\Shared\ScriptUtilsExtention.h"
 #include "LuaMission.h"
+#include "..\Shared\TRNAllies.h"
+//#include "..\Shared\Taunts.h"
 #include <math.h>
 #include <string.h>
 #include <iostream>
@@ -23,6 +25,8 @@ LuaMission::LuaMission(void)
 
 	i_count = &i_last - &i_first - 1;
 	i_array = &i_first + 1;
+
+	TRNAllies::SetupTRNAllies(GetMapTRNFilename());
 
 	// Zero things out first off. If you don't assign a default value, then it will be assigned whatever value was in that memory it is assigned to use. Essentially it would be filled with random values. We don't want that. This zero's out everything under each array at the very beginning.
 	if(i_array)
@@ -839,11 +843,11 @@ void LuaMission::ProcessCommand(unsigned long crc)
 		if (!L)
 			return;
 
-		// if the script has a PostRun function...
+		// if the script has a ProcessCommand function...
 		lua_getglobal(L, "ProcessCommand");
 		if (lua_isfunction(L, -1))
 		{
-			// call the PostRun function
+			// call the ProcessCommand function
 			lua_pushinteger(L, crc);
 			LuaBindings::LuaCheckStatus(lua_pcall(L, 1, 0, 0), L, "Lua script ProcessCommand error: '%s'");
 		}
@@ -861,11 +865,11 @@ void LuaMission::SetRandomSeed(unsigned long seed)
 		if (!L)
 			return;
 
-		// if the script has a PostRun function...
+		// if the script has a SetRandomSeed function...
 		lua_getglobal(L, "SetRandomSeed");
 		if (lua_isfunction(L, -1))
 		{
-			// call the PostRun function
+			// call the SetRandomSeed function
 			lua_pushinteger(L, seed);
 			LuaBindings::LuaCheckStatus(lua_pcall(L, 1, 0, 0), L, "Lua script SetRandomSeed error: '%s'");
 		}
@@ -875,3 +879,30 @@ void LuaMission::SetRandomSeed(unsigned long seed)
 		}
 	}
 }
+
+/*
+// Optional function to init Taunts.
+void LuaMission::LuaInitTaunts(const char *pCPUTeamName)
+{
+	if (!StopScript)
+	{
+		if (!L)
+			return;
+
+		// if the script has a InitTaunts function...
+		lua_getglobal(L, "InitTaunts");
+		if (lua_isfunction(L, -1))
+		{
+			// call the InitTaunts function
+			LuaBindings::LuaCheckStatus(lua_pcall(L, 0, 0, 0), L, "Lua script InitTaunts error: '%s'");
+			m_LastTauntPrintedAt = -2000; // Force first message to be printed...
+			// Pass the parameters to the internal Taunts code.
+			InitTaunts(&m_ElapsedGameTime, &m_LastTauntPrintedAt, &m_GameTPS, pCPUTeamName);
+		}
+		else
+		{
+			lua_pop(L, 1);
+		}
+	}
+}
+*/

@@ -264,6 +264,7 @@
     <ClCompile Include="..\Shared\DllBase.cpp" />
     <ClCompile Include="..\Shared\MathUtils.cpp" />
     <ClCompile Include="..\Shared\ScriptUtilsExtention.cpp" />
+    <ClCompile Include="..\Shared\TRNAllies.cpp" />
     <ClCompile Include="LuaMission.cpp" />
     <ClCompile Include="LuaBindings.cpp" />
   </ItemGroup>
@@ -272,6 +273,7 @@
     <ClInclude Include="..\Shared\DllBase.h" />
     <ClInclude Include="..\Shared\MathUtils.h" />
     <ClInclude Include="..\Shared\ScriptUtilsExtention.h" />
+    <ClInclude Include="..\Shared\TRNAllies.h" />
     <ClInclude Include="LuaBindings.h" />
     <ClInclude Include="LuaMission.h" />
   </ItemGroup>

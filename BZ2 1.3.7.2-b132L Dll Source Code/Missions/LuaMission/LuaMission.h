@@ -40,6 +40,7 @@ private:
 	int
 		i_first,
 		m_ElapsedGameTime,
+		//m_LastTauntPrintedAt,
 		Difficulty,
 
 		i_last;
@@ -93,6 +94,9 @@ public:
 	virtual PreGetInReturnCodes PreGetIn(const int curWorld, Handle pilotHandle, Handle emptyCraftHandle);
 	virtual PrePickupPowerupReturnCodes PrePickupPowerup(const int curWorld, Handle me, Handle powerupHandle);
 	virtual void PostTargetChangedCallback(Handle craft, Handle previousTarget, Handle currentTarget);
+
+	// Optional InitTaunts function.
+	//virtual void LuaInitTaunts(const char *pCPUTeamName = NULL);
 
 private:
 	// Rest of calls are internal functions, thus made private.

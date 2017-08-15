@@ -1,5 +1,5 @@
 #include "LuaBindings.h"
-
+//#include "..\Shared\Taunts.h"
 
 // Lua Specific things...
 
@@ -5694,6 +5694,19 @@ int WhoIsTargeting(lua_State *L)
 	return 0;
 }
 
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------
+// BZ2 DLL Utility Functions:
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------
+/* // Code removed by order of N1, LuaMissions will just have to do their own shit and hope it syncs across MP....
+//void DoTaunt(TauntTypes Taunt);
+int DoTaunt(lua_State *L)
+{
+	TauntTypes taunttype = TauntTypes(luaL_checkinteger(L, 1));
+	::DoTaunt(taunttype);
+	return 0;
+}
+*/
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------
 // BZScriptor Backwards Compatability Functions:

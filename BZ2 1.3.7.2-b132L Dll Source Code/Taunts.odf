@@ -1,16 +1,5 @@
-static const char *TauntHeaders[] =
-{
-	"GameStart",
-	"HumanEnters",
-	"HumanLeaves",
-	"HumanShipDestroyed",
-	"HumanRecyclerDestroyed",
-	"CPURecyclerDestroyed",
-	"Random",
-};
-
-
 // Taunts ODF, finally, taunts outsourced to an easy to edit format.
+// Add taunts to any category, code reads them until it hits a gap in the numbers.
 // Created by General BlackDragon.
 // Quotes thru Commando 8/21/02
 
