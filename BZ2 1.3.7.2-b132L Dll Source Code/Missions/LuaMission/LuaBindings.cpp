@@ -5698,7 +5698,18 @@ int WhoIsTargeting(lua_State *L)
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------
 // BZ2 DLL Utility Functions:
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------
-/* // Code removed by order of N1, LuaMissions will just have to do their own shit and hope it syncs across MP....
+// Code removed by order of N1, LuaMissions will just have to do their own shit and hope it syncs across MP....
+/* //void InitTaunts(int* pGameTime, int* pLastMessagePrintedAt, int* pTPS, const char* pCPUTeamName = NULL);
+int InitTaunts(lua_State *L)
+{
+	int gametime = luaL_checkinteger(L, 1);
+	int lasttauntat = luaL_optinteger(L, 2, -1);
+	int gametps = luaL_optinteger(L, 3, GetTPS());
+	const char *cputeamname = luaL_optstring(L, 4, NULL);
+	::InitTaunts(&gametime, &lasttauntat, &gametps, cputeamname);
+	return 0;
+}
+
 //void DoTaunt(TauntTypes Taunt);
 int DoTaunt(lua_State *L)
 {

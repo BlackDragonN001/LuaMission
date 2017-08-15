@@ -2370,6 +2370,15 @@ Gets whether a handle can be sniped
 Gets all GameObject handles that are targeting the specified 'me'. Note that this call must iterate over all GameObjects, so this is not necessarily cheap to use. 
 
 
+-ProcessCommand ( int crc )
+
+Processes the given command CRC, pass in using CalcCRC( string ).
+
+
+-SetRandomSeed ( int seed )
+
+Sets the Random seed used to sync GetRandomFloat across Multiworld.
+
 
 ============ BZScriptor Backwards Compatability Stuff ======================
 

@@ -541,6 +541,7 @@ namespace LuaBindings {
 	int GetCanSnipe(lua_State *L);
 	int WhoIsTargeting(lua_State *L);
 	// BZ2 DLL Utility Functions.
+	//int InitTaunts(lua_State *L);
 	//int DoTaunt(lua_State *L);
 	// BZScriptor Backwards Compatability functions.
 	int SetAngle(lua_State *L);
@@ -945,6 +946,7 @@ namespace LuaBindings {
 		{ "WhoIsTargeting", WhoIsTargeting },
 
 		// BZ2 DLL Utility Functions
+		//{ "InitTaunts", InitTaunts },
 		//{ "DoTaunt", DoTaunt },
 
 		// BZScriptor Backwards Compatability.

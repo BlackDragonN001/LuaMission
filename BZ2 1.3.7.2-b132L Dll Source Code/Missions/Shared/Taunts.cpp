@@ -3,6 +3,7 @@
 #include <string.h>
 #include <vector>
 
+// 8/12/17 Taunts.cpp re-written by General BlackDragon, outsourced taunts to exterior ODF file for modding/localization. -GBD
 static const char *TauntHeaders[] =
 {
 	"GameStart",

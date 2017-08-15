@@ -2,7 +2,6 @@
 #include "..\Shared\ScriptUtilsExtention.h"
 #include "LuaMission.h"
 #include "..\Shared\TRNAllies.h"
-//#include "..\Shared\Taunts.h"
 #include <math.h>
 #include <string.h>
 #include <iostream>
@@ -879,30 +878,3 @@ void LuaMission::SetRandomSeed(unsigned long seed)
 		}
 	}
 }
-
-/*
-// Optional function to init Taunts.
-void LuaMission::LuaInitTaunts(const char *pCPUTeamName)
-{
-	if (!StopScript)
-	{
-		if (!L)
-			return;
-
-		// if the script has a InitTaunts function...
-		lua_getglobal(L, "InitTaunts");
-		if (lua_isfunction(L, -1))
-		{
-			// call the InitTaunts function
-			LuaBindings::LuaCheckStatus(lua_pcall(L, 0, 0, 0), L, "Lua script InitTaunts error: '%s'");
-			m_LastTauntPrintedAt = -2000; // Force first message to be printed...
-			// Pass the parameters to the internal Taunts code.
-			InitTaunts(&m_ElapsedGameTime, &m_LastTauntPrintedAt, &m_GameTPS, pCPUTeamName);
-		}
-		else
-		{
-			lua_pop(L, 1);
-		}
-	}
-}
-*/
