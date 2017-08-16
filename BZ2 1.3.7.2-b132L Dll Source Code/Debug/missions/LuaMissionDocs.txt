@@ -2405,7 +2405,7 @@ Sets the Camera to the perspective of the handle, with the specified offset.
 Moves the handle to the destination position, at the specified speed/sec, and optionally rotating at the specified turnspeed in deg/sec. If only the Time is specified, it spins the object until the result of GetTime() is >= the specified time.
 
 
--Handle ReplaceObject ( Handle h, [ string ODF ], [ int Team = -1 ], [ float HeightOffset = 0.0f ], [ int Empty = -1 ], [ bool RestoreWeapons = true ], [ int Group = -1 ], [ bool KeepCommand = true ], [ int NewCommand = -1 ], [ Handle NewWho = -1 ] )
+-Handle ReplaceObject ( Handle h, [ string ODF ], [ int Team = -1 ], [ float HeightOffset = 0.0f ], [ int Empty = -1 ], [ bool RestoreWeapons = true ], [ int Group = -1 ], [ bool KeepCommand = true ], [ int NewCommand = -1 ], [ int NewPriority = 0 ], [ Handle NewWho = -1 ], [ Vector NewWhere (0, 0, 0) ] )
 
 Replaces an object with another object, retaining as much information about it as possible, with optional team switching, height offset, replacing of weapons with ones it currently has, group, and current command info (may not work for all commands).
 

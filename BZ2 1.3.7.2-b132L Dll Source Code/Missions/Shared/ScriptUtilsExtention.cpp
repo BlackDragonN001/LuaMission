@@ -195,7 +195,7 @@ bool Move(const Handle h, const float TurnSpeed, const float Time)
 /////////////////////////////////////////////////////////////
 
 // Replaces an object with another object, retaining as much information from the original as desired. 
-Handle ReplaceObject(const Handle H, const char *ODF, const int Team, const float HeightOffset, const int Empty, const bool RestoreWeapons, const int Group, const int CanSnipe, const bool KeepCommand, const int NewCommand, const Handle NewWho, const Vector NewWhere)
+Handle ReplaceObject(const Handle H, const char *ODF, const int Team, const float HeightOffset, const int Empty, const bool RestoreWeapons, const int Group, const int CanSnipe, const bool KeepCommand, const int NewCommand, const int Priority, const Handle NewWho, const Vector NewWhere)
 {
 	if (!IsAround(H))
 		return 0;
@@ -252,8 +252,8 @@ Handle ReplaceObject(const Handle H, const char *ODF, const int Team, const floa
 	hinfo.LifeSpan = GetRemainingLifespan(H);
 	hinfo.Independence = GetIndependence(H);
 	hinfo.Skill = GetSkill(H);
-	hinfo.Group = Group >= 0 ? Group : GetGroup(H); // If we override Group, do that, or use existing team.
-	hinfo.CanSnipe = CanSnipe >= 0 ? CanSnipe : GetCanSnipe(H); // If we override Group, do that, or use existing team.
+	hinfo.Group = Group >= 0 ? Group : GetGroup(H); // If we override Group, do that, or use existing group.
+	hinfo.CanSnipe = CanSnipe >= 0 ? CanSnipe : GetCanSnipe(H); // If we override Snipe, do that, or use existing Snipe ability.
 	hinfo.CurrCommand = GetCurrentCommand(H);
 	switch (hinfo.CurrCommand)
 	{
@@ -346,9 +346,9 @@ Handle ReplaceObject(const Handle H, const char *ODF, const int Team, const floa
 			else
 			{
 				if (NewCommand >= 0)
-					SetCommand(h, NewCommand, 0, NewWho, NewWhere);
+					SetCommand(h, NewCommand, Priority, NewWho, NewWhere);
 				else if (KeepCommand)
-					SetCommand(h, hinfo.CurrCommand, 0, hinfo.CurrWho, hinfo.CurrWhere);
+					SetCommand(h, hinfo.CurrCommand, Priority, hinfo.CurrWho, hinfo.CurrWhere);
 			}
 		}
 	}

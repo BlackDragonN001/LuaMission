@@ -441,7 +441,7 @@ extern bool Move(const Handle h, const float TurnSpeed, const float Time);
 // Replaces an object with another object, retaining as much information about it as possible, with optional team switching, height offset, replacing of 
 // weapons with what it currently has, group, if it can be sniped, and current command info (may not work for all commands).
 Handle ReplaceObject(const Handle h, const char *ODF = NULL, const int Team = -1, const float HeightOffset = 0.0f, const int Empty = -1,
-	const bool RestoreWeapons = true, const int Group = -1, const int Snipe = -1, const bool KeepCommand = true, const int NewCommand = -1, const Handle NewWho = -1, const Vector NewWhere = Vector(0, 0, 0));
+	const bool RestoreWeapons = true, const int Group = -1, const int Snipe = -1, const bool KeepCommand = true, const int NewCommand = -1, const int Priority = 0, const Handle NewWho = -1, const Vector NewWhere = Vector(0, 0, 0));
 //////////
 
 ////////// New things used by BZScriptor Tool functions.
@@ -486,7 +486,7 @@ extern bool IsFollowing(const Handle me, const Handle him);
 //inline int GetPriority(const Handle h) { if (!IsAround(h)) return -1; else return GetGroup(h) == -1; }; // Moved to below function.
 
 // Get CanCommand, backported from BZ1. //[11 / 13 / 2016 7:55 : 55 PM] Kenneth Miller : It returns true if it's not the player, not destroyed, not empty, and not running a priority command
-inline bool CanCommand(const Handle h) { if (!IsAround(h)) return false; else return (!IsPlayer(h) && IsAliveAndPilot2(h) && GetGroup(h) != -1); }; //GetPriority(h)); };
+inline bool CanCommand(const Handle h) { if (!IsAround(h)) return false; else return (!IsPlayer(h) && IsAliveAndPilot2(h) && GetGroup(h) != -1); }; //!GetPriority(h)); };
 
 // This function checks the validity of an ODF name retrieved by GetObjInfo Get_ODF, and cuts off the .odf from the end. Returns true if successful, otherwise returns false.
 extern bool GetODFName(const Handle h, char *ODFName);
