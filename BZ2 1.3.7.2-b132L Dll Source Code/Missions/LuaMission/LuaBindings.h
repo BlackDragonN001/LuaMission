@@ -816,7 +816,7 @@ namespace LuaBindings {
 		{ "GetBase", GetObjInfo_GOClass_gCfg, },
 		{ "GetClassSig", GetObjInfo_EntityType },
 		{ "GetClassLabel", GetObjInfo_GOClass },
-		{ "GetWeaponConfig ", Get_WeaponConfig },
+		{ "GetWeaponConfig", Get_WeaponConfig },
 		{ "GetWeaponODF", Get_WeaponODF },
 		{ "GetWeaponGOClass", Get_WeaponGOClass },
 		{ "DoesODFExist", DoesODFExist },
