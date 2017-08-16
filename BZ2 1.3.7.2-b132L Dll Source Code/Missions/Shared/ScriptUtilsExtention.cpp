@@ -329,7 +329,7 @@ Handle ReplaceObject(const Handle H, const char *ODF, const int Team, const floa
 		if (Group < 0)
 			SetBestGroup(h);
 		else if (Group > 0)
-			SetGroup(h, hinfo.Group - 1);
+			SetGroup(h, hinfo.Group);
 
 		SetCanSnipe(h, hinfo.CanSnipe);
 
