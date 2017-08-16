@@ -309,7 +309,8 @@ Handle ReplaceObject(const Handle H, const char *ODF, const int Team, const floa
 		//SetCurAmmo(h, hinfo.CurAmmo);
 		SetHealth(h, hinfo.HealthP);
 		SetAmmo(h, hinfo.AmmoP);
-		ReplaceWeapons(h, hinfo.Weapons, hinfo.LocalAmmo);
+		if (RestoreWeapons)
+			ReplaceWeapons(h, hinfo.Weapons, hinfo.LocalAmmo, hinfo.ODFName);
 		SetWeaponMask(h, hinfo.WeaponMask);
 		//SetScavengerCurScrap(h, hinfo.CurScrap); // Use percentage below.
 		//SetScavengerMaxScrap(h, hinfo.MaxScrap);
@@ -350,9 +351,6 @@ Handle ReplaceObject(const Handle H, const char *ODF, const int Team, const floa
 					SetCommand(h, hinfo.CurrCommand, 0, hinfo.CurrWho, hinfo.CurrWhere);
 			}
 		}
-
-		if (RestoreWeapons)
-			ReplaceWeapons(h, hinfo.Weapons, hinfo.LocalAmmo, hinfo.ODFName);
 	}
 	else
 	{

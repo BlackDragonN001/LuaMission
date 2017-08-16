@@ -481,9 +481,9 @@ Returns the game object's team number.
 Sets the game object's team number.
 
 
--vector SetVelocity ( handle h )
+-SetVelocity ( handle h, vector Velocity)
 
-Sets the game object's angular velocity vector.
+Sets the game object's linear velocity vector.
 
 
 -SetControls(Handle h, table VehicleControls )
