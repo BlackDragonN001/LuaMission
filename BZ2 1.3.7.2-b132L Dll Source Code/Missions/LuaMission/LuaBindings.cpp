@@ -895,6 +895,28 @@ int QuatPos_to_Matrix(lua_State *L)
 	return 1;
 }
 
+//extern Vector Vector_Transform(const Matrix &M, const Vector &v);
+int Vector_Transform(lua_State *L)
+{
+	const Matrix *m = GetMatrix(L, 1);
+	//const Vector *v = GetVector(L, 2);
+	float x, y, z;
+	if (const Vector *posit = GetVector(L, 2))
+	{
+		x = posit->x;
+		y = posit->y;
+		z = posit->z;
+	}
+	else
+	{
+		x = float(luaL_optnumber(L, 2, 0.0f));
+		y = float(luaL_optnumber(L, 3, 0.0f));
+		z = float(luaL_optnumber(L, 4, 0.0f));
+	}
+	*NewVector(L) = Vector_Transform(*m, Vector(x, y, z));
+	return 1;
+}
+
 //extern Vector Vector_TransformInv(const Matrix &M, const Vector &v);
 int Vector_TransformInv(lua_State *L)
 {

@@ -79,6 +79,7 @@ namespace LuaBindings {
 	int Matrix_to_QuatPos(lua_State *L);
 	int Matrix_to_Quaternion(lua_State *L);
 	int QuatPos_to_Matrix(lua_State *L);
+	int Vector_Transform(lua_State *L);
 	int Vector_TransformInv(lua_State *L);
 	int Vector_Rotate(lua_State *L);
 	int Vector_RotateInv(lua_State *L);
@@ -999,6 +1000,7 @@ namespace LuaBindings {
 		{ "Matrix_to_QuatPos", Matrix_to_QuatPos },
 		{ "Matrix_to_Quaternion", Matrix_to_Quaternion },
 		{ "QuatPos_to_Matrix", QuatPos_to_Matrix },
+		{ "Vector_Transform", Vector_Transform },
 		{ "Vector_TransformInv", Vector_TransformInv },
 		{ "Vector_Rotate", Vector_Rotate },
 		{ "Vector_RotateInv", Vector_RotateInv },
