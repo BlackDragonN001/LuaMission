@@ -544,8 +544,6 @@ namespace LuaBindings {
 	// BZ2 DLL Utility Functions.
 	//int InitTaunts(lua_State *L);
 	//int DoTaunt(lua_State *L);
-	// New Useful functions.
-	int GetVectorFromPath(lua_State *L);
 	// BZScriptor Backwards Compatability functions.
 	int SetAngle(lua_State *L);
 	int CameraPos(lua_State *L);
@@ -958,9 +956,6 @@ namespace LuaBindings {
 		{ "CameraOf", CameraOf },
 		{ "Move", Move },
 		{ "ReplaceObject", ReplaceObject },
-
-		// New, useful functions.
-		{ "GetVectorFromPath", GetVectorFromPath },
 
 		//BZ1 Functions/Backwards Compatability.
 		// Name Overloads.
