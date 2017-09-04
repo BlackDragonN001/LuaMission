@@ -2,6 +2,7 @@
 #include "..\Shared\ScriptUtilsExtention.h"
 #include "LuaMission.h"
 #include "..\Shared\TRNAllies.h"
+//#include "..\Shared\Taunts.h"
 #include <math.h>
 #include <string.h>
 #include <iostream>
