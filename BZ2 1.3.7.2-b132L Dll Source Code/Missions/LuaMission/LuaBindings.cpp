@@ -5759,8 +5759,8 @@ int CameraPos(lua_State *L)
 	Handle h2 = RequireHandle(L, 2);
 	Vector *v1 = RequireVector(L, 3);
 	Vector *v2 = RequireVector(L, 4);
-	float inc = float(luaL_checknumber(L, 5));
-	lua_pushboolean(L, ::CameraPos(h1, h2, *v1, *v2, inc));
+	float speed = float(luaL_checknumber(L, 5));
+	lua_pushboolean(L, ::CameraPos(h1, h2, *v1, *v2, speed));
 	return 1;
 }
 

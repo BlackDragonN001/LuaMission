@@ -425,8 +425,8 @@ extern void SetAngle(const Handle h, const float Degrees);
 // Internal math functions used in setting the Angle of an object in the BuildAngleObject functions, and the SetAngle function.
 extern Vector HRotateFront(const Vector Front, const float HAngleDifference);
 
-// Camera Pos function from Bob "BS-er" Stewert, moves the camera between two positions at the incrument speed. Tweaked by GBD and Ken Miller.
-extern bool CameraPos(const Handle me, const Handle him, const Vector &PosA, const Vector &PosB, const float Increment);
+// Camera Pos function from Bob "BS-er" Stewert, moves the camera between two positions at the speed (in CM/s). Tweaked by GBD and Ken Miller.
+extern bool CameraPos(const Handle me, const Handle him, const Vector &PosA, const Vector &PosB, const float Speed);
 
 // Positions the camera from the perspective of the handle with the specified offset.
 extern void CameraOf(const Handle me, const Vector &Offset);

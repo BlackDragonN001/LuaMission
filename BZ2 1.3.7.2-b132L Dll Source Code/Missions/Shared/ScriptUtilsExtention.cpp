@@ -64,7 +64,7 @@ void SetAngle(const Handle h, const float Degrees)
 // Code originally from Bob "BS-er" Stewart. Re-write by Ken Miller and General BlackDragon.
 float CameraTime = -1.0f;
 Vector CameraPosition(0, 0, 0);
-bool CameraPos(const Handle me, const Handle him, const Vector &PosA, const Vector &PosB, const float Increment)
+bool CameraPos(const Handle me, const Handle him, const Vector &PosA, const Vector &PosB, const float Speed)
 {
 	// Compute the difference vector between the starting and ending positions
 	Vector CameraDiffVector = Sub_Vectors(PosB, PosA);
@@ -74,13 +74,13 @@ bool CameraPos(const Handle me, const Handle him, const Vector &PosA, const Vect
 	// Compute the time when the camera shot must end
 	if (CameraTime < 0.0f)
 	{
-		float Time = Distance / (Increment * 0.01f);
+		float Time = Distance / (Speed * 0.01f);
 		CameraPosition = PosA;
 		CameraTime = (GetTime() + Time);
 	}
 	else
 	{
-		float Scale = Increment / (Distance * 100 * GetTPS() * 2); // Why is the 2 there? -GBD
+		float Scale = Speed / (Distance * 100 * GetTPS());
 		CameraPosition = Add_Mult_Vectors(CameraPosition, CameraDiffVector, Scale); // Increment the Position.
 	}
 
