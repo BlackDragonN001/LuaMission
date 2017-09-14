@@ -23,4 +23,7 @@ void InitTaunts(int* pGameTime, int* pLastMessagePrintedAt, int* pTPS, const cha
 // Prints a taunt from the specified category. 
 void DoTaunt(TauntTypes Taunt);
 
+// Sets the CPU Team name.
+void SetTauntCPUName(const char *Name);
+
 #endif // _TAUNTS_H_

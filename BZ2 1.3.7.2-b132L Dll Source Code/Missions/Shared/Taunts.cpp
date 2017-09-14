@@ -750,3 +750,8 @@ void DoTaunt(TauntTypes Taunt)
 	if(bEnableTaunts)
 		AddToMessagesBox(TempBuffer);
 }
+
+void SetTauntCPUName(const char* Name)
+{
+	sprintf_s(CPUTeamName, Name);
+}

@@ -925,12 +925,72 @@ Vector GetVectorFromPath(const char* path, const int point)
 	return retVal;
 }
 
-// Returns the current TPS (And sets it for entire game).
-int GetTPS(void)
+// Alternate PointInPoly code Ken Miller found online: http://geomalgorithms.com/a03-_inclusion.html
+// Ken's LUA Implementation: http://pastebin.com/nhtkYEpN
+int GetWindingNumber(const std::vector<VECTOR_2D> &areaPath, const Vector &vector)
 {
-	int TPS = 10; // Default.
-	EnableHighTPS(TPS);
-	return TPS;
+	int wn = 0; // the  winding number counter.
+	int numOfSides = areaPath.size();
+
+	// Iterate through each line.
+	for (int i = 0, j = 1; i < numOfSides; i++, j++)
+	{
+		if (j >= numOfSides)
+			j = 0;
+
+		if (areaPath[i].z <= vector.z) // start z <= Vector.z
+		{
+			if ((areaPath[j].z > vector.z) && (IsLeftOnRight(areaPath[i], areaPath[j], vector) > 0))  // An upward crossing and Vector left of  edge.
+				++wn; // have  a valid up intersect
+		}
+		else // start z > Vector.z (no test needed)
+		{
+			if ((areaPath[j].z <= vector.z) && (IsLeftOnRight(areaPath[i], areaPath[j], vector) < 0)) // A downward crossing and Vector right of  edge.
+				--wn; // have  a valid down intersect
+		}
+	}
+
+	return wn;
+}
+
+// Version that takes a Path Name.
+int GetWindingNumber(const char* path, const Vector vector)
+{
+	size_t bufSize = 0;
+
+	if (path)
+		GetPathPoints(path, bufSize, NULL);
+
+	// Bad Path, abort!
+	if (!bufSize)
+		return 0;
+
+	std::vector<VECTOR_2D> areaPath;
+	areaPath.clear();
+
+	float *pData = static_cast<float *>(_alloca(sizeof(float) * 2 * bufSize));
+	if (GetPathPoints(path, bufSize, pData))
+	{
+		for (size_t i = 0; i < bufSize; ++i)
+		{
+			VECTOR_2D newPoint; // does this need to be a pointer?
+			newPoint.x = pData[2 * i + 0];
+			newPoint.z = pData[2 * i + 1];
+			areaPath.push_back(newPoint);
+		}
+	}
+
+	return GetWindingNumber(areaPath, vector);
+}
+
+// Checks if a pathpoint exists. Returns the number of points in the path.
+int DoesPathExist(const char* path)
+{
+	size_t bufSize = 0;
+	if (path)
+		GetPathPoints(path, bufSize, NULL);
+
+	return bufSize;
 }
 
 // IsInfo that uses a handle. No need to know exact ODF name :)

@@ -2553,8 +2553,8 @@ DLLEXPORT void DLLAPI SetInterpolablePosition(Handle h, const Matrix* pLastMat =
 DLLEXPORT void DLLAPI SetInterpolablePosition(Handle h, const Vector* pLastPos = NULL, const Vector* pTruePos = NULL);
 
 // Helpful time conversion functions -- convert turns to seconds, and
-// vice versa. These are MWF aware -- e.g. if MWF=10, 1 second = 10
-// turns; if MWF=20, 1 second = 20 turns.
+// vice versa. These are TPS aware -- e.g. if TPS=10, 1 second = 10
+// turns; if TPS=20, 1 second = 20 turns.
 DLLEXPORT int DLLAPI SecondsToTurns(float timeSeconds);
 DLLEXPORT float DLLAPI TurnsToSeconds(int turns);
 

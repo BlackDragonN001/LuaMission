@@ -541,19 +541,32 @@ namespace LuaBindings {
 	int SetCanSnipe(lua_State *L);
 	int GetCanSnipe(lua_State *L);
 	int WhoIsTargeting(lua_State *L);
+
 	// BZ2 DLL Utility Functions.
 	//int DoTaunt(lua_State *L);
 	//int SetTauntCPUName(lua_State *L);
+
 	// BZScriptor Backwards Compatability functions.
 	int SetAngle(lua_State *L);
 	int CameraPos(lua_State *L);
 	int CameraOf(lua_State *L);
 	int Move(lua_State *L);
 	int ReplaceObject(lua_State *L);
+
 	// BZ1 Lua backwards compatability functions.
 	int CanCommand(lua_State *L);
 	int GetTransform(lua_State *L);
 	int SetTransform(lua_State *L);
+
+	int GetRecyclerHandle(lua_State *L);
+	int GetFactoryHandle(lua_State *L);
+	int GetArmoryHandle(lua_State *L);
+	int GetTimeStep(lua_State *L);
+	int IsInsideArea(lua_State *L);
+	int GetWindingNumber(lua_State *L);
+
+	// Useful Custom Functions
+	int GetTPS(lua_State *L);
 
 	// Lua script utils functions
 	const luaL_Reg sLuaScriptUtils[] = {
@@ -963,18 +976,34 @@ namespace LuaBindings {
 		{ "GetAIP", GetPlan },
 		{ "GetFloorHeightAndNormal", TerrainFindFloor },
 		{ "GetWeaponClass", Get_WeaponConfig },
+		{ "GetTeamSlot", GetObjectByTeamSlot },
 		//{ "GetClassId", GetObjInfo_EntityType }, //GetClassId }, // BZ1 version returns an int, bz2 returns string, just use Get_EntityType.
+
 //		{ "BuildAt", BuildAt }, // Needs a struct/handle/position saveoff for 1 turn.
 		{ "CanCommand", CanCommand },
 	//	{ "GetRidOfSomeScrap", GetRidOfSomeScrap },
 	//	{ "ClearScrapAround", ClearScrapAround },
 	//	{ "ObjectsInRange", ObjectsInRange },
+	//	{ "AllObjects", AllObjects },
+	//	{ "AllCraft", AllCraft },
+	//	{ "AllBuildings", AllBuildings },
+	//	{ "AllScrap", AllScrap },
+	//	{ "SelectedObjects", SelectedObjects },
 		// Remade functions.
 		{ "SetPathOneWay", SetPathOneWay },
 		{ "SetPathRoundTrip", SetPathRoundTrip },
 		{ "SetPathLoop", SetPathLoop },
 		{ "SetTransform", SetTransform },
 		{ "GetTransform", GetTransform },
+		{ "GetRecyclerHandle", GetRecyclerHandle },
+		{ "GetFactoryHandle", GetFactoryHandle },
+		{ "GetArmoryHandle", GetArmoryHandle },
+		{ "GetTimeStep", GetTimeStep },
+		{ "IsInsideArea", IsInsideArea },
+		{ "GetWindingNumber", GetWindingNumber },
+
+		// New Custom utility functions.
+		{ "GetTPS", GetTPS },
 
 		// Math stuffs.
 		{ "SetVector", SetVector },

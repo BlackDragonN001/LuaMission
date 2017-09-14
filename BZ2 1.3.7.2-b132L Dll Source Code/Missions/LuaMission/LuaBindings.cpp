@@ -825,8 +825,8 @@ int BuildDirectionalMatrix(lua_State *L)
 //extern Matrix Interpolate_Matrix(const Matrix &m0, const Matrix &m1, const float t);
 int Interpolate_Matrix(lua_State *L)
 {
-	const Matrix *m1 = GetMatrix(L, 1);
-	const Matrix *m2 = GetMatrix(L, 2);
+	const Matrix *m1 = RequireMatrix(L, 1);
+	const Matrix *m2 = RequireMatrix(L, 2);
 	float t = float(luaL_checknumber(L, 3));
 	*NewMatrix(L) = Interpolate_Matrix(*m1, *m2, t);
 	return 1;
@@ -854,7 +854,7 @@ int Normalize_Quaternion(lua_State *L)
 //extern void Matrix_to_QuatPos(const Matrix &M, Quaternion &Q, Vector &P);
 int Matrix_to_QuatPos(lua_State *L)
 {
-	const Matrix *m1 = GetMatrix(L, 1);
+	const Matrix *m1 = RequireMatrix(L, 1);
 	Quaternion q;
 	Vector v;
 	Matrix_to_QuatPos(*m1, q, v);
@@ -865,7 +865,7 @@ int Matrix_to_QuatPos(lua_State *L)
 //inline Quaternion Matrix_to_Quaternion(const Matrix &M) { Quaternion q; Vector v; Matrix_to_QuatPos(M, q, v); return q; }
 int Matrix_to_Quaternion(lua_State *L)
 {
-	const Matrix *m1 = GetMatrix(L, 1);
+	const Matrix *m1 = RequireMatrix(L, 1);
 	Quaternion q;
 	Vector v;
 	Matrix_to_QuatPos(*m1, q, v);
@@ -898,8 +898,7 @@ int QuatPos_to_Matrix(lua_State *L)
 //extern Vector Vector_Transform(const Matrix &M, const Vector &v);
 int Vector_Transform(lua_State *L)
 {
-	const Matrix *m = GetMatrix(L, 1);
-	//const Vector *v = GetVector(L, 2);
+	const Matrix *m = RequireMatrix(L, 1);
 	float x, y, z;
 	if (const Vector *posit = GetVector(L, 2))
 	{
@@ -920,8 +919,7 @@ int Vector_Transform(lua_State *L)
 //extern Vector Vector_TransformInv(const Matrix &M, const Vector &v);
 int Vector_TransformInv(lua_State *L)
 {
-	const Matrix *m = GetMatrix(L, 1);
-	//const Vector *v = GetVector(L, 2);
+	const Matrix *m = RequireMatrix(L, 1);
 	float x, y, z;
 	if (const Vector *posit = GetVector(L, 2))
 	{
@@ -942,8 +940,7 @@ int Vector_TransformInv(lua_State *L)
 //extern Vector Vector_Rotate(const Matrix &M, const Vector &v);
 int Vector_Rotate(lua_State *L)
 {
-	const Matrix *m = GetMatrix(L, 1);
-	//const Vector *v = GetVector(L, 2);
+	const Matrix *m = RequireMatrix(L, 1);
 	float x, y, z;
 	if (const Vector *posit = GetVector(L, 2))
 	{
@@ -964,8 +961,7 @@ int Vector_Rotate(lua_State *L)
 //extern Vector Vector_RotateInv(const Matrix &M, const Vector &v);
 int Vector_RotateInv(lua_State *L)
 {
-	const Matrix *m = GetMatrix(L, 1);
-	//const Vector *v = GetVector(L, 2);
+	const Matrix *m = RequireMatrix(L, 1);
 	float x, y, z;
 	if (const Vector *posit = GetVector(L, 2))
 	{
@@ -986,7 +982,7 @@ int Vector_RotateInv(lua_State *L)
 //extern Matrix Matrix_Inverse(const Matrix &M);
 int Matrix_Inverse(lua_State *L)
 {
-	const Matrix *m1 = GetMatrix(L, 1);
+	const Matrix *m1 = RequireMatrix(L, 1);
 	*NewMatrix(L) = Matrix_Inverse(*m1);
 	return 1;
 }
@@ -2020,8 +2016,8 @@ int SetTeamNum(lua_State *L)
 int SetVelocity(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
-	if (Vector *v = GetVector(L, 2))
-		SetVelocity(h, *v);
+	Vector *v = RequireVector(L, 2);
+	SetVelocity(h, *v);
 
 	return 0;
 }
@@ -2295,8 +2291,8 @@ AiPath **GetAiPath(lua_State *L, int n)
 //DLLEXPORT AiPath *DLLAPI FindAiPath(const Vector &start, const Vector &goal);
 int FindAiPath(lua_State *L)
 {
-	Vector *start = GetVector(L, 1);
-	Vector *goal = GetVector(L, 2);
+	Vector *start = RequireVector(L, 1);
+	Vector *goal = RequireVector(L, 2);
 	AiPath* path = FindAiPath(*start, *goal);
 	*NewAiPath(L) = path;
 	return 1;
@@ -3474,12 +3470,23 @@ int StopSoundEffect(lua_State *L)
 	return 0;
 }
 
-//DLLEXPORT Handle DLLAPI GetObjectByTeamSlot(int TeamNum, int Slot);
+//Handle GetObjectByTeamSlot(int Slot); // BZ1 backwards compatability.
+//DLLEXPORT Handle DLLAPI GetObjectByTeamSlot(int TeamNum, int Slot); // Preserve reverse input order for BZ2 compatability.
 int GetObjectByTeamSlot(lua_State *L)
 {
-	int team = luaL_checkinteger(L, 1);
-	int slot = luaL_checkinteger(L, 2);
-	PushHandle(L, ::GetObjectByTeamSlot(team, slot));
+	Handle h = 0;
+	if (lua_isnumber(L, 2))
+	{
+		int team = luaL_checkinteger(L, 1);
+		int slot = luaL_checkinteger(L, 2);
+		h = ::GetObjectByTeamSlot(team, slot);
+	}
+	else
+	{
+		int slot = luaL_checkinteger(L, 1);
+		h = ::GetObjectByTeamSlot(::GetLocalPlayerTeamNumber(), slot);
+	}
+	PushHandle(L, h);
 	return 1;
 }
 
@@ -4963,8 +4970,8 @@ int TerrainIsWater(lua_State *L)
 	}
 	else if (lua_isstring(L, 1))
 	{
-		Name path = Name(lua_tostring(L, 3));
-		int point = luaL_optinteger(L, 4, 0);
+		Name path = Name(lua_tostring(L, 1));
+		int point = luaL_optinteger(L, 2, 0);
 		lua_pushboolean(L, ::TerrainIsWater(path, point));
 	}
 	return 1;
@@ -5641,8 +5648,8 @@ int GetOmega(lua_State *L)
 int SetOmega(lua_State *L)
 {
 	Handle h = RequireHandle(L, 1);
-	if (Vector *v = GetVector(L, 2))
-		::SetOmega(h, *v);
+	Vector *v = RequireVector(L, 2);
+	::SetOmega(h, *v);
 
 	return 0;
 }
@@ -5862,6 +5869,106 @@ int SetTransform(lua_State *L)
 	}
 	return 0;
 }
+
+//Handle GetRecyclerHandle(const int Team);
+int GetRecyclerHandle(lua_State *L)
+{
+	TeamNum team = TeamNum(luaL_optinteger(L, 1, ::GetLocalPlayerTeamNumber()));
+	PushHandle(L, ::GetObjectByTeamSlot(team, DLL_TEAM_SLOT_RECYCLER));
+	return 1;
+}
+
+//Handle GetFactoryHandle(const int Team);
+int GetFactoryHandle(lua_State *L)
+{
+	TeamNum team = TeamNum(luaL_optinteger(L, 1, ::GetLocalPlayerTeamNumber()));
+	PushHandle(L, ::GetObjectByTeamSlot(team, DLL_TEAM_SLOT_FACTORY));
+	return 1;
+}
+
+//Handle GetArmoryHandle(const int Team);
+int GetArmoryHandle(lua_State *L)
+{
+	TeamNum team = TeamNum(luaL_optinteger(L, 1, ::GetLocalPlayerTeamNumber()));
+	PushHandle(L, ::GetObjectByTeamSlot(team, DLL_TEAM_SLOT_ARMORY));
+	return 1;
+}
+
+//extern int GetTimeStep(void);
+int GetTimeStep(lua_State *L)
+{
+	lua_pushnumber(L, ::GetTimeStep());
+	return 1;
+}
+
+//extern bool IsInsideArea(std::vector<VECTOR_2D> &areaPath, Vector &vector); // VECTOR_2D not supported in Lua. -GBD
+//inline bool IsInsideArea(const char* path, const Vector vector)
+//inline bool IsInsideArea(const char* path, const Handle h)
+//inline bool IsInsideArea(const char* path, const Matrix pos)
+int IsInsideArea(lua_State *L)
+{
+	Name path = Name(luaL_checkstring(L, 1));
+	bool inside = false;
+	if (Matrix *mat = GetMatrix(L, 2))
+	{
+		inside = ::IsInsideArea(path, *mat);
+	}
+	else if (Vector *pos = GetVector(L, 2))
+	{
+		inside = ::IsInsideArea(path, *pos);
+	}
+	else
+	{
+		Handle h = GetHandle(L, 2);
+		inside = ::IsInsideArea(path, h);
+	}
+	lua_pushboolean(L, inside);
+	return 1;
+}
+
+//extern int GetWindingNumber(const std::vector<VECTOR_2D> &areaPath, const Vector &vector); // VECTOR_2D not supported in Lua. -GBD
+//extern int GetWindingNumber(const char* path, const Vector vector);
+//inline int GetWindingNumber(const char* path, const Handle h)
+//inline int GetWindingNumber(const char* path, const Matrix pos)
+int GetWindingNumber(lua_State *L)
+{
+	Name path = Name(luaL_checkstring(L, 1));
+	int winding = 0;
+	if (Matrix *mat = GetMatrix(L, 2))
+	{
+		winding = ::GetWindingNumber(path, *mat);
+	}
+	else if (Vector *pos = GetVector(L, 2))
+	{
+		winding = ::GetWindingNumber(path, *pos);
+	}
+	else
+	{
+		Handle h = GetHandle(L, 2);
+		winding = ::GetWindingNumber(path, h);
+	}
+	lua_pushnumber(L, winding);
+	return 1;
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------
+// New Useful utlity Functions:
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+//inline int GetTPS(void);
+int GetTPS(lua_State *L)
+{
+	lua_pushinteger(L, ::GetTPS());
+	return 1;
+}
+
+
+
+
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------
+// Load / Save values to/from the Lua Stack.
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 // read a lua value from the file
 bool LoadValue(lua_State *L, bool push)

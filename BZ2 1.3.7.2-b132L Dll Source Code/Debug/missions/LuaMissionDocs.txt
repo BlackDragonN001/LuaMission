@@ -2426,6 +2426,49 @@ Teleports the game object to the given transform matrix.
 Returns the game object's transform matrix. Returns nil if none exists.
 
 
+-handle GetRecyclerHandle ( [ integer team ] )
+
+Returns the Recycler on the given team. Returns nil if none exists.
+
+It uses the local player team if no team is given.
+
+
+-handle GetFactoryHandle ( [ integer team ] )
+
+Returns the Factory on the given team. Returns nil if none exists.
+
+It uses the local player team if no team is given.
+
+
+-handle GetArmoryHandle ( [ integer team ] )
+
+Returns the Armory on the given team. Returns nil if none exists.
+
+It uses the local player team if no team is given.
+
+
+-GetTimeStep ()
+
+Returns the simulation time step in seconds.
+
+
+-boolean IsInsideArea ( string Name, Vector Position )
+-boolean IsInsideArea ( string Name, Matrix Position)
+-boolean IsInsideArea ( string Name, Handle h )
+
+Returns true if the given game object/position is inside the area bounded by the named path. Returns false otherwise.
+
+This function is equivalent to GetWindingNumber( path, pos/handle ) ~= 0
+
+
+-integer GetWindingNumber ( string Name, Vector Position )
+-integer GetWindingNumber ( string Name, Matrix Position )
+-integer GetWindingNumber ( string Name, Handle h )
+
+Returns how many times the named path loops around the given game object/position.
+
+Each full counterclockwise loop adds one and each full clockwise loop subtracts one
+
 
 
 == Math stuff? Copied over, it should work?

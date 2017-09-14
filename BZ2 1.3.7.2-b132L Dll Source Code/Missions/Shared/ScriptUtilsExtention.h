@@ -445,8 +445,9 @@ Handle ReplaceObject(const Handle h, const char *ODF = NULL, const int Team = -1
 //////////
 
 ////////// New things used by BZScriptor Tool functions.
-// Returns the current TPS rate in use. (and sets it for the clients)
-extern int GetTPS(void);
+// Returns the current TPS rate in use. 
+inline int GetTPS(void) { return SecondsToTurns(1.0f); }
+inline float GetTimeStep(void) { return TurnsToSeconds(1); }
 
 // Version that gets/sets a percent.
 extern float GetScavengerScrap(const Handle h);
@@ -476,6 +477,22 @@ extern bool ReplaceWeapons(const Handle h, const char NewWeapons[][MAX_ODF_LENGT
 extern void CheckODFName(char *ODFName);
 //////////
 
+////////// New Things //////////////
+
+// Returns the number of times a position is encircled by the specified path.
+extern int GetWindingNumber(const std::vector<VECTOR_2D> &areaPath, const Vector &vector);
+extern int GetWindingNumber(const char* path, const Vector vector);
+inline int GetWindingNumber(const char* path, const Handle h) { return GetWindingNumber(path, GetPosition(h)); }
+inline int GetWindingNumber(const char* path, const Matrix pos) { return GetWindingNumber(path, pos.posit); }
+// Polypoly. Takes in a saved std:Vector of a path. Code from Nielk1/Ken Miller.
+inline bool IsInsideArea(const std::vector<VECTOR_2D> &areaPath, const Vector &vector) { return GetWindingNumber(areaPath, vector) != 0; }
+// Version that takes in a path name, e.g. "area_path", but it may be slightly more expensive to call this each tick. 
+inline bool IsInsideArea(const char* path, const Vector vector) { return GetWindingNumber(path, vector) != 0; }
+inline bool IsInsideArea(const char* path, const Handle h) { return IsInsideArea(path, GetPosition(h)); }
+inline bool IsInsideArea(const char* path, const Matrix pos) { return IsInsideArea(path, pos.posit); }
+
+// Returns the number of points in the path, (true) if a path exists. 0 (false) if it doesn't exist.
+extern int DoesPathExist(const char* path);
 
 // IsInfo that takes in a handle.
 extern bool IsInfo(const Handle h);
