@@ -1,18 +1,19 @@
 #include "..\shared\SubMission.h"
 #include "Taunts.h"
 #include <string.h>
+#include <stdio.h>
 #include <vector>
 
 // 8/12/17 Taunts.cpp re-written by General BlackDragon, outsourced taunts to exterior ODF file for modding/localization. -GBD
 static const char *TauntHeaders[] =
 {
-	"GameStart",
-	"HumanEnters",
-	"HumanLeaves",
-	"HumanShipDestroyed",
-	"HumanRecyclerDestroyed",
-	"CPURecyclerDestroyed",
-	"Random",
+	"_start.otf",
+	"_enter.otf",
+	"_leave.otf",
+	"_kill.otf",
+	"_lose.otf",
+	"_win.otf",
+	"_rand.otf",
 };
 
 /*
@@ -596,7 +597,7 @@ TauntIndexType TauntIndices[TAUNTS_MAX] =
 */
 
 // New STD String for storing our taunts.
-std::vector<std::string> TauntList[TAUNTS_MAX];
+std::vector<char *> TauntList[TAUNTS_MAX];
 
 static int *g_pElapsedTime = NULL;
 static int *g_pLastTauntPrintedAt = NULL;
@@ -640,29 +641,40 @@ void InitTaunts(int* pGameTime, int* pLastMessagePrintedAt, int* pTPS, const cha
 		strcpy_s(mapTrnFile, GetMapTRNFilename());
 		if (OpenODF(mapTrnFile)) // Open the map's .TRN file.
 		{
-			char TauntODFName[64] = { 0 };
-			GetODFString(mapTrnFile, "DLL", "TauntODFFile", 64, TauntODFName, "Taunts"); // Look for specified Taunts.odf file, fallback to Taunts.odf if not specified.
-			strcat_s(TauntODFName, 64, ".odf"); // Add .odf to the end.
-			if (OpenODF(TauntODFName)) // Open the map's Taunts.odf file.
+			char *buffer = NULL;
+			char TauntFileName[64] = { 0 };
+			GetODFString(mapTrnFile, "DLL", "TauntODFFile", 64, TauntFileName, "Taunts"); // Look for specified Taunts.odf file, fallback to Taunts.odf if not specified.
+
+			for (int TauntType = 0; TauntType < TAUNTS_MAX; TauntType++)
 			{
-				char IndexName[64] = { 0 };
-				char FoundItem[2048] = { 0 };
-				for (int TauntType = 0; TauntType < TAUNTS_MAX; TauntType++)
+				std::vector<char *> &Taunts = TauntList[TauntType];
+
+				strncat(TauntFileName, TauntHeaders[TauntType], (64 - strlen(TauntFileName)) - 1);
+
+				// Load the file as text.
+				size_t bufSize = 0;
+				LoadFile(TauntFileName, NULL, bufSize);
+				buffer = static_cast<char *>(malloc(bufSize + 1));
+				LoadFile(TauntFileName, buffer, bufSize);
+				buffer[bufSize] = '\0';
+
+				if (buffer != NULL)
 				{
-					std::vector<std::string> &Taunts = TauntList[TauntType];
-
-					for (int index = 0;; ++index)
+					char *start = buffer, *end = start + bufSize, *pos = start;
+					// We have end of string here, store off pointer to buffer
+					while ((*pos == '\n' || *pos == '\r' || *pos) && pos != end)
 					{
-						sprintf_s(IndexName, "Taunt%d", index + 1);
+						*pos = '\0';
+						++pos;
 
-						if (GetODFString(TauntODFName, TauntHeaders[TauntType], IndexName, 2048, FoundItem))
-							Taunts.push_back(FoundItem);
-						else
-							break; // Stop reading after the first gap in number sequence.
+						Taunts.push_back(start);
 					}
+					if (start < pos)
+						Taunts.push_back(start);
 				}
 			}
-			CloseODF(TauntODFName);
+			free(buffer);
+			CloseODF(TauntFileName);
 		}
 		CloseODF(mapTrnFile);
 		ReadTaunts = true;
@@ -690,6 +702,7 @@ void DoTaunt(TauntTypes Taunt)
 		const char *TempName = GetVarItemStr("network.session.svar2");
 		if(TempName != NULL)
 			strcpy_s(CPUTeamName,TempName);
+
 		DeterminedCPUTeamName=true;
 	}
 
@@ -721,14 +734,14 @@ void DoTaunt(TauntTypes Taunt)
 		Which = clamp(int(GetRandomFloat(float(Size))), 0, Size - 1); // Get a random taunt, clamping the value within the range.
 
 		if (Which == LastTauntPrinted[Taunt])
-			++Which; // If this is the previous taunt, bump it up one.
+			++Which; // If this is the previous taunt, bump it up one to prevent duplicate taunts in a row.
 
 		if (Which >= Size)
 			Which = 0; // Wrap around if we go out of range.
 	}
 
 	LastTauntPrinted[Taunt] = Which;
-	sprintf_s(TempBuffer, "%s : %s\n", CPUTeamName, TauntList[Taunt].at(Which).c_str()); //TauntIndices[Taunt].TauntList[Which]);
+	sprintf_s(TempBuffer, "%s : %s\n", CPUTeamName, TauntList[Taunt][Which]); //TauntIndices[Taunt].TauntList[Which]);
 
 	// Message squelching -- only do this *AFTER* all calls to Random()
 	// and things that can affect gamestate. Need to do null pointer checks

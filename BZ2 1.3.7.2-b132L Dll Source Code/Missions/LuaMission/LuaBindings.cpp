@@ -5044,7 +5044,10 @@ int GetPathPoints(lua_State *L)
 		lua_createtable(L, bufSize, 0);
 		for (size_t i = 0; i < bufSize; ++i)
 		{
-			lua_pushnumber(L, pData[i]);
+			float x = pData[2 * i + 0];
+			float z = pData[2 * i + 1];
+			float y = ::TerrainFindFloor(x, z);
+			*NewVector(L) = Vector(x, y, z);
 			lua_rawseti(L, -2, i + 1);
 		}
 		return 1;
