@@ -1011,10 +1011,9 @@ int Build_Yaw_Matrix(lua_State *L)
 //inline Vector Add_Mult_Vectors(const Vector &v1, const Vector &v2, float Mult) { return Vector(v1.x + v2.x * Mult, v1.y + v2.y * Mult, v1.z + v2.z * Mult); }
 int Add_Mult_Vectors(lua_State *L)
 {
-	int StartArg = 1;
 	const Vector *v1 = RequireVector(L, 1);
 	const Vector *v2 = RequireVector(L, 2);
-	float mult = float(luaL_checknumber(L, StartArg));
+	float mult = float(luaL_checknumber(L, 3));
 	*NewVector(L) = Add_Mult_Vectors(*v1, *v2, mult);
 	return 1;
 }
@@ -5813,17 +5812,19 @@ int Move(lua_State *L)
 //Handle ReplaceObject(Handle h, char* ODF = NULL, int Team = -1, float HeightOffset = 0.0f, int Empty = -1, bool RestoreWeapons = true, int Group = -1, bool KeepCommand = true, int NewCommand = -1, Handle NewWho = -1);
 int ReplaceObject(lua_State *L)
 {
-	Handle h = RequireHandle(L, 1);
-	const char *replace = luaL_optstring(L, 2, NULL);
-	int team = luaL_optinteger(L, 3, -1);
-	float height = float(luaL_optnumber(L, 4, 0.0f));
-	int empty = luaL_optinteger(L, 5, -1);
-	bool restoreweapons = luaL_optboolean(L, 6, TRUE);
-	int group = luaL_optinteger(L, 7, -1);
-	bool keepcmd = luaL_optboolean(L, 8, TRUE);
-	int newcmd = luaL_optinteger(L, 9, -1);
-	Handle newwho = GetHandle(L, 10);
-	PushHandle(L, ::ReplaceObject(h, const_cast<char *>(replace), team, height, empty, restoreweapons, group, keepcmd, newcmd, newwho));
+	int startarg = 1;
+	Handle h = RequireHandle(L, startarg++);
+	const char *replace = luaL_optstring(L, startarg++, NULL);
+	int team = luaL_optinteger(L, startarg++, -1);
+	float height = float(luaL_optnumber(L, startarg++, 0.0f));
+	int empty = luaL_optinteger(L, startarg++, -1);
+	bool restoreweapons = luaL_optboolean(L, startarg++, TRUE);
+	int group = luaL_optinteger(L, startarg++, -1);
+	int snipe = luaL_optinteger(L, startarg++, -1);
+	bool keepcmd = luaL_optboolean(L, startarg++, TRUE);
+	int newcmd = luaL_optinteger(L, startarg++, -1);
+	Handle newwho = GetHandle(L, startarg++);
+	PushHandle(L, ::ReplaceObject(h, const_cast<char *>(replace), team, height, empty, restoreweapons, group, snipe, keepcmd, newcmd, newwho));
 	return 1;
 }
 
