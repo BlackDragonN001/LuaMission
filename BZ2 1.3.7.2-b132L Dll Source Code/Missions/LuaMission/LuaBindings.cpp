@@ -1,5 +1,5 @@
 #include "LuaBindings.h"
-//#include "..\Shared\Taunts.h"
+#include "..\Shared\Taunts.h"
 
 // Lua Specific things...
 
@@ -2750,8 +2750,8 @@ int GetCameraPosition(lua_State *L)
 //DLLEXPORT void DLLAPI SetCameraPosition(const Vector &pos, const Vector &dir);
 int SetCameraPosition(lua_State *L)
 {
-	Vector *pos = GetVector(L, 1);
-	Vector *dir = GetVector(L, 2);
+	Vector *pos = RequireVector(L, 1);
+	Vector *dir = RequireVector(L, 2);
 	::SetCameraPosition(*pos, *dir);
 	return 0;
 }
@@ -4490,7 +4490,7 @@ int GetODFChar(lua_State *L)
 		found = ::GetODFChar(h, section, label, &value, value);
 	}
 
-	if (value)
+	if (found)
 		lua_pushlstring(L, &value, 1);
 	else
 		lua_pushnil(L);
@@ -4548,7 +4548,7 @@ int GetODFString(lua_State *L)
 		found = ::GetODFString(h, section, label, MAX_ODF_LENGTH, value, defval);
 	}
 
-	if (value)
+	if (found)
 		lua_pushstring(L, value);
 	else
 		lua_pushnil(L);
@@ -5729,8 +5729,6 @@ int WhoIsTargeting(lua_State *L)
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------
 // BZ2 DLL Utility Functions:
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Code removed by order of N1, LuaMissions will just have to do their own shit and hope it syncs across MP....
-/*
 //void DoTaunt(TauntTypes Taunt);
 int DoTaunt(lua_State *L)
 {
@@ -5746,7 +5744,6 @@ int SetTauntCPUName(lua_State *L)
 	::SetTauntCPUName(cputeamname);
 	return 0;
 }
-*/
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------
 // BZScriptor Backwards Compatability Functions:
@@ -5809,7 +5806,7 @@ int Move(lua_State *L)
 	return 1;
 }
 
-//Handle ReplaceObject(Handle h, char* ODF = NULL, int Team = -1, float HeightOffset = 0.0f, int Empty = -1, bool RestoreWeapons = true, int Group = -1, bool KeepCommand = true, int NewCommand = -1, Handle NewWho = -1);
+//Handle ReplaceObject(Handle h, char* ODF = NULL, int Team = -1, float HeightOffset = 0.0f, int Empty = -1, bool RestoreWeapons = true, int Group = -1, int Snipe = -1, bool KeepCommand = true, int NewCommand = -1, Handle NewWho = -1);
 int ReplaceObject(lua_State *L)
 {
 	int startarg = 1;
@@ -5873,6 +5870,7 @@ int SetTransform(lua_State *L)
 	}
 	return 0;
 }
+
 
 //Handle GetRecyclerHandle(const int Team);
 int GetRecyclerHandle(lua_State *L)
@@ -6056,7 +6054,7 @@ bool LoadValue(lua_State *L, bool push)
 		{
 		case 0x8f89e802 /* "Vector" */:
 		{
-			Vector v;
+			Vector v(0, 0, 0);
 			//in(fp, &v, sizeof(v));
 			ret = ret && Read(&v, sizeof(v));
 			if (push)
@@ -6065,7 +6063,7 @@ bool LoadValue(lua_State *L, bool push)
 		break;
 		case 0x15c2f8ec /* "Matrix" */:
 		{
-			Matrix m;
+			Matrix m = Identity_Matrix;
 			//in(fp, &m, sizeof(m));
 			ret = ret && Read(&m, sizeof(m));
 			if (push)
@@ -6074,7 +6072,7 @@ bool LoadValue(lua_State *L, bool push)
 		break;
 		case 0xf3e6468d /* "Quaternion" */:
 		{
-			Quaternion q;
+			Quaternion q(1, Vector(0, 0, 0));
 			//in(fp, &q, sizeof(q));
 			ret = ret && Read(&q, sizeof(q));
 			if (push)

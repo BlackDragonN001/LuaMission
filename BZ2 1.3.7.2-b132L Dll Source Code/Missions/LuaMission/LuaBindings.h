@@ -282,8 +282,6 @@ namespace LuaBindings {
 	int CameraCancelled(lua_State *L);
 	int FreeCamera(lua_State *L);
 	int FreeFinish(lua_State *L);
-	int FreeCamera(lua_State *L);
-	int FreeFinish(lua_State *L);
 	int PlayMovie(lua_State *L);
 	int StopMovie(lua_State *L);
 	int PlayMove(lua_State *L);
@@ -419,9 +417,9 @@ namespace LuaBindings {
 	int Get_WeaponODF(lua_State *L);;
 	int Get_WeaponGOClass(lua_State *L);;
 	int DoesODFExist(lua_State *L);
-	int IsAlive2(lua_State *L);
-	int IsFlying2(lua_State *L);
-	int IsAliveAndPilot2(lua_State *L);
+	//int IsAlive2(lua_State *L); // IsAlive directs to this.
+	//int IsFlying2(lua_State *L); // IsFlying directs to this.
+	//int IsAliveAndPilot2(lua_State *L); // IsAliveAndPilot directs to this.
 	int TranslateString2(lua_State *L);
 	int GetScavengerCurScrap(lua_State *L);
 	int GetScavengerMaxScrap(lua_State *L);
@@ -543,8 +541,8 @@ namespace LuaBindings {
 	int WhoIsTargeting(lua_State *L);
 
 	// BZ2 DLL Utility Functions.
-	//int DoTaunt(lua_State *L);
-	//int SetTauntCPUName(lua_State *L);
+	int DoTaunt(lua_State *L);
+	int SetTauntCPUName(lua_State *L);
 
 	// BZScriptor Backwards Compatability functions.
 	int SetAngle(lua_State *L);
@@ -770,6 +768,14 @@ namespace LuaBindings {
 		{ "AddObjective", AddObjective },
 		{ "IsWithin", IsWithin },
 		{ "CountUnitsNearObject", CountUnitsNearObject },
+		{ "SetAvoidType", SetAvoidType },
+		{ "Annoy", Annoy },
+		{ "ClearThrust", ClearThrust },
+		{ "SetVerbose", SetVerbose },
+		{ "ClearIdleAnims", CountUnitsNearObject },
+		{ "AddIdleAnim", CountUnitsNearObject },
+		{ "IsIdle", CountUnitsNearObject },
+		{ "CountThreats", CountUnitsNearObject },
 		{ "SpawnBirds", SpawnBirds },
 		{ "RemoveBirds", RemoveBirds },
 		{ "SetColorFade", SetColorFade },
@@ -779,8 +785,6 @@ namespace LuaBindings {
 		{ "FindSoundEffect", FindSoundEffect },
 		{ "StopSoundEffect", StopSoundEffect },
 		{ "GetObjectByTeamSlot", GetObjectByTeamSlot },
-		{ "IsNetGame", IsNetworkOn },
-		{ "IsHosting", ImServer },
 		{ "IsNetworkOn", IsNetworkOn },
 		{ "ImServer", ImServer },
 		{ "ImDedicatedServer", ImDedicatedServer },
@@ -822,8 +826,26 @@ namespace LuaBindings {
 		{ "AddKills", AddKills },
 		{ "AddScore", AddScore },
 		{ "SetAsUser", SetAsUser },
+		{ "SetNoScrapFlagByHandle", SetNoScrapFlagByHandle },
+		{ "ClearNoScrapFlagByHandle", ClearNoScrapFlagByHandle },
+		{ "GetLocalPlayerTeamNumber", GetLocalPlayerTeamNumber },
+		{ "GetLocalPlayerDPID", GetLocalPlayerDPID },
+		{ "FlagSteal", FlagSteal },
+		{ "FlagRecover", FlagRecover },
+		{ "FlagScore", FlagScore },
+		{ "MoneyScore", MoneyScore },
+		{ "NoteGameoverByTimelimit", NoteGameoverByTimelimit },
+		{ "NoteGameoverByKillLimit", NoteGameoverByKillLimit },
+		{ "NoteGameoverByScore", NoteGameoverByScore },
+		{ "NoteGameoverByLastWithBase", NoteGameoverByLastWithBase },
+		{ "NoteGameoverByLastTeamWithBase", NoteGameoverByLastTeamWithBase },
+		{ "NoteGameoverByNoBases", NoteGameoverByNoBases },
+		{ "DoGameover", DoGameover },
+		{ "SetMPTeamRace", SetMPTeamRace },
 		{ "GetTarget", GetTarget },
 		{ "IFace_ConsoleCmd", IFace_ConsoleCmd },
+		{ "Network_SetString", Network_SetString },
+		{ "Network_SetInteger", Network_SetInteger },
 		{ "GetVelocity", GetVelocity },
 		{ "GetCfg", GetObjInfo_CFG },
 		{ "GetOdf", GetObjInfo_ODF },
@@ -851,11 +873,12 @@ namespace LuaBindings {
 		{ "ResetTeamSlot", ResetTeamSlot },
 		{ "GetCategoryTypeOverride", GetCategoryTypeOverride },
 		{ "GetCategoryType", GetCategoryType },
-		{ "GetODFHexInt", GetODFBool },
+		{ "GetODFHexInt", GetODFHexInt },
 		{ "GetODFInt", GetODFInt },
 		{ "GetODFLong", GetODFLong },
 		{ "GetODFFloat", GetODFFloat },
 		{ "GetODFDouble", GetODFDouble },
+		{ "GetODFChar", GetODFChar },
 		{ "GetODFBool", GetODFBool },
 		{ "GetODFString", GetODFString },
 		{ "GetODFColor", GetODFColor },
@@ -888,7 +911,8 @@ namespace LuaBindings {
 		{ "KickPlayer", KickPlayer },
 		{ "TerrainIsWater", TerrainIsWater },
 		{ "GetTerrainHeightAndNormal", GetTerrainHeightAndNormal },
-		{ "WriteToFile", WriteToFile }, //{ "GetOutputPath", GetOutputPath },
+		{ "WriteToFile", WriteToFile }, 
+		//{ "GetOutputPath", GetOutputPath },
 		{ "GetPathPoints", GetPathPoints },
 		{ "GetOwner", GetOwner },
 		{ "SetTarget", SetTarget },
@@ -960,8 +984,8 @@ namespace LuaBindings {
 		{ "WhoIsTargeting", WhoIsTargeting },
 
 		// BZ2 DLL Utility Functions
-		//{ "DoTaunt", DoTaunt },
-		//{ "SetTauntCPUTeamName", SetTauntCPUTeamName },
+		{ "DoTaunt", DoTaunt },
+		{ "SetTauntCPUTeamName", SetTauntCPUName },
 
 		// BZScriptor Backwards Compatability.
 		{ "SetAngle", SetAngle },
@@ -977,6 +1001,8 @@ namespace LuaBindings {
 		{ "GetFloorHeightAndNormal", TerrainFindFloor },
 		{ "GetWeaponClass", Get_WeaponConfig },
 		{ "GetTeamSlot", GetObjectByTeamSlot },
+		{ "IsNetGame", IsNetworkOn },
+		{ "IsHosting", ImServer },
 		//{ "GetClassId", GetObjInfo_EntityType }, //GetClassId }, // BZ1 version returns an int, bz2 returns string, just use Get_EntityType.
 
 //		{ "BuildAt", BuildAt }, // Needs a struct/handle/position saveoff for 1 turn.
