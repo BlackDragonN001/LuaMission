@@ -327,25 +327,25 @@ Matrix Matrix_Multiply(const Matrix &A, const Matrix &B)
 {
 	Matrix M;
 
-	M.right.x = A.right.x * B.right.x + A.right.y * B.up.x + A.right.z * B.front.x + A.rightw * B.posit.x;
-	M.right.y = A.right.x * B.right.y + A.right.y * B.up.y + A.right.z * B.front.y + A.rightw * B.posit.y;
-	M.right.z = A.right.x * B.right.z + A.right.y * B.up.z + A.right.z * B.front.z + A.rightw * B.posit.z;
-	M.rightw  = A.right.x * B.rightw  + A.right.y * B.upw  + A.right.z * B.frontw  + A.rightw * B.positw;
+	M.right.x = A.right.x * B.right.x + A.right.y * B.up.x + A.right.z * B.front.x;
+	M.right.y = A.right.x * B.right.y + A.right.y * B.up.y + A.right.z * B.front.y;
+	M.right.z = A.right.x * B.right.z + A.right.y * B.up.z + A.right.z * B.front.z;
+	M.rightw  = 0.0f;
 
-	M.up.x    = A.up.x    * B.right.x + A.up.y    * B.up.x + A.up.z    * B.front.x + A.upw * B.posit.x;
-	M.up.y    = A.up.x    * B.right.y + A.up.y    * B.up.y + A.up.z    * B.front.y + A.upw * B.posit.y;
-	M.up.z    = A.up.x    * B.right.z + A.up.y    * B.up.z + A.up.z    * B.front.z + A.upw * B.posit.z;
-	M.upw     = A.up.x    * B.rightw  + A.up.y    * B.upw  + A.up.z    * B.frontw  + A.upw * B.positw;
+	M.up.x    = A.up.x    * B.right.x + A.up.y    * B.up.x + A.up.z    * B.front.x;
+	M.up.y    = A.up.x    * B.right.y + A.up.y    * B.up.y + A.up.z    * B.front.y;
+	M.up.z    = A.up.x    * B.right.z + A.up.y    * B.up.z + A.up.z    * B.front.z;
+	M.upw     = 0.0f;
 
-	M.front.x = A.front.x * B.right.x + A.front.y * B.up.x + A.front.z * B.front.x + A.frontw * B.posit.x;
-	M.front.y = A.front.x * B.right.y + A.front.y * B.up.y + A.front.z * B.front.y + A.frontw * B.posit.y;
-	M.front.z = A.front.x * B.right.z + A.front.y * B.up.z + A.front.z * B.front.z + A.frontw * B.posit.z;
-	M.frontw  = A.front.x * B.rightw  + A.front.y * B.upw  + A.front.z * B.frontw  + A.frontw * B.positw;
+	M.front.x = A.front.x * B.right.x + A.front.y * B.up.x + A.front.z * B.front.x;
+	M.front.y = A.front.x * B.right.y + A.front.y * B.up.y + A.front.z * B.front.y;
+	M.front.z = A.front.x * B.right.z + A.front.y * B.up.z + A.front.z * B.front.z;
+	M.frontw  = 0.0f;
 
-	M.posit.x = A.posit.x * B.right.x + A.posit.y * B.up.x + A.posit.z * B.front.x + A.positw * B.posit.x;
-	M.posit.y = A.posit.x * B.right.y + A.posit.y * B.up.y + A.posit.z * B.front.y + A.positw * B.posit.y;
-	M.posit.z = A.posit.x * B.right.z + A.posit.y * B.up.z + A.posit.z * B.front.z + A.positw * B.posit.z;
-	M.positw  = A.posit.x * B.rightw  + A.posit.y * B.upw  + A.posit.z * B.frontw  + A.positw * B.positw;
+	M.posit.x = A.posit.x * B.right.x + A.posit.y * B.up.x + A.posit.z * B.front.x + B.posit.x;
+	M.posit.y = A.posit.x * B.right.y + A.posit.y * B.up.y + A.posit.z * B.front.y + B.posit.y;
+	M.posit.z = A.posit.x * B.right.z + A.posit.y * B.up.z + A.posit.z * B.front.z + B.posit.z;
+	M.positw  = 1.0f;
 
 	//Matrix_Sanity_Check (&M);
 
